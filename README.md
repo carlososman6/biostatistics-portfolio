@@ -45,7 +45,8 @@ data/
   processed/  files created by scripts
 ```
 
-Only the tools used in a project are present. Outputs are PDFs where possible, because GitHub shows PDFs but not rendered HTML. SPSS `.spv` files open only in SPSS. Stata `.smcl` logs open in Stata.
+Only the tools used in a project are present. Outputs are PDFs where possible
+SPSS `.spv` files open only in SPSS. Stata `.smcl` logs open in Stata.
 
 ## Running the code
 
@@ -60,6 +61,4 @@ Only the tools used in a project are present. Outputs are PDFs where possible, b
 
 See [`data/README.md`](data/README.md) for sources. Course datasets belong to their owners and are shared only to make the coursework reproducible. No patient-identifiable data and no data from my own research projects is included.
 
-## Licence
 
-Code is released under the MIT licence (see [LICENSE](LICENSE)). The licence does not cover the datasets.
