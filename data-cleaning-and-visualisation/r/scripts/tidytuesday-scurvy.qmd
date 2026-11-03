@@ -1,0 +1,159 @@
+---
+title: "Challenge 1: Scurvy"
+date: today
+format: html
+engine: knitr
+---
+
+# SCURVY
+
+This is a weekly challenge from tidy Tuesday (Week 30)
+
+<https://github.com/rfordatascience/tidytuesday/blob/main/data/2023/2023-07-25/readme.md>
+
+## Overview
+
+James Lind's 1757 experiment is the first documented controlled clinical trial in history. Twelve sailors with scurvy were split into six treatment pairs (citrus, cider, vitriol, vinegar, seawater,a spice paste) and their symptoms scored after six
+days. Th challenge will attempted in both R and python
+
+## R Analysis
+
+### Load packages
+
+```{r}
+library(tidyverse)
+library(medicaldata)
+library(tidytuesdayR)
+library(janitor)
+library(gtsummary)
+```
+
+### Load data frame
+
+The scurvy data frame is loaded from the tidytuesdayR Package
+
+```{r}
+
+library(medicaldata)
+scurvy <- medicaldata::scurvy
+
+```
+
+## Inspection and cleaning
+
+The dimensions of the data frame
+
+```{r}
+dim(scurvy) #show both rows and columns
+nrow(scurvy) # only rows
+ncol(scurvy) # only columns
+```
+
+The 12 rows represent the 12 sailors that underwent the trial
+
+The 8 columns defined as follows;
+
+- study_id ; Participant ID
+
+- treatment ; The treatments groups- cider, dilute_sulfuric_acid, vinegar, sea_water, citrus, purgative_mixture
+
+- dosing_regimen_for_scurvy ; Dosing Regimen-1 quart per day; 25 drops of elixir of vitriol, three times a day; two spoonfuls, three times daily; half pint daily; two lemons and an orange daily; a nutmeg-sized paste of garlic, mustard seed, horseradish, balsam of Peru, and gum myrrh three times a day
+
+- gum_rot_d6; Likert scale for severity of gum rot on day 6 (0_none, 1_mild, 2_moderate, 3_severe)
+
+- skin_sores_d6 ; Likert scale for severity of skin sores on day 6 (0_none, 1_mild, 2_moderate, 3_severe)
+
+- weakness_of_the_knees_d6 ; Likert scale for severity weakness of the knees on day 6 (0_none, 1_mild, 2_moderate, 3_severe)
+
+- lassitude_d6 ; Likert scale for severity of Lassitude on day 6 (0_none, 1_mild, 2_moderate, 3_severe)
+
+- fit_for_duty_d6 ; Whether the sailor is fit for duty (0_no, 1_yes)
+
+## Inspection
+
+```{r}
+head(scurvy, n = 7)  # top 7 rows
+
+tail(scurvy, n = 6) # bottom 6 rows
+```
+
+## Check structure
+
+```{r}
+str(scurvy)
+```
+
+No need to fix variable type as they are already fixed
+
+## Check for missing data
+
+Overall
+
+```{r}
+anyNA(scurvy)
+colSums(is.na(scurvy))  # counts of missing values per column
+```
+
+In a particular column
+
+```{r}
+
+anyNA(scurvy$lassitude_d6)  # 
+
+sum(is.na(scurvy$treatment))
+```
+
+No missing data noted anywhere in the dataframe
+
+## Check for duplicates
+
+```{r}
+scurvy[duplicated(scurvy), ] # to see the duplicates
+sum(duplicated(scurvy))      # counts of the duplicates
+```
+
+No duplicated rows noted
+
+# Exploration
+
+```{r}
+
+scurvy |> tabyl(treatment, fit_for_duty_d6)
+
+# put in a better table
+scurvy |> 
+  tbl_cross(
+    row = treatment,
+    col = fit_for_duty_d6,
+    label = list(treatment ~ "Treatment",
+                 fit_for_duty_d6 ~ "Fit for duty by day 6"
+                 )
+  )
+
+```
+
+The sailors have been grouped according to whether they are fit for duty or not
+
+After day 6; only one sailor is fit for duty
+
+Next we shall group the sailors by severity of the symptoms
+
+```{r}
+scurvy |> 
+  select(treatment, gum_rot_d6, skin_sores_d6, weakness_of_the_knees_d6, lassitude_d6) |> 
+  tbl_summary(
+    by = treatment,
+    label = list(
+      gum_rot_d6 ~ "Gum rot",
+      skin_sores_d6 ~ "Skin sores",
+      weakness_of_the_knees_d6 ~ "Knee weakness",
+      lassitude_d6 ~ "Lassitude"
+    )
+  )
+  
+
+```
+
+Only the citrus group produced a sailor fit for duty after day 6. All other treatments produced no recovery.
+
+## 

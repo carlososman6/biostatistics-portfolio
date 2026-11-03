@@ -1,0 +1,46 @@
+---
+title: "anova class contraceptive"
+author: "farouk"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+Family health worker receives complaints of weight gain from clients on contraceptives. He has also noticed & is aware that weight gain varies from individual to individual. He wants to find out if it is due to genetic variation or contraceptives. He compares 4 different contraceptive
+```{r}
+library(readxl)
+library(tidyverse)
+
+anova_contra <- read_excel(here::here("data", "raw", "one_Way_ANOVA classwork_2022.xlsx"))
+glimpse(anova_contra)
+```
+
+convert contraceptive to factor
+```{r}
+anova_contra$contraceptive <- as.factor(anova_contra$contraceptive)
+class(anova_contra$contraceptive)
+levels(anova_contra$contraceptive)
+```
+
+```{r}
+View(anova_contra)
+```
+
+```{r}
+#grandmean
+mean(anova_contra$wtgain)
+```
+```{r}
+#find mean in each categogory using dyplyr
+
+anova_contra %>% 
+  group_by(contraceptive) %>% 
+  summarise(mean(wtgain))
+
+#please note; the summarise function is different from summary as it only produces the specific calculation you want; so you have to tell it what you want calculate; mean
+```
+
+

@@ -1,0 +1,9 @@
+# Linear regression
+
+**Status:** coursework, MSc Clinical Epidemiology and Biostatistics (MCEB), Makerere University, 2025/26. Datasets are in [`data/raw`](../data/raw); see [`data/README.md`](../data/README.md).
+
+| Analysis | Question / task | Methods | Tools | Code | Output |
+|---|---|---|---|---|---|
+| Birthweight and maternal factors | Are smoking and mother's race associated with birthweight? | Multiple linear regression of birthweight on smoking, race and other maternal characteristics; assumption checks | Stata, R | [do-file](stata/do-files/birthweight-assignment-1.do), [R script](r/scripts/birthweight-analysis.R) | [Stata log (PDF)](stata/do-files/birthweight-assignment-1.pdf); R: [text log](r/outputs/birthweight-analysis-output.txt) and diagnostic plots in [`r/outputs`](r/outputs) |
+| pbirths | Build and check a linear model for birthweight (grams) using gestation, smoking, race and education | Multiple linear regression; R-squared and F-test; residual plots; normality test; correlations | Stata, SPSS | [do-file](stata/do-files/pbirths-linear-regression.do), [SPSS syntax](spss/spss-files/pbirths-regression.sps) | [Stata log (text)](stata/do-files/pbirths-linear-regression-log.txt); [SPSS output (PDF)](spss/spss-files/pbirths-regression.pdf) |
+| Body fat | Multiple linear regression with assumption checks, collinearity and influential-point diagnostics | VIF; Cook's distance; DFBETAS | SPSS, R | [SPSS syntax](spss/spss-files/bodyfat-regression.sps), [R script](r/scripts/bodyfat-regression-verification.R) | [SPSS output (PDF)](spss/spss-files/bodyfat-regression.pdf); R: [text log](r/outputs/bodyfat-regression-output.txt); SPSS `.spv` (opens in SPSS only): [final](spss/spss-files/bodyfat-regression-final-output.spv), [number 3](spss/spss-files/bodyfat-regression-number-3-output.spv) |

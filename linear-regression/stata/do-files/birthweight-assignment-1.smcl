@@ -1,0 +1,1893 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}data/STATA\birthweight_assignment2.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}18 May 2026, 12:42:10
+{txt}
+{com}. 
+. 
+. *2)     A study was conducted to determine if smoking and mother's race are associated with birthweight of babies. The data is attached as Regression assignment I Number_2_2025_2026 and the table below contains the details about the variables. Use it to answer the question. Interpret the final model obtained. USE STATA for the analysis
+. 
+. * Import data
+. import excel "data/STATA\Regression assignment I data_Number 2_2025_2026.xlsx", sheet("Sheet1") firstrow
+{res}{text}(10 vars, 189 obs)
+
+{com}. 
+. * Rename columns 
+. rename Column1  id       // Identification code
+{res}{txt}
+{com}. rename Column2  age      // Age of mother in years
+{res}{txt}
+{com}. rename Column3  lwt      // Mother's weight at last menstrual period (lbs)
+{res}{txt}
+{com}. rename Column4  race     // Mother's race (1=White, 2=Black, 3=Other)
+{res}{txt}
+{com}. rename Column5  smoke    // Smoking during pregnancy (1=Yes, 0=No)
+{res}{txt}
+{com}. rename Column6  ptl      // History of premature labour
+{res}{txt}
+{com}. rename Column7  ht       // History of hypertension (1=Yes, 0=No)
+{res}{txt}
+{com}. rename Column8  ui       // Uterine irritability (1=Yes, 0=No)
+{res}{txt}
+{com}. rename Column9  ftv      // Physician visits – 1st trimester
+{res}{txt}
+{com}. rename Column10 bwt      // Birthweight in grams (OUTCOME)
+{res}{txt}
+{com}. 
+. *check to see if renaming was succesful
+. bro
+{txt}
+{com}. 
+. *Label columns after renaming
+. 
+. label variable id    "Identification Code"
+{txt}
+{com}. label variable age   "Age of the Mother in Years"
+{txt}
+{com}. label variable lwt   "Weight in Pounds at the Last Menstrual Period"
+{txt}
+{com}. label variable race  "Mothers Race (1=White, 2=Black, 3=Other)"
+{txt}
+{com}. label variable smoke "Smoking Status During Pregnancy (1=Yes, 0=No)"
+{txt}
+{com}. label variable ptl   "History of Premature Labor (0=None, 1=One, etc.)"
+{txt}
+{com}. label variable ht    "History of Hypertension (1=Yes, 0=No)"
+{txt}
+{com}. label variable ui    "Presence of Uterine Irritability (1=Yes, 0=No)"
+{txt}
+{com}. label variable ftv   "Number of Physician Visits During First Trimester"
+{txt}
+{com}. label variable bwt   "Birth Weight in Grams"
+{txt}
+{com}. 
+. *Data inspection
+. bro
+{txt}
+{com}. 
+. *ptl and ftv have levels with sparse categories
+. 
+. tab ptl
+
+ {txt}History of {c |}
+  Premature {c |}
+      Labor {c |}
+   (0=None, {c |}
+     1=One, {c |}
+      etc.) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        159       84.13       84.13
+{txt}          1 {c |}{res}         24       12.70       96.83
+{txt}          2 {c |}{res}          5        2.65       99.47
+{txt}          3 {c |}{res}          1        0.53      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        189      100.00
+{txt}
+{com}. 
+. tab ftv
+
+  {txt}Number of {c |}
+  Physician {c |}
+     Visits {c |}
+     During {c |}
+      First {c |}
+  Trimester {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        100       52.91       52.91
+{txt}          1 {c |}{res}         47       24.87       77.78
+{txt}          2 {c |}{res}         30       15.87       93.65
+{txt}          3 {c |}{res}          7        3.70       97.35
+{txt}          4 {c |}{res}          4        2.12       99.47
+{txt}          6 {c |}{res}          1        0.53      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        189      100.00
+{txt}
+{com}. 
+. *COLLAPSE SPARSE CATEGORIES; 
+. *History of premature labor acategories(ptl); 0=159, 1=24, 2=5, 3=1 → Collapse 2 and 3 into "2 or more"
+. gen ptl2 = ptl
+{txt}
+{com}. recode ptl2 (2 3 = 2)
+{txt}(1 changes made to {bf:ptl2})
+
+{com}. label define ptl2_lbl 0 "No prior premature labor"  1 "One prior premature labor"   2 "Two or more prior premature labors"
+{txt}
+{com}. label values ptl2 ptl2_lbl
+{txt}
+{com}. tab ptl2
+
+                              {txt}ptl2 {c |}      Freq.     Percent        Cum.
+{hline 35}{c +}{hline 35}
+          No prior premature labor {c |}{res}        159       84.13       84.13
+{txt}         One prior premature labor {c |}{res}         24       12.70       96.83
+{txt}Two or more prior premature labors {c |}{res}          6        3.17      100.00
+{txt}{hline 35}{c +}{hline 35}
+                             Total {c |}{res}        189      100.00
+{txt}
+{com}. 
+. * Number of Physician Visits During the First Trimester()ftv2: 0=100, 1=47, 2=30, 3=7, 4=4, 6=1 → Collapse 3, 4, 6 into "3 or more"
+. gen ftv2 = ftv
+{txt}
+{com}. recode ftv2 (3 4 6 = 3)
+{txt}(5 changes made to {bf:ftv2})
+
+{com}. label define ftv2_lbl 0 "No physician visits" 1 "One physician visit" 2 "Two physician visits" 3 "Three or more physician visits"
+{txt}
+{com}. 
+. 
+. label values ftv2 ftv2_lbl
+{txt}
+{com}. tab ftv2
+
+                          {txt}ftv2 {c |}      Freq.     Percent        Cum.
+{hline 31}{c +}{hline 35}
+           No physician visits {c |}{res}        100       52.91       52.91
+{txt}           One physician visit {c |}{res}         47       24.87       77.78
+{txt}          Two physician visits {c |}{res}         30       15.87       93.65
+{txt}Three or more physician visits {c |}{res}         12        6.35      100.00
+{txt}{hline 31}{c +}{hline 35}
+                         Total {c |}{res}        189      100.00
+{txt}
+{com}. 
+. 
+. * SAMPLE SIZE CHECK 
+. * We need atleast 40 subjects per variable 
+. * 
+. bro
+{txt}
+{com}. 
+. * FIT  MODEL
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *CHECK ASSUMPTIONS
+. 
+. * EXISTENCE OF A RELATIONSHIP
+. 
+. correlate smoke race lwt ptl2 ht ui age ftv2 bwt
+{txt}(obs=189)
+
+             {c |}    smoke     race      lwt     ptl2       ht       ui      age     ftv2      bwt
+{hline 13}{c +}{hline 81}
+       smoke {c |}{res}   1.0000
+        {txt}race {c |}{res}  -0.3390   1.0000
+         {txt}lwt {c |}{res}  -0.0442  -0.1650   1.0000
+        {txt}ptl2 {c |}{res}   0.1837   0.0189  -0.1347   1.0000
+          {txt}ht {c |}{res}   0.0134   0.0199   0.2364  -0.0133   1.0000
+          {txt}ui {c |}{res}   0.0622   0.0536  -0.1528   0.2128  -0.1086   1.0000
+         {txt}age {c |}{res}  -0.0443  -0.1728   0.1801   0.0717  -0.0158  -0.0752   1.0000
+        {txt}ftv2 {c |}{res}  -0.0460  -0.1295   0.0884  -0.0512  -0.0711  -0.0505   0.2184   1.0000
+         {txt}bwt {c |}{res}  -0.1891  -0.1962   0.1858  -0.1740  -0.1461  -0.2835   0.0899   0.0503   1.0000
+
+{txt}
+{com}. *None of the predictor variables have a correlation coefficient > 0.3 with the birthweight
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *However the F-test shows a p value <0.05; which shows there is existence of a relationships between predictors and outcome; Therefore the assumption of existence of a relationships is met
+. 
+. 
+. * CHECK FOR LINEARITY
+. * use CPR plots with each predictor.
+. 
+. cprplot age, rlopts(lcolor(red)) lowess
+{res}{txt}
+{com}. *looking at this graph;  The CPR plot shows a straight reference line with no meaningful curvature, indicating that the linearity assumption is satisfied for age.the lowess line also closely aligns with with it for most of the data range; hence linearity is fulfilled
+. 
+. cprplot lwt, rlopts(lcolor(red)) lowess
+{res}{txt}
+{com}. *  straight reference line with no curvature, therefore linearity assumption is satisfied;lowess line here also closely aligns with the line of best fit therefore
+. 
+. cprplot smoke, rlopts(lcolor(red)) lowess
+{res}{txt}
+{com}. * The line of best fit,along with the lowess smoother are straight indicating linearity
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. cprplot race
+{res}{txt}
+{com}. *race
+. 
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. cprplot ptl2
+{res}{txt}
+{com}. *ptl2
+. 
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. *cprplot ptl2, rlopts(lcolor(red)) lowess
+. *The line of best fit is straight indicating linearity
+. 
+. cprplot ht
+{res}{txt}
+{com}. *The line of best fit is straight indicating linearity
+. 
+. cprplot ui
+{res}{txt}
+{com}. *The line of best fit is straight indicating linearity with no curvatures
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. cprplot ftv2
+{res}{txt}
+{com}. *ftv2
+. 
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. * CHECK FOR INDEPENDENCE OF RESIDUALS
+. 
+. * Use RVP plots (residuals versus predictor plots) – should show no clear pattern.
+. 
+. rvpplot age, yline(0)
+{res}{txt}
+{com}. *no pattern or funnel-shape noted
+. 
+. rvpplot lwt, yline(0)
+{res}{txt}
+{com}. *no pattern or funnel shaped
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. rvpplot race, yline(0)
+{res}{txt}
+{com}. *race
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. rvpplot smoke, yline(0)
+{res}{txt}
+{com}. *no pattern
+. 
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. rvpplot ptl2, yline(0)
+{res}{txt}
+{com}. * no pattern
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. rvpplot ht, yline(0)
+{res}{txt}
+{com}. *no pattern
+. 
+. rvpplot ui, yline(0)
+{res}{txt}
+{com}. *no pattern
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. rvpplot ftv2, yline(0)
+{res}{txt}
+{com}. *ftv2
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. 
+. * Interpretation: No clear pattern in any plot → independence assumption is met.
+. 
+. 
+. * CHECK NORMALITY OF RESIDUALS
+. * create new variable of residuals in the model
+. predict residuals, residuals
+{txt}
+{com}. 
+. 
+. * Check normalty using:Shapiro-Wilk test.
+. swilk residuals
+
+                   {txt}Shapiro–Wilk W test for normal data
+
+    Variable {c |}        Obs{col 33}W{col 45}V{col 55}z       Prob>z
+{hline 13}{c +}{hline 54}
+   residuals {c |} {res}       189    0.99118      1.253     0.518    0.30222
+{txt}
+{com}. 
+. * H0: Residuals are normally distributed.
+. * Non-significant p-value (p =  0.59724) means we fail to reject the null hypothesis that the residuals are normally distributed
+. 
+. 
+. 
+. 
+. * CHECK FOR EQUAL VARIANCE (HOMOSCEDASTICITY)
+. 
+. *Use both visual checks and statistical test
+. 
+. *Visual checks using rvpplot and rvf plots
+. 
+. * (a) RVP plots
+. rvpplot age, yline(0)
+{res}{txt}
+{com}. *distribution is rectangular
+. 
+. rvpplot lwt, yline(0)
+{res}{txt}
+{com}. *distribution is largely rectangular
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. rvpplot race, yline(0)
+{res}{txt}
+{com}. * no pattern
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *race
+. 
+. rvpplot smoke, yline(0)
+{res}{txt}
+{com}. *rectangular distribution is observed
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. rvpplot ptl2, yline(0)
+{res}{txt}
+{com}. * no pattern
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. rvpplot ht, yline(0)
+{res}{txt}
+{com}. *rectangular distribution noted
+. 
+. rvpplot ui, yline(0)
+{res}{txt}
+{com}. *rectangular distribution noted
+. 
+. 
+. regress bwt smoke race age lwt ptl2 ht ui ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.55
+{txt}       Model {c |} {res} 22528099.7         8  2816012.47   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77388952.9       180  429938.627   {txt}R-squared       ={res}    0.2255
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1910
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res}  655.7
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-352.2265{col 26}{space 2} 107.4927{col 37}{space 1}   -3.28{col 46}{space 3}0.001{col 54}{space 4}-564.3345{col 67}{space 3}-140.1186
+{txt}{space 8}race {c |}{col 14}{res}{space 2}-189.5989{col 26}{space 2} 57.89535{col 37}{space 1}   -3.27{col 46}{space 3}0.001{col 54}{space 4}-303.8398{col 67}{space 3}-75.35806
+{txt}{space 9}age {c |}{col 14}{res}{space 2} .4082827{col 26}{space 2} 9.586487{col 37}{space 1}    0.04{col 46}{space 3}0.966{col 54}{space 4}-18.50807{col 67}{space 3} 19.32464
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 3.349241{col 26}{space 2} 1.687248{col 37}{space 1}    1.99{col 46}{space 3}0.049{col 54}{space 4} .0199116{col 67}{space 3}  6.67857
+{txt}{space 8}ptl2 {c |}{col 14}{res}{space 2}-92.84892{col 26}{space 2} 108.0376{col 37}{space 1}   -0.86{col 46}{space 3}0.391{col 54}{space 4}-306.0321{col 67}{space 3} 120.3342
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-599.8101{col 26}{space 2}  203.596{col 37}{space 1}   -2.95{col 46}{space 3}0.004{col 54}{space 4}-1001.552{col 67}{space 3}-198.0681
+{txt}{space 10}ui {c |}{col 14}{res}{space 2}-501.8176{col 26}{space 2} 139.5389{col 37}{space 1}   -3.60{col 46}{space 3}0.000{col 54}{space 4}-777.1602{col 67}{space 3}-226.4751
+{txt}{space 8}ftv2 {c |}{col 14}{res}{space 2}-26.56862{col 26}{space 2} 52.66522{col 37}{space 1}   -0.50{col 46}{space 3}0.615{col 54}{space 4}-130.4893{col 67}{space 3} 77.35201
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3138.616{col 26}{space 2} 343.1829{col 37}{space 1}    9.15{col 46}{space 3}0.000{col 54}{space 4} 2461.437{col 67}{space 3} 3815.795
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. rvpplot ftv2, yline(0)
+{res}{txt}
+{com}. * no pattern
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. * (b) RVF plot 
+. * First predict fitted values 
+. predict fitted, xb
+{txt}
+{com}. 
+. rvfplot, yline(0)
+{res}{txt}
+{com}. *by observation; we can see that there is a a rectangular spread of the data points ; this fulfills the assumption of equal variance
+. 
+. * Use Statistical test: Breusch-Pagan / Cook-Weisberg test (estat hettest)
+. 
+. * H0: Constant variance. p > 0.05 → assumption holds.
+. 
+. * Overall check
+. estat hettest
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:{txt:Fitted values of} {res:bwt}}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.03}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.8660}
+{txt}
+{com}. 
+. * per variable;
+. 
+. estat hettest age
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:age}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:5.21}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.0224}
+{txt}
+{com}. *Breusch-Pagan / Cook-Weisberg test for age is signficant; hence null hypotheis of constant variance is rejected
+. 
+. estat hettest race
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:race}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.02}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.8852}
+{txt}
+{com}. estat hettest smoke
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:smoke}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.53}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.4682}
+{txt}
+{com}. estat hettest lwt
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:lwt}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.16}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.6923}
+{txt}
+{com}. estat hettest ptl2
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:ptl2}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.12}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.7294}
+{txt}
+{com}. estat hettest ht
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:ht}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.55}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.4563}
+{txt}
+{com}. estat hettest ui
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:ui}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.95}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.3300}
+{txt}
+{com}. estat hettest ftv2
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:ftv2}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.06}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.8077}
+{txt}
+{com}. 
+. *Though the age-specific Breusch-Pagan / Cook-Weisberg test for age is signficant, the overall test is non signficant and the RVP plot for age looked rectangular; therefore the  assumption of equal variance in model is considered met.
+. 
+. 
+. *CHECK FOR MULTICOLLINEARITY
+. * Correlation matrix – eyeball for strong relationships 
+. 
+. correlate smoke race lwt ptl2 ht ui age ftv2 bwt
+{txt}(obs=189)
+
+             {c |}    smoke     race      lwt     ptl2       ht       ui      age     ftv2      bwt
+{hline 13}{c +}{hline 81}
+       smoke {c |}{res}   1.0000
+        {txt}race {c |}{res}  -0.3390   1.0000
+         {txt}lwt {c |}{res}  -0.0442  -0.1650   1.0000
+        {txt}ptl2 {c |}{res}   0.1837   0.0189  -0.1347   1.0000
+          {txt}ht {c |}{res}   0.0134   0.0199   0.2364  -0.0133   1.0000
+          {txt}ui {c |}{res}   0.0622   0.0536  -0.1528   0.2128  -0.1086   1.0000
+         {txt}age {c |}{res}  -0.0443  -0.1728   0.1801   0.0717  -0.0158  -0.0752   1.0000
+        {txt}ftv2 {c |}{res}  -0.0460  -0.1295   0.0884  -0.0512  -0.0711  -0.0505   0.2184   1.0000
+         {txt}bwt {c |}{res}  -0.1891  -0.1962   0.1858  -0.1740  -0.1461  -0.2835   0.0899   0.0503   1.0000
+
+{txt}
+{com}. *from  eyeballing; there was no multicollinearity as the relationship between continuous predictors was not strong (0.1801) 
+. 
+. 
+. 
+. * Using VIF (Variance Inflation Factor) 
+. 
+. estat vif
+
+{txt}    Variable {c |}       VIF       1/VIF  
+{hline 13}{c +}{hline 22}
+{space 7}smoke {c |} {res}     1.30    0.767604
+{txt}{space 8}race {c |}
+{space 10}2  {c |} {res}     1.21    0.824928
+{txt}{space 10}3  {c |} {res}     1.44    0.693252
+{txt}{space 9}age {c |} {res}     1.18    0.845102
+{txt}{space 9}lwt {c |} {res}     1.25    0.797575
+{txt}{space 8}ptl2 {c |}
+{space 10}1  {c |} {res}     1.13    0.886325
+{txt}{space 10}2  {c |} {res}     1.08    0.926226
+{txt}{space 10}ht {c |} {res}     1.10    0.913111
+{txt}{space 10}ui {c |} {res}     1.09    0.916761
+{txt}{space 8}ftv2 {c |}
+{space 10}1  {c |} {res}     1.28    0.780588
+{txt}{space 10}2  {c |} {res}     1.18    0.845851
+{txt}{space 10}3  {c |} {res}     1.07    0.930575
+{txt}{hline 13}{c +}{hline 22}
+    Mean VIF {c |} {res}     1.19
+{txt}
+{com}. *No VIF was noted >10; No multicollinearity between the predictors
+. 
+. 
+. * CHECK FOR OUTLIERS
+. 
+. * Using DFbetas
+. 
+. predict dfbetas_age, dfbeta(age)
+{txt}
+{com}. predict dfbeta_smoke, dfbeta(smoke)
+{txt}
+{com}. predict dfbeta_2race, dfbeta(2.race)   
+{txt}
+{com}. predict dfbeta_3race, dfbeta(3.race)   
+{txt}
+{com}. predict dfbeta_lwt, dfbeta(lwt)
+{txt}
+{com}. predict dfbeta_1ptl2, dfbeta(1.ptl2)
+{txt}
+{com}. predict dfbeta_2ptl2, dfbeta(2.ptl2) 
+{txt}
+{com}. predict dfbeta_ht, dfbeta(ht)
+{txt}
+{com}. predict dfbeta_ui, dfbeta(ui)
+{txt}
+{com}. predict dfbeta_1ftv2, dfbeta(1.ftv2)
+{txt}
+{com}. predict dfbeta_2ftv2, dfbeta(2.ftv2) 
+{txt}
+{com}. predict dfbeta_3ftv2, dfbeta(3.ftv2)  
+{txt}
+{com}. 
+.  
+. * Summarise each ;
+. 
+. sum dfbetas_age
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}dfbetas_age {c |}{res}        189    .0001922    .0997504  -.4358608   .8462367
+{txt}
+{com}. * noted to have max dfbeta > 0.5
+. 
+. *to identify ids causing this influence ;
+. 
+. list if abs( dfbetas_age) > 0.5
+
+     {txt}{c TLC}{hline 5}{c TT}{hline 5}{c TT}{hline 5}{c TT}{hline 6}{c TT}{hline 7}{c TT}{hline 5}{c TT}{hline 4}{c TT}{hline 4}{c TT}{hline 5}{c TT}{hline 6}{c TT}{hline 26}{c TT}{hline 21}{c TT}{hline 10}{c TT}{hline 10}{c TT}{hline 10}{c TT}{hline 11}{c TT}{hline 10}{c TT}{hline 11}{c TRC}
+130. {c |}  id {c |} age {c |} lwt {c |} race {c |} smoke {c |} ptl {c |} ht {c |} ui {c |} ftv {c |}  bwt {c |}                     ptl2 {c |}                ftv2 {c |} residu~s {c |}   fitted {c |} dfbet~ge {c |} dfbeta~ke {c |} df~2race {c |} dfb~3race {c |}
+     {c |} {res}226 {txt}{c |} {res} 45 {txt}{c |} {res}123 {txt}{c |} {res}   1 {txt}{c |} {res}    0 {txt}{c |} {res}  0 {txt}{c |} {res} 0 {txt}{c |} {res} 0 {txt}{c |} {res}  1 {txt}{c |} {res}4990 {txt}{c |} {res}No prior premature labor {txt}{c |} {res}One physician visit {txt}{c |} {res}1593.518 {txt}{c |} {res}3396.482 {txt}{c |} {res}.8462367 {txt}{c |} {res}-.0946698 {txt}{c |} {res}.0578532 {txt}{c |} {res}-.0919594 {txt}{c |}
+     {c LT}{hline 5}{c BT}{hline 5}{c BT}{hline 5}{c BT}{hline 3}{c TT}{hline 2}{c BT}{hline 7}{c BT}{hline 5}{c BT}{hline 4}{c +}{hline 4}{c BT}{hline 5}{c BT}{hline 6}{c BT}{hline 4}{c TT}{hline 21}{c +}{hline 21}{c +}{hline 10}{c BT}{hline 10}{c +}{hline 10}{c BT}{hline 11}{c +}{hline 10}{c BT}{hline 11}{c RT}
+     {c |}      dfbeta~wt      {c |}      dfb~1ptl2      {c |}      dfb~2ptl2       {c |}      dfbet~ht       {c |}      dfbeta~i       {c |}      df~1ftv2       {c |}      dfb~2ftv2       {c |}      dfb~3ftv2       {c |}
+     {c |}      {res}-.2277828      {txt}{c |}      {res}-.2031392      {txt}{c |}      {res}-.0771283       {txt}{c |}      {res}.0001991       {txt}{c |}      {res}.0065741       {txt}{c |}      {res}.1235413       {txt}{c |}      {res}-.1709331       {txt}{c |}      {res}-.0947763       {txt}{c |}
+     {c BLC}{hline 21}{c BT}{hline 21}{c BT}{hline 22}{c BT}{hline 21}{c BT}{hline 21}{c BT}{hline 21}{c BT}{hline 22}{c BT}{hline 22}{c BRC}
+
+{com}. * ids listed are 159,188 and 226
+. 
+. 
+. sum dfbeta_smoke
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_smoke {c |}{res}        189   -.0000483    .0749203   -.243478   .2588947
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+. sum dfbeta_2race
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_2race {c |}{res}        189   -.0002255    .0694604  -.4112781   .2672275
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+.    
+. sum dfbeta_3race
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_3race {c |}{res}        189    -.000305    .0770598  -.2204692   .2534211
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+.    
+. sum dfbeta_lwt
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}dfbeta_lwt {c |}{res}        189    .0003746    .0731693  -.2465397   .2912798
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+. 
+. sum dfbeta_1ptl2
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_1ptl2 {c |}{res}        189    .0002136    .0793465  -.3182063   .3904274
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+. 
+. sum dfbeta_2ptl2 
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_2ptl2 {c |}{res}        189   -.0000742    .0970423  -.8761988   .7555826
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+.   
+. sum dfbeta_ht
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 3}dfbeta_ht {c |}{res}        189   -.0001866    .0864127  -.5336523   .4472942
+{txt}
+{com}. *min abs dfbeta>0.5
+. 
+. **to identify ids causing this influence ;
+. 
+. list if abs(dfbeta_ht) > 0.5
+
+     {txt}{c TLC}{hline 4}{c TT}{hline 5}{c TT}{hline 5}{c TT}{hline 6}{c TT}{hline 7}{c TT}{hline 5}{c TT}{hline 4}{c TT}{hline 4}{c TT}{hline 5}{c TT}{hline 6}{c TT}{hline 26}{c TT}{hline 21}{c TT}{hline 11}{c TT}{hline 10}{c TT}{hline 11}{c TT}{hline 10}{c TT}{hline 11}{c TT}{hline 11}{c TRC}
+133. {c |} id {c |} age {c |} lwt {c |} race {c |} smoke {c |} ptl {c |} ht {c |} ui {c |} ftv {c |}  bwt {c |}                     ptl2 {c |}                ftv2 {c |} residuals {c |}   fitted {c |} dfbetas~e {c |} dfbet~ke {c |} dfb~2race {c |} dfb~3race {c |}
+     {c |} {res}11 {txt}{c |} {res} 34 {txt}{c |} {res}187 {txt}{c |} {res}   2 {txt}{c |} {res}    1 {txt}{c |} {res}  0 {txt}{c |} {res} 1 {txt}{c |} {res} 0 {txt}{c |} {res}  0 {txt}{c |} {res}1135 {txt}{c |} {res}No prior premature labor {txt}{c |} {res}No physician visits {txt}{c |} {res}-1139.403 {txt}{c |} {res}2274.403 {txt}{c |} {res}-.4358608 {txt}{c |} {res}-.243478 {txt}{c |} {res}-.4112781 {txt}{c |} {res}-.1343776 {txt}{c |}
+     {c LT}{hline 4}{c BT}{hline 5}{c BT}{hline 5}{c BT}{hline 5}{c TT}{c BT}{hline 7}{c BT}{hline 5}{c BT}{hline 4}{c BT}{hline 1}{c TT}{hline 2}{c BT}{hline 5}{c BT}{hline 6}{c BT}{hline 5}{c TT}{hline 20}{c BT}{hline 1}{c TT}{hline 19}{c BT}{hline 2}{c TT}{hline 8}{c BT}{hline 10}{c BT}{hline 1}{c TT}{hline 9}{c BT}{hline 10}{c BT}{c TT}{hline 10}{c BT}{hline 11}{c RT}
+     {c |}      dfbeta~wt       {c |}      df~1ptl2       {c |}      df~2ptl2       {c |}      dfbeta_ht       {c |}      dfbeta_ui       {c |}      df~1ftv2       {c |}      df~2ftv2       {c |}       df~3ftv2       {c |}
+     {c |}      {res}-.0235547       {txt}{c |}      {res}.1785985       {txt}{c |}      {res}.0155561       {txt}{c |}      {res}-.5336523       {txt}{c |}      {res}-.0347399       {txt}{c |}      {res}.1016487       {txt}{c |}      {res}.0921492       {txt}{c |}       {res}.1283023       {txt}{c |}
+     {c BLC}{hline 22}{c BT}{hline 21}{c BT}{hline 21}{c BT}{hline 22}{c BT}{hline 22}{c BT}{hline 21}{c BT}{hline 21}{c BT}{hline 22}{c BRC}
+
+{com}. ** ids listed are 159,188 and 11
+. 
+. 
+. sum dfbeta_ui
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 3}dfbeta_ui {c |}{res}        189    .0001852    .0854952  -.5757909   .3582423
+{txt}
+{com}. *min abs dfbeta>0.5
+. 
+. **to identify ids causing this influence ;
+. 
+. list if abs(dfbeta_ui) > 0.5
+
+     {txt}{c TLC}{hline 4}{c TT}{hline 5}{c TT}{hline 5}{c TT}{hline 6}{c TT}{hline 7}{c TT}{hline 5}{c TT}{hline 4}{c TT}{hline 4}{c TT}{hline 5}{c TT}{hline 6}{c TT}{hline 26}{c TT}{hline 22}{c TT}{hline 11}{c TT}{hline 10}{c TT}{hline 11}{c TT}{hline 10}{c TT}{hline 10}{c TT}{hline 10}{c TRC}
+132. {c |} id {c |} age {c |} lwt {c |} race {c |} smoke {c |} ptl {c |} ht {c |} ui {c |} ftv {c |}  bwt {c |}                     ptl2 {c |}                 ftv2 {c |} residuals {c |}   fitted {c |} dfbetas~e {c |} dfbet~ke {c |} df~2race {c |} df~3race {c |}
+     {c |} {res}10 {txt}{c |} {res} 29 {txt}{c |} {res}130 {txt}{c |} {res}   1 {txt}{c |} {res}    0 {txt}{c |} {res}  0 {txt}{c |} {res} 0 {txt}{c |} {res} 1 {txt}{c |} {res}  2 {txt}{c |} {res}1021 {txt}{c |} {res}No prior premature labor {txt}{c |} {res}Two physician visits {txt}{c |} {res}-1802.514 {txt}{c |} {res}2823.514 {txt}{c |} {res}-.1977893 {txt}{c |} {res}.2588947 {txt}{c |} {res}.1146002 {txt}{c |} {res}.2534211 {txt}{c |}
+     {c LT}{hline 4}{c BT}{hline 5}{c BT}{hline 5}{c BT}{hline 3}{c TT}{hline 2}{c BT}{hline 7}{c BT}{hline 5}{c BT}{hline 4}{c +}{hline 4}{c BT}{hline 5}{c BT}{hline 6}{c BT}{hline 3}{c TT}{hline 22}{c +}{hline 22}{c +}{hline 11}{c BT}{hline 9}{c TT}{c BT}{hline 11}{c BT}{hline 9}{c TT}{c BT}{hline 10}{c BT}{hline 10}{c RT}
+     {c |}      dfbet~wt      {c |}      df~1ptl2       {c |}      df~2ptl2       {c |}      dfbeta_ht       {c |}      dfbeta_ui       {c |}      df~1ftv2       {c |}      dfb~2ftv2       {c |}      dfb~3ftv2       {c |}
+     {c |}      {res}.0699314      {txt}{c |}      {res}.0793891       {txt}{c |}      {res}.0969735       {txt}{c |}      {res}-.0821431       {txt}{c |}      {res}-.5757909       {txt}{c |}      {res}.0807833       {txt}{c |}      {res}-.3960064       {txt}{c |}      {res}-.0059288       {txt}{c |}
+     {c BLC}{hline 20}{c BT}{hline 21}{c BT}{hline 21}{c BT}{hline 22}{c BT}{hline 22}{c BT}{hline 21}{c BT}{hline 22}{c BT}{hline 22}{c BRC}
+
+{com}. *ids are 159,188,10
+. 
+. sum dfbeta_1ftv2
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_1ftv2 {c |}{res}        189   -.0002647    .0785257  -.3359247    .237453
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+. 
+. sum dfbeta_2ftv2 
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_2ftv2 {c |}{res}        189   -.0003227    .0778068  -.3960064   .2400846
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+. 
+. sum dfbeta_3ftv2
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbeta_3ftv2 {c |}{res}        189    .0001181    .0605618   -.245884    .437811
+{txt}
+{com}. *both abs min max dfbeta are <0.5
+. 
+.   
+. 
+. regress bwt smoke i.race age lwt i.ptl2 ht ui i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(12, 176)      = {res}     5.37
+{txt}       Model {c |} {res} 26789683.1        12  2232473.59   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73127369.5       176  415496.418   {txt}R-squared       ={res}    0.2681
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2182
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 644.59
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}smoke {c |}{col 37}{res}{space 2}-293.3205{col 49}{space 2} 109.6431{col 60}{space 1}   -2.68{col 69}{space 3}0.008{col 77}{space 4}-509.7049{col 90}{space 3}-76.93619
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-443.4656{col 49}{space 2} 149.8739{col 60}{space 1}   -2.96{col 69}{space 3}0.004{col 77}{space 4} -739.247{col 90}{space 3}-147.6843
+{txt}{space 33}3  {c |}{col 37}{res}{space 2}-300.2724{col 49}{space 2} 117.7204{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-532.5976{col 90}{space 3}-67.94725
+{txt}{space 35} {c |}
+{space 32}age {c |}{col 37}{res}{space 2}-2.106441{col 49}{space 2} 9.651227{col 60}{space 1}   -0.22{col 69}{space 3}0.827{col 77}{space 4}-21.15347{col 90}{space 3} 16.94059
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.458538{col 49}{space 2} 1.721434{col 60}{space 1}    2.59{col 69}{space 3}0.010{col 77}{space 4} 1.061229{col 90}{space 3} 7.855848
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-320.2626{col 49}{space 2}  149.579{col 60}{space 1}   -2.14{col 69}{space 3}0.034{col 77}{space 4}-615.4618{col 90}{space 3}-25.06333
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 153.6952{col 49}{space 2} 277.8785{col 60}{space 1}    0.55{col 69}{space 3}0.581{col 77}{space 4}-394.7076{col 90}{space 3} 702.0979
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-575.0218{col 49}{space 2}  201.222{col 60}{space 1}   -2.86{col 69}{space 3}0.005{col 77}{space 4}-972.1403{col 90}{space 3}-177.9032
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-505.9775{col 49}{space 2} 137.8461{col 60}{space 1}   -3.67{col 69}{space 3}0.000{col 77}{space 4}-778.0215{col 90}{space 3}-233.9334
+{txt}{space 35} {c |}
+{space 31}ftv2 {c |}
+{space 15}One physician visit  {c |}{col 37}{res}{space 2} 118.7878{col 49}{space 2} 122.7752{col 60}{space 1}    0.97{col 69}{space 3}0.335{col 77}{space 4}-123.5133{col 90}{space 3} 361.0888
+{txt}{space 14}Two physician visits  {c |}{col 37}{res}{space 2}-13.11499{col 49}{space 2}  139.511{col 60}{space 1}   -0.09{col 69}{space 3}0.925{col 77}{space 4}-288.4447{col 90}{space 3} 262.2147
+{txt}{space 4}Three or more physician visits  {c |}{col 37}{res}{space 2}-112.8566{col 49}{space 2}  199.325{col 60}{space 1}   -0.57{col 69}{space 3}0.572{col 77}{space 4}-506.2313{col 90}{space 3} 280.5181
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 2824.084{col 49}{space 2} 314.0448{col 60}{space 1}    8.99{col 69}{space 3}0.000{col 77}{space 4} 2204.305{col 90}{space 3} 3443.862
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. * Using Cook's Distance
+. 
+. predict cooksd, cooksd
+{txt}
+{com}. summarize cooksd
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}cooksd {c |}{res}        189      .00642    .0117865   9.75e-07   .0738859
+{txt}
+{com}. *max is <1
+. 
+. 
+. 
+. 
+. *What predictors enter the multivariate analysis
+. *we shall do simple linear regression for each predictor outcome and set cut off of p-value<0.2
+. 
+. regress bwt age
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(1, 187)       = {res}     1.52
+{txt}       Model {c |} {res} 806926.913         1  806926.913   {txt}Prob > F        ={res}    0.2188
+{txt}    Residual {c |} {res} 99110125.7       187  530000.672   {txt}R-squared       ={res}    0.0081
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0028
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 728.01
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}age {c |}{col 14}{res}{space 2} 12.36433{col 26}{space 2} 10.02055{col 37}{space 1}    1.23{col 46}{space 3}0.219{col 54}{space 4}-7.403527{col 67}{space 3} 32.13219
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 2657.333{col 26}{space 2}  238.804{col 37}{space 1}   11.13{col 46}{space 3}0.000{col 54}{space 4} 2186.236{col 67}{space 3} 3128.429
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue= 0.219
+. 
+. regress bwt lwt
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(1, 187)       = {res}     6.69
+{txt}       Model {c |} {res}  3448881.3         1   3448881.3   {txt}Prob > F        ={res}    0.0105
+{txt}    Residual {c |} {res} 96468171.3       187  515872.574   {txt}R-squared       ={res}    0.0345
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0294
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 718.24
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}lwt {c |}{col 14}{res}{space 2} 4.429264{col 26}{space 2} 1.713025{col 37}{space 1}    2.59{col 46}{space 3}0.010{col 54}{space 4} 1.049927{col 67}{space 3}   7.8086
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 2369.672{col 26}{space 2} 228.4306{col 37}{space 1}   10.37{col 46}{space 3}0.000{col 54}{space 4}  1919.04{col 67}{space 3} 2820.304
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue=0.010
+. 
+. regress bwt i.race
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(2, 186)       = {res}     4.97
+{txt}       Model {c |} {res} 5070607.63         2  2535303.82   {txt}Prob > F        ={res}    0.0079
+{txt}    Residual {c |} {res}   94846445       186  509927.124   {txt}R-squared       ={res}    0.0507
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0405
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 714.09
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}race {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-384.0473{col 26}{space 2} 157.8744{col 37}{space 1}   -2.43{col 46}{space 3}0.016{col 54}{space 4}-695.5019{col 67}{space 3}-72.59266
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-299.7247{col 26}{space 2} 113.6776{col 37}{space 1}   -2.64{col 46}{space 3}0.009{col 54}{space 4}-523.9878{col 67}{space 3} -75.4615
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}  3103.74{col 26}{space 2} 72.88169{col 37}{space 1}   42.59{col 46}{space 3}0.000{col 54}{space 4} 2959.959{col 67}{space 3} 3247.521
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue=0.0079
+. 
+. regress bwt smoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(1, 187)       = {res}     6.94
+{txt}       Model {c |} {res} 3573406.24         1  3573406.24   {txt}Prob > F        ={res}    0.0092
+{txt}    Residual {c |} {res} 96343646.4       187  515206.665   {txt}R-squared       ={res}    0.0358
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0306
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 717.78
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}smoke {c |}{col 14}{res}{space 2}-281.7133{col 26}{space 2} 106.9687{col 37}{space 1}   -2.63{col 46}{space 3}0.009{col 54}{space 4}-492.7338{col 67}{space 3}-70.69274
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3054.957{col 26}{space 2} 66.93324{col 37}{space 1}   45.64{col 46}{space 3}0.000{col 54}{space 4} 2922.915{col 67}{space 3} 3186.998
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue= 0.009
+. 
+. regress bwt i.ptl2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(2, 186)       = {res}     5.51
+{txt}       Model {c |} {res} 5586361.94         2  2793180.97   {txt}Prob > F        ={res}    0.0047
+{txt}    Residual {c |} {res} 94330690.7       186  507154.251   {txt}R-squared       ={res}    0.0559
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0458
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 712.15
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-517.2807{col 49}{space 2} 155.9522{col 60}{space 1}   -3.32{col 69}{space 3}0.001{col 77}{space 4}-824.9431{col 90}{space 3}-209.6182
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} -101.739{col 49}{space 2} 296.1678{col 60}{space 1}   -0.34{col 69}{space 3}0.732{col 77}{space 4}-686.0188{col 90}{space 3} 482.5408
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 3013.572{col 49}{space 2} 56.47698{col 60}{space 1}   53.36{col 69}{space 3}0.000{col 77}{space 4} 2902.155{col 90}{space 3}  3124.99
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue=0.0047
+. 
+. regress bwt ht
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(1, 187)       = {res}     4.08
+{txt}       Model {c |} {res} 2132014.49         1  2132014.49   {txt}Prob > F        ={res}    0.0449
+{txt}    Residual {c |} {res} 97785038.2       187  522914.643   {txt}R-squared       ={res}    0.0213
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0161
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 723.13
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}ht {c |}{col 14}{res}{space 2}-435.5607{col 26}{space 2} 215.7094{col 37}{space 1}   -2.02{col 46}{space 3}0.045{col 54}{space 4}-861.0973{col 67}{space 3}-10.02413
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 2972.311{col 26}{space 2} 54.35366{col 37}{space 1}   54.68{col 46}{space 3}0.000{col 54}{space 4} 2865.086{col 67}{space 3} 3079.536
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue= 0.045
+. 
+. regress bwt ui
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(1, 187)       = {res}    16.34
+{txt}       Model {c |} {res} 8028747.44         1  8028747.44   {txt}Prob > F        ={res}    0.0001
+{txt}    Residual {c |} {res} 91888305.2       187  491381.311   {txt}R-squared       ={res}    0.0804
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0754
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 700.99
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 10}ui {c |}{col 14}{res}{space 2}-580.1801{col 26}{space 2} 143.5318{col 37}{space 1}   -4.04{col 46}{space 3}0.000{col 54}{space 4}-863.3298{col 67}{space 3}-297.0304
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3030.609{col 26}{space 2} 55.24543{col 37}{space 1}   54.86{col 46}{space 3}0.000{col 54}{space 4} 2921.624{col 67}{space 3} 3139.593
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue= 0.000
+. 
+. regress bwt i.ftv2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(3, 185)       = {res}     1.43
+{txt}       Model {c |} {res} 2256992.02         3  752330.673   {txt}Prob > F        ={res}    0.2369
+{txt}    Residual {c |} {res} 97660060.6       185   527892.22   {txt}R-squared       ={res}    0.0226
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0067
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 726.56
+
+{txt}{hline 32}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                            bwt{col 33}{c |} Coefficient{col 45}  Std. err.{col 57}      t{col 65}   P>|t|{col 73}     [95% con{col 86}f. interval]
+{hline 32}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 27}ftv2 {c |}
+{space 11}One physician visit  {c |}{col 33}{res}{space 2}   242.73{col 45}{space 2} 128.4939{col 56}{space 1}    1.89{col 65}{space 3}0.060{col 73}{space 4}-10.77167{col 86}{space 3} 496.2317
+{txt}{space 10}Two physician visits  {c |}{col 33}{res}{space 2} 145.0633{col 45}{space 2} 151.2459{col 56}{space 1}    0.96{col 65}{space 3}0.339{col 73}{space 4}-153.3252{col 86}{space 3} 443.4519
+{txt}Three or more physician visits  {c |}{col 33}{res}{space 2}   -63.02{col 45}{space 2} 221.9683{col 56}{space 1}   -0.28{col 65}{space 3}0.777{col 73}{space 4}-500.9347{col 86}{space 3} 374.8947
+{txt}{space 31} {c |}
+{space 26}_cons {c |}{col 33}{res}{space 2}  2865.27{col 45}{space 2} 72.65619{col 56}{space 1}   39.44{col 65}{space 3}0.000{col 73}{space 4} 2721.929{col 86}{space 3} 3008.611
+{txt}{hline 32}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *pvalue= 0.2369
+. 
+. *because Age of the Mother in Years and Number of Physician Visits During the First Trimester have a p value >0.2; they should be dropped from the model; However ; maternal age is clinically important so it cannot be dropped
+. 
+. 
+. *
+. * STEP 10: CHECK FOR INTERACTION
+. * Main predictors: smoke and race.
+. 
+. **check for signficance of variables
+. regress bwt age lwt i.race smoke i.ptl2 ht ui 
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(9, 179)       = {res}     7.04
+{txt}       Model {c |} {res}   26110508         9  2901167.56   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73806544.6       179  412327.065   {txt}R-squared       ={res}    0.2613
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2242
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 642.13
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 32}age {c |}{col 37}{res}{space 2}  -1.4796{col 49}{space 2} 9.409666{col 60}{space 1}   -0.16{col 69}{space 3}0.875{col 77}{space 4}-20.04774{col 90}{space 3} 17.08854
+{txt}{space 32}lwt {c |}{col 37}{res}{space 2} 4.230848{col 49}{space 2} 1.703954{col 60}{space 1}    2.48{col 69}{space 3}0.014{col 77}{space 4} .8684271{col 90}{space 3} 7.593269
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-453.6814{col 49}{space 2} 149.0072{col 60}{space 1}   -3.04{col 69}{space 3}0.003{col 77}{space 4}-747.7181{col 90}{space 3}-159.6447
+{txt}{space 33}3  {c |}{col 37}{res}{space 2} -327.286{col 49}{space 2} 113.8901{col 60}{space 1}   -2.87{col 69}{space 3}0.005{col 77}{space 4} -552.026{col 90}{space 3}-102.5459
+{txt}{space 35} {c |}
+{space 30}smoke {c |}{col 37}{res}{space 2}-325.4022{col 49}{space 2} 105.4711{col 60}{space 1}   -3.09{col 69}{space 3}0.002{col 77}{space 4}-533.5289{col 90}{space 3}-117.2754
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-295.8071{col 49}{space 2}  146.966{col 60}{space 1}   -2.01{col 69}{space 3}0.046{col 77}{space 4}-585.8159{col 90}{space 3}-5.798431
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 183.1224{col 49}{space 2}  275.106{col 60}{space 1}    0.67{col 69}{space 3}0.506{col 77}{space 4}-359.7458{col 90}{space 3} 725.9907
+{txt}{space 35} {c |}
+{space 33}ht {c |}{col 37}{res}{space 2}-567.9902{col 49}{space 2} 198.9717{col 60}{space 1}   -2.85{col 69}{space 3}0.005{col 77}{space 4}-960.6221{col 90}{space 3}-175.3583
+{txt}{space 33}ui {c |}{col 37}{res}{space 2}-514.5269{col 49}{space 2} 136.7178{col 60}{space 1}   -3.76{col 69}{space 3}0.000{col 77}{space 4}-784.3129{col 90}{space 3} -244.741
+{txt}{space 30}_cons {c |}{col 37}{res}{space 2}  2879.69{col 49}{space 2} 309.5318{col 60}{space 1}    9.30{col 69}{space 3}0.000{col 77}{space 4} 2268.889{col 90}{space 3} 3490.491
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *age is not signficant; so we dont from interaction terms with its
+. 
+. *
+. 
+. * Use stepwise backward to remove non-significant interaction terms.
+. *
+. stepwise, pr(0.05) : regress bwt (i.smoke i.race) i.smoke#i.race i.smoke##c.lwt i.smoke##ht i.smoke##ui i.smoke##i.ptl2 i.race##c.lwt i.race##i.ht i.race##ui i.race##i.ptl2
+{res}{txt}note: {bf:0b.smoke} omitted because of estimability.
+note: {bf:1b.race} omitted because of estimability.
+note: {bf:0o.smoke#1o.race} omitted because of estimability.
+note: {bf:0.smoke#2.race} omitted because of estimability.
+note: {bf:0.smoke#3.race} omitted because of estimability.
+note: {bf:1.smoke#1.race} omitted because of estimability.
+note: {bf:lwt} omitted because of estimability.
+note: {bf:0o.smoke#co.lwt} omitted because of estimability.
+note: {bf:0b.ht} omitted because of estimability.
+note: {bf:0o.smoke#0o.ht} omitted because of estimability.
+note: {bf:0o.smoke#1o.ht} omitted because of estimability.
+note: {bf:1o.smoke#0o.ht} omitted because of estimability.
+note: {bf:0b.ui} omitted because of estimability.
+note: {bf:0o.smoke#0o.ui} omitted because of estimability.
+note: {bf:0o.smoke#1o.ui} omitted because of estimability.
+note: {bf:1o.smoke#0o.ui} omitted because of estimability.
+note: {bf:0b.ptl2} omitted because of estimability.
+note: {bf:0o.smoke#0o.ptl2} omitted because of estimability.
+note: {bf:0o.smoke#1o.ptl2} omitted because of estimability.
+note: {bf:0o.smoke#2o.ptl2} omitted because of estimability.
+note: {bf:1o.smoke#0o.ptl2} omitted because of estimability.
+note: {bf:1o.race#co.lwt} omitted because of estimability.
+note: {bf:1o.race#0o.ht} omitted because of estimability.
+note: {bf:1o.race#1o.ht} omitted because of estimability.
+note: {bf:2o.race#0o.ht} omitted because of estimability.
+note: {bf:3o.race#0o.ht} omitted because of estimability.
+note: {bf:1o.race#0o.ui} omitted because of estimability.
+note: {bf:1o.race#1o.ui} omitted because of estimability.
+note: {bf:2o.race#0o.ui} omitted because of estimability.
+note: {bf:3o.race#0o.ui} omitted because of estimability.
+note: {bf:1o.race#0o.ptl2} omitted because of estimability.
+note: {bf:1o.race#1o.ptl2} omitted because of estimability.
+note: {bf:1o.race#2o.ptl2} omitted because of estimability.
+note: {bf:2o.race#0o.ptl2} omitted because of estimability.
+note: {bf:2o.race#2o.ptl2} omitted because of estimability.
+note: {bf:3o.race#0o.ptl2} omitted because of estimability.
+
+{p2colset 0 23 32 2}{...}
+Wald test, begin with full model:
+{p2col:p = {res:0.9779} >= 0.0500,}removing {res:1.smoke#c.lwt}{p_end}
+{p2col:p = {res:0.8760} >= 0.0500,}removing {res:3.race#1.ui}{p_end}
+{p2col:p = {res:0.8058} >= 0.0500,}removing {res:2.ptl2}{p_end}
+{p2col:p = {res:0.8058} >= 0.0500,}removing {res:2.ptl2}{p_end}
+{p2col:p = {res:0.6302} >= 0.0500,}removing {res:2.race#1.ptl2}{p_end}
+{p2col:p = {res:0.6317} >= 0.0500,}removing {res:1.smoke#2.race}{p_end}
+{p2col:p = {res:0.6456} >= 0.0500,}removing {res:1.ptl2}{p_end}
+{p2col:p = {res:0.6456} >= 0.0500,}removing {res:1.ptl2}{p_end}
+{p2col:p = {res:0.6205} >= 0.0500,}removing {res:1.smoke#1.ui}{p_end}
+{p2col:p = {res:0.5660} >= 0.0500,}removing {res:1.ht}{p_end}
+{p2col:p = {res:0.5660} >= 0.0500,}removing {res:1.ht}{p_end}
+{p2col:p = {res:0.4907} >= 0.0500,}removing {res:3.race#1.ptl2}{p_end}
+{p2col:p = {res:0.3392} >= 0.0500,}removing {res:1.smoke#1.ht}{p_end}
+{p2col:p = {res:0.3071} >= 0.0500,}removing {res:3.race#2.ptl2}{p_end}
+{p2col:p = {res:0.3974} >= 0.0500,}removing {res:1.smoke#2.ptl2}{p_end}
+{p2col:p = {res:0.1919} >= 0.0500,}removing {res:2.race#1.ui}{p_end}
+{p2col:p = {res:0.2205} >= 0.0500,}removing {res:2.race#c.lwt}{p_end}
+{p2col:p = {res:0.2856} >= 0.0500,}removing {res:2.race#1.ht}{p_end}
+{p2col:p = {res:0.0911} >= 0.0500,}removing {res:3.race#c.lwt}{p_end}
+{p2colset 0 12 32 2}{...}
+{p2colreset}{...}
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(7, 181)       = {res}     9.50
+{txt}       Model {c |} {res} 26847686.2         7  3835383.75   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 73069366.4       181  403698.157   {txt}R-squared       ={res}    0.2687
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2404
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 635.37
+
+{txt}{hline 29}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                         bwt{col 30}{c |} Coefficient{col 42}  Std. err.{col 54}      t{col 62}   P>|t|{col 70}     [95% con{col 83}f. interval]
+{hline 29}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 21}1.smoke {c |}{col 30}{res}{space 2}-449.9509{col 42}{space 2} 120.8418{col 53}{space 1}   -3.72{col 62}{space 3}0.000{col 70}{space 4}-688.3907{col 83}{space 3} -211.511
+{txt}{space 28} {c |}
+{space 24}race {c |}
+{space 26}2  {c |}{col 30}{res}{space 2}-473.6543{col 42}{space 2} 141.6819{col 53}{space 1}   -3.34{col 62}{space 3}0.001{col 70}{space 4} -753.215{col 83}{space 3}-194.0936
+{txt}{space 26}3  {c |}{col 30}{res}{space 2}-506.6406{col 42}{space 2}  126.859{col 53}{space 1}   -3.99{col 62}{space 3}0.000{col 70}{space 4}-756.9532{col 83}{space 3}-256.3279
+{txt}{space 28} {c |}
+{space 18}smoke#race {c |}
+{space 24}1 3  {c |}{col 30}{res}{space 2} 548.7293{col 42}{space 2} 235.6858{col 53}{space 1}    2.33{col 62}{space 3}0.021{col 70}{space 4} 83.68424{col 83}{space 3} 1013.774
+{txt}{space 28} {c |}
+{space 24}1.ui {c |}{col 30}{res}{space 2}-549.9903{col 42}{space 2} 132.1732{col 53}{space 1}   -4.16{col 62}{space 3}0.000{col 70}{space 4}-810.7888{col 83}{space 3}-289.1918
+{txt}{space 28} {c |}
+{space 21}race#ht {c |}
+{space 24}3 1  {c |}{col 30}{res}{space 2}-896.6995{col 42}{space 2} 330.5602{col 53}{space 1}   -2.71{col 62}{space 3}0.007{col 70}{space 4}-1548.947{col 83}{space 3}-244.4523
+{txt}{space 28} {c |}
+{space 18}smoke#ptl2 {c |}
+1#One prior premature labor  {c |}{col 30}{res}{space 2}-470.9246{col 42}{space 2} 189.7619{col 53}{space 1}   -2.48{col 62}{space 3}0.014{col 70}{space 4}-845.3546{col 83}{space 3}-96.49456
+{txt}{space 28} {c |}
+{space 23}_cons {c |}{col 30}{res}{space 2}  3466.09{col 42}{space 2} 91.71842{col 53}{space 1}   37.79{col 62}{space 3}0.000{col 70}{space 4} 3285.115{col 83}{space 3} 3647.065
+{txt}{hline 29}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. *then we bring back the predictors 
+. 
+. regress bwt i.smoke i.race i.smoke#i.race i.race#i.ht i.smoke#i.ptl2 i.ht i.ui i.ptl2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(13, 175)      = {res}     5.22
+{txt}       Model {c |} {res} 27935093.8        13  2148853.37   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 71981958.8       175  411325.479   {txt}R-squared       ={res}    0.2796
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2261
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 641.35
+
+{txt}{hline 38}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                  bwt{col 39}{c |} Coefficient{col 51}  Std. err.{col 63}      t{col 71}   P>|t|{col 79}     [95% con{col 92}f. interval]
+{hline 38}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 30}1.smoke {c |}{col 39}{res}{space 2}-488.3979{col 51}{space 2} 139.7189{col 62}{space 1}   -3.50{col 71}{space 3}0.001{col 79}{space 4}-764.1488{col 92}{space 3} -212.647
+{txt}{space 37} {c |}
+{space 33}race {c |}
+{space 35}2  {c |}{col 39}{res}{space 2}-476.8397{col 51}{space 2} 196.1984{col 62}{space 1}   -2.43{col 71}{space 3}0.016{col 79}{space 4}-864.0593{col 92}{space 3} -89.6201
+{txt}{space 35}3  {c |}{col 39}{res}{space 2}-522.2059{col 51}{space 2} 133.4373{col 62}{space 1}   -3.91{col 71}{space 3}0.000{col 79}{space 4}-785.5593{col 92}{space 3}-258.8524
+{txt}{space 37} {c |}
+{space 27}smoke#race {c |}
+{space 33}1 2  {c |}{col 39}{res}{space 2} 114.9077{col 51}{space 2}  294.638{col 62}{space 1}    0.39{col 71}{space 3}0.697{col 79}{space 4}-466.5935{col 92}{space 3} 696.4089
+{txt}{space 33}1 3  {c |}{col 39}{res}{space 2} 557.8333{col 51}{space 2} 245.9875{col 62}{space 1}    2.27{col 71}{space 3}0.025{col 79}{space 4}  72.3492{col 92}{space 3} 1043.317
+{txt}{space 37} {c |}
+{space 30}race#ht {c |}
+{space 33}2 1  {c |}{col 39}{res}{space 2}-270.0486{col 51}{space 2} 494.2018{col 62}{space 1}   -0.55{col 71}{space 3}0.585{col 79}{space 4}-1245.411{col 92}{space 3} 705.3143
+{txt}{space 33}3 1  {c |}{col 39}{res}{space 2}-756.8714{col 51}{space 2} 456.7031{col 62}{space 1}   -1.66{col 71}{space 3}0.099{col 79}{space 4}-1658.226{col 92}{space 3} 144.4836
+{txt}{space 37} {c |}
+{space 27}smoke#ptl2 {c |}
+{space 9}1#One prior premature labor  {c |}{col 39}{res}{space 2}-461.0504{col 51}{space 2} 295.5487{col 62}{space 1}   -1.56{col 71}{space 3}0.121{col 79}{space 4}-1044.349{col 92}{space 3} 122.2482
+{txt}1#Two or more prior premature labors  {c |}{col 39}{res}{space 2} 557.1381{col 51}{space 2} 567.5967{col 62}{space 1}    0.98{col 71}{space 3}0.328{col 79}{space 4}-563.0778{col 92}{space 3} 1677.354
+{txt}{space 37} {c |}
+{space 33}1.ht {c |}{col 39}{res}{space 2}-144.4255{col 51}{space 2} 299.3605{col 62}{space 1}   -0.48{col 71}{space 3}0.630{col 79}{space 4}-735.2471{col 92}{space 3} 446.3961
+{txt}{space 33}1.ui {c |}{col 39}{res}{space 2}-561.4512{col 51}{space 2} 137.2283{col 62}{space 1}   -4.09{col 71}{space 3}0.000{col 79}{space 4}-832.2867{col 92}{space 3}-290.6157
+{txt}{space 37} {c |}
+{space 33}ptl2 {c |}
+{space 11}One prior premature labor  {c |}{col 39}{res}{space 2}-5.782161{col 51}{space 2} 224.2486{col 62}{space 1}   -0.03{col 71}{space 3}0.979{col 79}{space 4} -448.362{col 92}{space 3} 436.7977
+{txt}{space 2}Two or more prior premature labors  {c |}{col 39}{res}{space 2}-261.3153{col 51}{space 2} 461.6875{col 62}{space 1}   -0.57{col 71}{space 3}0.572{col 79}{space 4}-1172.507{col 92}{space 3} 649.8769
+{txt}{space 37} {c |}
+{space 32}_cons {c |}{col 39}{res}{space 2} 3489.144{col 51}{space 2} 98.30021{col 62}{space 1}   35.49{col 71}{space 3}0.000{col 79}{space 4} 3295.137{col 92}{space 3}  3683.15
+{txt}{hline 38}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *notice how the interaction terms become non significant
+. 
+. *final model after interaction is as follows;
+. 
+. regress bwt i.smoke i.race i.smoke#i.race i.ui
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(6, 182)       = {res}     8.27
+{txt}       Model {c |} {res} 21410334.2         6  3568389.03   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 78506718.4       182  431355.596   {txt}R-squared       ={res}    0.2143
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1884
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 656.78
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.smoke {c |}{col 14}{res}{space 2}-554.8017{col 26}{space 2} 135.0013{col 37}{space 1}   -4.11{col 46}{space 3}0.000{col 54}{space 4}-821.1706{col 67}{space 3}-288.4327
+{txt}{space 12} {c |}
+{space 8}race {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-521.0953{col 26}{space 2} 192.1929{col 37}{space 1}   -2.71{col 46}{space 3}0.007{col 54}{space 4} -900.308{col 67}{space 3}-141.8827
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-584.4969{col 26}{space 2} 133.0493{col 37}{space 1}   -4.39{col 46}{space 3}0.000{col 54}{space 4}-847.0143{col 67}{space 3}-321.9794
+{txt}{space 12} {c |}
+{space 2}smoke#race {c |}
+{space 8}1 2  {c |}{col 14}{res}{space 2} 101.1191{col 26}{space 2} 299.2605{col 37}{space 1}    0.34{col 46}{space 3}0.736{col 54}{space 4} -489.347{col 67}{space 3} 691.5851
+{txt}{space 8}1 3  {c |}{col 14}{res}{space 2}  601.123{col 26}{space 2} 249.1934{col 37}{space 1}    2.41{col 46}{space 3}0.017{col 54}{space 4} 109.4434{col 67}{space 3} 1092.803
+{txt}{space 12} {c |}
+{space 8}1.ui {c |}{col 14}{res}{space 2}-550.3073{col 26}{space 2} 136.8903{col 37}{space 1}   -4.02{col 46}{space 3}0.000{col 54}{space 4}-820.4033{col 67}{space 3}-280.2113
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3478.778{col 26}{space 2}  99.7918{col 37}{space 1}   34.86{col 46}{space 3}0.000{col 54}{space 4}  3281.88{col 67}{space 3} 3675.676
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. *CHECK FOR CONFOUNDING;
+. *we start with last variable to be dropped ;
+. 
+. *hypertension (ht)
+. 
+. regress bwt i.smoke i.race i.smoke#i.race i.ui ht
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(7, 181)       = {res}     7.94
+{txt}       Model {c |} {res} 23463582.1         7  3351940.29   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 76453470.6       181  422394.865   {txt}R-squared       ={res}    0.2348
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2052
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 649.92
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.smoke {c |}{col 14}{res}{space 2}-528.5806{col 26}{space 2} 134.1201{col 37}{space 1}   -3.94{col 46}{space 3}0.000{col 54}{space 4}-793.2205{col 67}{space 3}-263.9406
+{txt}{space 12} {c |}
+{space 8}race {c |}
+{space 10}2  {c |}{col 14}{res}{space 2} -473.532{col 26}{space 2} 191.4057{col 37}{space 1}   -2.47{col 46}{space 3}0.014{col 54}{space 4}-851.2056{col 67}{space 3}-95.85841
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-561.0034{col 26}{space 2} 132.0906{col 37}{space 1}   -4.25{col 46}{space 3}0.000{col 54}{space 4}-821.6389{col 67}{space 3}-300.3679
+{txt}{space 12} {c |}
+{space 2}smoke#race {c |}
+{space 8}1 2  {c |}{col 14}{res}{space 2} 57.89384{col 26}{space 2} 296.7841{col 37}{space 1}    0.20{col 46}{space 3}0.846{col 54}{space 4}-527.7078{col 67}{space 3} 643.4955
+{txt}{space 8}1 3  {c |}{col 14}{res}{space 2} 549.4975{col 26}{space 2} 247.7008{col 37}{space 1}    2.22{col 46}{space 3}0.028{col 54}{space 4} 60.74499{col 67}{space 3}  1038.25
+{txt}{space 12} {c |}
+{space 8}1.ui {c |}{col 14}{res}{space 2}-583.1192{col 26}{space 2}  136.276{col 37}{space 1}   -4.28{col 46}{space 3}0.000{col 54}{space 4}-852.0133{col 67}{space 3}-314.2252
+{txt}{space 10}ht {c |}{col 14}{res}{space 2}-434.0746{col 26}{space 2} 196.8806{col 37}{space 1}   -2.20{col 46}{space 3}0.029{col 54}{space 4}-822.5511{col 67}{space 3}-45.59819
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3491.626{col 26}{space 2} 98.92165{col 37}{space 1}   35.30{col 46}{space 3}0.000{col 54}{space 4} 3296.438{col 67}{space 3} 3686.814
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *History of Premature Labor (ptl2)
+. 
+. regress bwt i.smoke i.race i.smoke#i.race i.ui i.ptl2
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(8, 180)       = {res}     6.98
+{txt}       Model {c |} {res} 23667931.3         8  2958491.42   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 76249121.3       180   423606.23   {txt}R-squared       ={res}    0.2369
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.2030
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 650.85
+
+{txt}{hline 36}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                                bwt{col 37}{c |} Coefficient{col 49}  Std. err.{col 61}      t{col 69}   P>|t|{col 77}     [95% con{col 90}f. interval]
+{hline 36}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 28}1.smoke {c |}{col 37}{res}{space 2}-511.9453{col 49}{space 2} 135.7706{col 60}{space 1}   -3.77{col 69}{space 3}0.000{col 77}{space 4} -779.852{col 90}{space 3}-244.0386
+{txt}{space 35} {c |}
+{space 31}race {c |}
+{space 33}2  {c |}{col 37}{res}{space 2}-486.8832{col 49}{space 2} 191.0838{col 60}{space 1}   -2.55{col 69}{space 3}0.012{col 77}{space 4}-863.9357{col 90}{space 3}-109.8307
+{txt}{space 33}3  {c |}{col 37}{res}{space 2} -551.078{col 49}{space 2} 132.6534{col 60}{space 1}   -4.15{col 69}{space 3}0.000{col 77}{space 4}-812.8339{col 90}{space 3}-289.3222
+{txt}{space 35} {c |}
+{space 25}smoke#race {c |}
+{space 31}1 2  {c |}{col 37}{res}{space 2} 85.73506{col 49}{space 2} 296.6894{col 60}{space 1}    0.29{col 69}{space 3}0.773{col 77}{space 4}-499.7015{col 90}{space 3} 671.1716
+{txt}{space 31}1 3  {c |}{col 37}{res}{space 2} 586.6353{col 49}{space 2} 247.0615{col 60}{space 1}    2.37{col 69}{space 3}0.019{col 77}{space 4} 99.12598{col 90}{space 3} 1074.145
+{txt}{space 35} {c |}
+{space 31}1.ui {c |}{col 37}{res}{space 2}-533.0904{col 49}{space 2} 138.3795{col 60}{space 1}   -3.85{col 69}{space 3}0.000{col 77}{space 4}-806.1451{col 90}{space 3}-260.0357
+{txt}{space 35} {c |}
+{space 31}ptl2 {c |}
+{space 9}One prior premature labor  {c |}{col 37}{res}{space 2}-323.2567{col 49}{space 2} 146.4491{col 60}{space 1}   -2.21{col 69}{space 3}0.029{col 77}{space 4}-612.2345{col 90}{space 3}-34.27883
+{txt}Two or more prior premature labors  {c |}{col 37}{res}{space 2} 123.8508{col 49}{space 2} 277.8927{col 60}{space 1}    0.45{col 69}{space 3}0.656{col 77}{space 4}-424.4957{col 90}{space 3} 672.1973
+{txt}{space 35} {c |}
+{space 30}_cons {c |}{col 37}{res}{space 2} 3481.745{col 49}{space 2} 99.01526{col 60}{space 1}   35.16{col 69}{space 3}0.000{col 77}{space 4} 3286.365{col 90}{space 3} 3677.125
+{txt}{hline 36}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Weight in Pounds at the Last Menstrual Period(lwt)  
+. 
+. regress bwt i.smoke i.race i.smoke#i.race i.ui lwt
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(7, 181)       = {res}     7.52
+{txt}       Model {c |} {res} 22518035.4         7   3216862.2   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 77399017.2       181   427618.88   {txt}R-squared       ={res}    0.2254
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1954
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 653.93
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.smoke {c |}{col 14}{res}{space 2}-523.7502{col 26}{space 2} 135.7928{col 37}{space 1}   -3.86{col 46}{space 3}0.000{col 54}{space 4}-791.6908{col 67}{space 3}-255.8096
+{txt}{space 12} {c |}
+{space 8}race {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-552.5264{col 26}{space 2} 192.3525{col 37}{space 1}   -2.87{col 46}{space 3}0.005{col 54}{space 4} -932.068{col 67}{space 3}-172.9847
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-533.3755{col 26}{space 2} 136.2265{col 37}{space 1}   -3.92{col 46}{space 3}0.000{col 54}{space 4}-802.1717{col 67}{space 3}-264.5793
+{txt}{space 12} {c |}
+{space 2}smoke#race {c |}
+{space 8}1 2  {c |}{col 14}{res}{space 2}  94.2514{col 26}{space 2}  297.992{col 37}{space 1}    0.32{col 46}{space 3}0.752{col 54}{space 4}-493.7336{col 67}{space 3} 682.2364
+{txt}{space 8}1 3  {c |}{col 14}{res}{space 2} 551.1941{col 26}{space 2} 250.0436{col 37}{space 1}    2.20{col 46}{space 3}0.029{col 54}{space 4} 57.81884{col 67}{space 3} 1044.569
+{txt}{space 12} {c |}
+{space 8}1.ui {c |}{col 14}{res}{space 2}-519.1285{col 26}{space 2} 137.6659{col 37}{space 1}   -3.77{col 46}{space 3}0.000{col 54}{space 4}-790.7649{col 67}{space 3} -247.492
+{txt}{space 9}lwt {c |}{col 14}{res}{space 2} 2.681943{col 26}{space 2} 1.666351{col 37}{space 1}    1.61{col 46}{space 3}0.109{col 54}{space 4}-.6060304{col 67}{space 3} 5.969915
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}  3103.58{col 26}{space 2} 253.4098{col 37}{space 1}   12.25{col 46}{space 3}0.000{col 54}{space 4} 2603.563{col 67}{space 3} 3603.598
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Age
+. 
+. regress bwt i.smoke i.race i.smoke#i.race i.ui age
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(7, 181)       = {res}     7.07
+{txt}       Model {c |} {res}   21447887         7  3063983.86   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 78469165.7       181  433531.302   {txt}R-squared       ={res}    0.2147
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1843
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 658.43
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.smoke {c |}{col 14}{res}{space 2}-563.7015{col 26}{space 2} 138.6784{col 37}{space 1}   -4.06{col 46}{space 3}0.000{col 54}{space 4}-837.3358{col 67}{space 3}-290.0673
+{txt}{space 12} {c |}
+{space 8}race {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-538.1467{col 26}{space 2} 201.1989{col 37}{space 1}   -2.67{col 46}{space 3}0.008{col 54}{space 4}-935.1438{col 67}{space 3}-141.1497
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-594.7562{col 26}{space 2} 137.8641{col 37}{space 1}   -4.31{col 46}{space 3}0.000{col 54}{space 4}-866.7838{col 67}{space 3}-322.7286
+{txt}{space 12} {c |}
+{space 2}smoke#race {c |}
+{space 8}1 2  {c |}{col 14}{res}{space 2} 121.4699{col 26}{space 2} 307.8795{col 37}{space 1}    0.39{col 46}{space 3}0.694{col 54}{space 4}-486.0248{col 67}{space 3} 728.9645
+{txt}{space 8}1 3  {c |}{col 14}{res}{space 2} 610.7381{col 26}{space 2} 251.9481{col 37}{space 1}    2.42{col 46}{space 3}0.016{col 54}{space 4} 113.6048{col 67}{space 3} 1107.871
+{txt}{space 12} {c |}
+{space 8}1.ui {c |}{col 14}{res}{space 2}-552.0597{col 26}{space 2} 137.3642{col 37}{space 1}   -4.02{col 46}{space 3}0.000{col 54}{space 4}-823.1008{col 67}{space 3}-281.0186
+{txt}{space 9}age {c |}{col 14}{res}{space 2}-2.829917{col 26}{space 2}   9.6153{col 37}{space 1}   -0.29{col 46}{space 3}0.769{col 54}{space 4}-21.80241{col 67}{space 3} 16.14258
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3552.579{col 26}{space 2} 269.9778{col 37}{space 1}   13.16{col 46}{space 3}0.000{col 54}{space 4} 3019.871{col 67}{space 3} 4085.288
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}.  
+. *FINAL MODEL
+. 
+. regress bwt i.smoke i.race i.smoke#i.race i.ui , beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       189
+{txt}{hline 13}{c +}{hline 34}   F(6, 182)       = {res}     8.27
+{txt}       Model {c |} {res} 21410334.2         6  3568389.03   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 78506718.4       182  431355.596   {txt}R-squared       ={res}    0.2143
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1884
+{txt}       Total {c |} {res} 99917052.6       188  531473.684   {txt}Root MSE        =   {res} 656.78
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}         bwt{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 67}        Beta
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}1.smoke {c |}{col 14}{res}{space 2}-554.8017{col 26}{space 2} 135.0013{col 37}{space 1}   -4.11{col 46}{space 3}0.000{col 67}{space 3}-.3724362
+{txt}{space 12} {c |}
+{space 8}race {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-521.0953{col 26}{space 2} 192.1929{col 37}{space 1}   -2.71{col 46}{space 3}0.007{col 67}{space 3}-.2468578
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-584.4969{col 26}{space 2} 133.0493{col 37}{space 1}   -4.39{col 46}{space 3}0.000{col 67}{space 3}-.3845464
+{txt}{space 12} {c |}
+{space 2}smoke#race {c |}
+{space 8}1 2  {c |}{col 14}{res}{space 2} 101.1191{col 26}{space 2} 299.2605{col 37}{space 1}    0.34{col 46}{space 3}0.736{col 67}{space 3} .0311321
+{txt}{space 8}1 3  {c |}{col 14}{res}{space 2}  601.123{col 26}{space 2} 249.1934{col 37}{space 1}    2.41{col 46}{space 3}0.017{col 67}{space 3} .2015997
+{txt}{space 12} {c |}
+{space 8}1.ui {c |}{col 14}{res}{space 2}-550.3073{col 26}{space 2} 136.8903{col 37}{space 1}   -4.02{col 46}{space 3}0.000{col 67}{space 3}-.2688726
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3478.778{col 26}{space 2}  99.7918{col 37}{space 1}   34.86{col 46}{space 3}0.000{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. 
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}data/STATA\birthweight_assignment2.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}18 May 2026, 12:42:36
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

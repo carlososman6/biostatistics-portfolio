@@ -1,0 +1,471 @@
+tibble [252 × 56] (S3: tbl_df/tbl/data.frame)
+ $ density    : num [1:252] 1.07 1.09 1.04 1.08 1.03 ...
+  ..- attr(*, "label")= chr "Density"
+  ..- attr(*, "format.spss")= chr "F6.4"
+  ..- attr(*, "display_width")= int 12
+ $ fat        : num [1:252] 12.3 6.1 25.3 10.4 28.7 20.9 19.2 12.4 4.1 11.7 ...
+  ..- attr(*, "label")= chr "Body Fat"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ age        : num [1:252] 23 22 22 26 24 24 26 25 25 23 ...
+  ..- attr(*, "label")= chr "Age"
+  ..- attr(*, "format.spss")= chr "F2.0"
+  ..- attr(*, "display_width")= int 12
+ $ weight     : num [1:252] 154 173 154 185 184 ...
+  ..- attr(*, "label")= chr "Weight in pounds"
+  ..- attr(*, "format.spss")= chr "F6.2"
+  ..- attr(*, "display_width")= int 12
+ $ height     : num [1:252] 67.8 72.2 66.2 72.2 71.2 ...
+  ..- attr(*, "label")= chr "Height in inches"
+  ..- attr(*, "format.spss")= chr "F5.2"
+  ..- attr(*, "display_width")= int 12
+ $ neck       : num [1:252] 36.2 38.5 34 37.4 34.4 39 36.4 37.8 38.1 42.1 ...
+  ..- attr(*, "label")= chr "Neck Circumference"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ chest      : num [1:252] 93.1 93.6 95.8 101.8 97.3 ...
+  ..- attr(*, "label")= chr "Chest Circumference"
+  ..- attr(*, "format.spss")= chr "F5.1"
+  ..- attr(*, "display_width")= int 12
+ $ abdomen    : num [1:252] 85.2 83 87.9 86.4 100 94.4 90.7 88.5 82.5 88.6 ...
+  ..- attr(*, "label")= chr "Abdomen Circumference at Umbilicus"
+  ..- attr(*, "format.spss")= chr "F5.1"
+  ..- attr(*, "display_width")= int 12
+ $ hip        : num [1:252] 94.5 98.7 99.2 101.2 101.9 ...
+  ..- attr(*, "label")= chr "Hip Circumference"
+  ..- attr(*, "format.spss")= chr "F5.1"
+  ..- attr(*, "display_width")= int 12
+ $ thigh      : num [1:252] 59 58.7 59.6 60.1 63.2 66 58.4 60 62.9 63.1 ...
+  ..- attr(*, "label")= chr "Thigh Circumference"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ knee       : num [1:252] 37.3 37.3 38.9 37.3 42.2 42 38.3 39.4 38.3 41.7 ...
+  ..- attr(*, "label")= chr "Knee Circumference"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ ankle      : num [1:252] 21.9 23.4 24 22.8 24 25.6 22.9 23.2 23.8 25 ...
+  ..- attr(*, "label")= chr "Ankle Circumference"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ biceps     : num [1:252] 32 30.5 28.8 32.4 32.2 35.7 31.9 30.5 35.9 35.6 ...
+  ..- attr(*, "label")= chr "Extended Biceps Circumference"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ forearm    : num [1:252] 27.4 28.9 25.2 29.4 27.7 30.6 27.8 29 31.1 30 ...
+  ..- attr(*, "label")= chr "Forearm Circumference"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ wrist      : num [1:252] 17.1 18.2 16.6 18.2 17.7 18.8 17.7 18.8 18.2 19.2 ...
+  ..- attr(*, "label")= chr "Wrist Circumference"
+  ..- attr(*, "format.spss")= chr "F4.1"
+  ..- attr(*, "display_width")= int 12
+ $ filter_$   : dbl+lbl [1:252] 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+   ..@ label        : chr "fat > 0 & height > 30 (FILTER)"
+   ..@ format.spss  : chr "F1.0"
+   ..@ display_width: int 10
+   ..@ labels       : Named num [1:2] 0 1
+   .. ..- attr(*, "names")= chr [1:2] "Not Selected" "Selected"
+ $ PRE_1      : num [1:252] 16.21 8.92 18.52 11.94 27.31 ...
+  ..- attr(*, "label")= chr "Unstandardized Predicted Value"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ RES_1      : num [1:252] -3.91 -2.82 6.78 -1.54 1.39 ...
+  ..- attr(*, "label")= chr "Unstandardized Residual"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ COO_1      : num [1:252] 0.002432 0.001121 0.017405 0.000337 0.001151 ...
+  ..- attr(*, "label")= chr "Cook's Distance"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB0_1     : num [1:252] -0.04424 -0.00525 0.00932 -0.00428 0.0201 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA Intercept"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB1_1     : num [1:252] 0.1165 0.0508 -0.2225 0.0102 -0.0607 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA age"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB2_1     : num [1:252] 0.00669 -0.01304 -0.11037 -0.01198 0.0029 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA weight"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB3_1     : num [1:252] 0.04658 0.00209 -0.12097 -0.0041 -0.01028 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA height"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB4_1     : num [1:252] -0.0091 -0.0453 -0.0486 0.0165 -0.053 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA neck"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB5_1     : num [1:252] 0.0342 0.0298 0.0833 -0.0243 -0.0406 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA chest"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB6_1     : num [1:252] -0.0614 0.00955 0.04648 0.03349 0.07486 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA abdomen"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB7_1     : num [1:252] 0.0566 -0.0165 0.0721 -0.0123 -0.0414 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA hip"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB8_1     : num [1:252] 0.000569 0.01644 -0.041488 -0.002063 -0.010486 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA thigh"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB9_1     : num [1:252] -0.0524 0.0268 0.2125 0.029 0.0596 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA knee"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB10_1    : num [1:252] 0.02276 -0.00153 0.12713 0.01383 -0.00256 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA ankle"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB11_1    : num [1:252] -0.05392 0.03914 -0.02461 0.00974 0.01398 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA biceps"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB12_1    : num [1:252] 0.04021 -0.00985 -0.13303 -0.00531 -0.01087 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA forearm"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB13_1    : num [1:252] 3.15e-05 -1.51e-02 -4.20e-02 -9.01e-03 1.46e-02 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA wrist"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ age_chest  : num [1:252] 2141 2059 2108 2647 2335 ...
+  ..- attr(*, "format.spss")= chr "F8.2"
+  ..- attr(*, "display_width")= int 11
+ $ age_thigh  : num [1:252] 1357 1291 1311 1563 1517 ...
+  ..- attr(*, "format.spss")= chr "F8.2"
+  ..- attr(*, "display_width")= int 11
+ $ age_wrist  : num [1:252] 393 400 365 473 425 ...
+  ..- attr(*, "format.spss")= chr "F8.2"
+  ..- attr(*, "display_width")= int 11
+ $ chest_thigh: num [1:252] 5493 5494 5710 6118 6149 ...
+  ..- attr(*, "format.spss")= chr "F8.2"
+  ..- attr(*, "display_width")= int 13
+ $ chest_wrist: num [1:252] 1592 1704 1590 1853 1722 ...
+  ..- attr(*, "format.spss")= chr "F8.2"
+  ..- attr(*, "display_width")= int 13
+ $ thigh_wrist: num [1:252] 1009 1068 989 1094 1119 ...
+  ..- attr(*, "format.spss")= chr "F8.2"
+  ..- attr(*, "display_width")= int 13
+ $ PRE_2      : num [1:252] 16.21 8.92 18.52 11.94 27.31 ...
+  ..- attr(*, "label")= chr "Unstandardized Predicted Value"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ RES_2      : num [1:252] -3.91 -2.82 6.78 -1.54 1.39 ...
+  ..- attr(*, "label")= chr "Unstandardized Residual"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ COO_2      : num [1:252] 0.002432 0.001121 0.017405 0.000337 0.001151 ...
+  ..- attr(*, "label")= chr "Cook's Distance"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB0_2     : num [1:252] -0.04424 -0.00525 0.00932 -0.00428 0.0201 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA Intercept"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB1_2     : num [1:252] 0.1165 0.0508 -0.2225 0.0102 -0.0607 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA age"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB2_2     : num [1:252] 0.00669 -0.01304 -0.11037 -0.01198 0.0029 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA weight"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB3_2     : num [1:252] 0.04658 0.00209 -0.12097 -0.0041 -0.01028 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA height"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB4_2     : num [1:252] -0.0091 -0.0453 -0.0486 0.0165 -0.053 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA neck"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB5_2     : num [1:252] 0.0342 0.0298 0.0833 -0.0243 -0.0406 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA chest"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB6_2     : num [1:252] -0.0614 0.00955 0.04648 0.03349 0.07486 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA abdomen"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB7_2     : num [1:252] 0.0566 -0.0165 0.0721 -0.0123 -0.0414 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA hip"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB8_2     : num [1:252] 0.000569 0.01644 -0.041488 -0.002063 -0.010486 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA thigh"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB9_2     : num [1:252] -0.0524 0.0268 0.2125 0.029 0.0596 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA knee"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB10_2    : num [1:252] 0.02276 -0.00153 0.12713 0.01383 -0.00256 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA ankle"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB11_2    : num [1:252] -0.05392 0.03914 -0.02461 0.00974 0.01398 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA biceps"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB12_2    : num [1:252] 0.04021 -0.00985 -0.13303 -0.00531 -0.01087 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA forearm"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+ $ SDB13_2    : num [1:252] 3.15e-05 -1.51e-02 -4.20e-02 -9.01e-03 1.46e-02 ...
+  ..- attr(*, "label")= chr "Standardized DFBETA wrist"
+  ..- attr(*, "format.spss")= chr "F11.5"
+  ..- attr(*, "display_width")= int 13
+Start:  AIC=744.77
+fat ~ age + weight + height + neck + chest + abdomen + hip + 
+    thigh + knee + ankle + biceps + forearm + wrist + abd_wt + 
+    abd_wrist + abd_fore + wt_wrist + wt_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- wrist       1     0.000 4130.4 742.77
+- wt_wrist    1     0.144 4130.5 742.78
+- wt_fore     1     0.539 4130.9 742.80
+- abdomen     1     4.319 4134.7 743.03
+- weight      1     4.950 4135.3 743.07
+- abd_fore    1     6.529 4136.9 743.16
+- knee        1     6.929 4137.3 743.19
+- biceps      1     8.613 4139.0 743.29
+- chest       1    13.537 4143.9 743.59
+- ankle       1    13.802 4144.2 743.61
+- abd_wrist   1    16.795 4147.2 743.79
+- hip         1    17.876 4148.2 743.86
+- wrist_fore  1    25.901 4156.3 744.34
+- forearm     1    27.693 4158.1 744.45
+- thigh       1    29.812 4160.2 744.58
+<none>                    4130.4 744.77
+- height      1    42.755 4173.1 745.36
+- neck        1    50.715 4181.1 745.84
+- age         1    91.054 4221.4 748.26
+- abd_wt      1   128.187 4258.6 750.47
+
+Step:  AIC=742.77
+fat ~ age + weight + height + neck + chest + abdomen + hip + 
+    thigh + knee + ankle + biceps + forearm + abd_wt + abd_wrist + 
+    abd_fore + wt_wrist + wt_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- wt_wrist    1     0.185 4130.6 740.78
+- wt_fore     1     0.600 4131.0 740.80
+- abdomen     1     4.882 4135.3 741.06
+- abd_fore    1     6.873 4137.2 741.19
+- knee        1     6.984 4137.4 741.19
+- biceps      1     8.830 4139.2 741.31
+- weight      1     9.718 4140.1 741.36
+- chest       1    13.546 4143.9 741.59
+- ankle       1    13.812 4144.2 741.61
+- hip         1    17.908 4148.3 741.86
+- abd_wrist   1    20.215 4150.6 742.00
+- thigh       1    29.852 4160.2 742.58
+<none>                    4130.4 742.77
+- height      1    42.799 4173.2 743.36
+- neck        1    51.287 4181.7 743.88
+- forearm     1    55.976 4186.3 744.16
+- age         1    91.607 4222.0 746.29
+- wrist_fore  1    91.784 4222.2 746.31
+- abd_wt      1   133.574 4263.9 748.79
+
+Step:  AIC=740.78
+fat ~ age + weight + height + neck + chest + abdomen + hip + 
+    thigh + knee + ankle + biceps + forearm + abd_wt + abd_wrist + 
+    abd_fore + wt_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- wt_fore     1     0.418 4131.0 738.80
+- knee        1     6.999 4137.6 739.20
+- abdomen     1     7.738 4138.3 739.25
+- abd_fore    1     8.401 4139.0 739.29
+- biceps      1     9.078 4139.6 739.33
+- chest       1    13.371 4143.9 739.59
+- ankle       1    13.774 4144.3 739.62
+- hip         1    17.874 4148.4 739.87
+- weight      1    18.835 4149.4 739.92
+- thigh       1    29.889 4160.4 740.60
+<none>                    4130.6 740.78
+- height      1    42.629 4173.2 741.37
+- neck        1    51.330 4181.9 741.89
+- forearm     1    59.504 4190.1 742.38
+- abd_wrist   1    62.484 4193.0 742.56
+- wrist_fore  1    92.315 4222.9 744.35
+- age         1    92.637 4223.2 744.37
+- abd_wt      1   175.496 4306.1 749.26
+
+Step:  AIC=738.8
+fat ~ age + weight + height + neck + chest + abdomen + hip + 
+    thigh + knee + ankle + biceps + forearm + abd_wt + abd_wrist + 
+    abd_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- knee        1     6.847 4137.8 737.22
+- abdomen     1     7.849 4138.8 737.28
+- biceps      1     9.184 4140.2 737.36
+- chest       1    13.041 4144.0 737.60
+- ankle       1    14.158 4145.1 737.67
+- hip         1    17.612 4148.6 737.88
+- abd_fore    1    22.510 4153.5 738.17
+- thigh       1    29.697 4160.7 738.61
+<none>                    4131.0 738.80
+- height      1    42.756 4173.7 739.40
+- neck        1    51.388 4182.4 739.92
+- abd_wrist   1    80.242 4211.2 741.65
+- age         1    92.259 4223.2 742.37
+- forearm     1   101.041 4232.0 742.89
+- weight      1   102.633 4233.6 742.99
+- wrist_fore  1   116.177 4247.2 743.79
+- abd_wt      1   200.274 4331.2 748.73
+
+Step:  AIC=737.22
+fat ~ age + weight + height + neck + chest + abdomen + hip + 
+    thigh + ankle + biceps + forearm + abd_wt + abd_wrist + abd_fore + 
+    wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- abdomen     1     8.049 4145.9 735.71
+- biceps      1    10.480 4148.3 735.86
+- chest       1    11.026 4148.8 735.89
+- ankle       1    11.366 4149.2 735.91
+- hip         1    19.331 4157.2 736.40
+- abd_fore    1    22.676 4160.5 736.60
+- thigh       1    24.708 4162.5 736.72
+<none>                    4137.8 737.22
+- height      1    44.201 4182.0 737.90
+- neck        1    47.593 4185.4 738.10
+- abd_wrist   1    80.216 4218.0 740.06
+- age         1    85.428 4223.3 740.37
+- weight      1    95.897 4233.7 740.99
+- forearm     1   101.026 4238.8 741.30
+- wrist_fore  1   116.493 4254.3 742.22
+- abd_wt      1   194.787 4332.6 746.81
+
+Step:  AIC=735.71
+fat ~ age + weight + height + neck + chest + hip + thigh + ankle + 
+    biceps + forearm + abd_wt + abd_wrist + abd_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- ankle       1     10.69 4156.6 734.36
+- chest       1     11.34 4157.2 734.40
+- biceps      1     12.91 4158.8 734.49
+- abd_fore    1     16.93 4162.8 734.74
+- hip         1     20.40 4166.3 734.95
+- thigh       1     22.69 4168.6 735.09
+<none>                    4145.9 735.71
+- height      1     41.91 4187.8 736.25
+- neck        1     51.78 4197.6 736.84
+- age         1     80.70 4226.6 738.57
+- forearm     1    105.76 4251.6 740.06
+- weight      1    113.83 4259.7 740.54
+- abd_wrist   1    265.48 4411.4 749.35
+- abd_wt      1    396.62 4542.5 756.73
+- wrist_fore  1    430.11 4576.0 758.59
+
+Step:  AIC=734.36
+fat ~ age + weight + height + neck + chest + hip + thigh + biceps + 
+    forearm + abd_wt + abd_wrist + abd_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- biceps      1     11.83 4168.4 733.08
+- chest       1     12.26 4168.8 733.10
+- abd_fore    1     15.63 4172.2 733.31
+- hip         1     21.66 4178.2 733.67
+- thigh       1     23.73 4180.3 733.79
+<none>                    4156.6 734.36
+- height      1     44.28 4200.8 735.03
+- neck        1     58.93 4215.5 735.91
+- age         1     77.47 4234.0 737.01
+- forearm     1    105.04 4261.6 738.65
+- weight      1    129.67 4286.2 740.10
+- abd_wrist   1    267.98 4424.5 748.10
+- abd_wt      1    400.56 4557.1 755.54
+- wrist_fore  1    423.53 4580.1 756.81
+
+Step:  AIC=733.08
+fat ~ age + weight + height + neck + chest + hip + thigh + forearm + 
+    abd_wt + abd_wrist + abd_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- chest       1     10.37 4178.8 731.70
+- abd_fore    1     13.56 4182.0 731.89
+- hip         1     24.70 4193.1 732.57
+<none>                    4168.4 733.08
+- thigh       1     35.01 4203.4 733.18
+- height      1     46.77 4215.2 733.89
+- neck        1     54.66 4223.1 734.36
+- age         1     81.31 4249.7 735.94
+- forearm     1    112.71 4281.1 737.80
+- weight      1    139.10 4307.5 739.35
+- abd_wrist   1    273.95 4442.3 747.12
+- abd_wt      1    401.46 4569.9 754.25
+- wrist_fore  1    430.31 4598.7 755.83
+
+Step:  AIC=731.7
+fat ~ age + weight + height + neck + hip + thigh + forearm + 
+    abd_wt + abd_wrist + abd_fore + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- abd_fore    1     11.25 4190.0 730.38
+- hip         1     20.29 4199.1 730.92
+<none>                    4178.8 731.70
+- height      1     38.68 4217.4 732.02
+- thigh       1     44.90 4223.7 732.40
+- neck        1     59.45 4238.2 733.26
+- age         1     79.91 4258.7 734.48
+- forearm     1    111.17 4289.9 736.32
+- weight      1    132.02 4310.8 737.54
+- abd_wrist   1    265.97 4444.7 745.25
+- abd_wt      1    391.87 4570.6 752.29
+- wrist_fore  1    420.60 4599.4 753.87
+
+Step:  AIC=730.38
+fat ~ age + weight + height + neck + hip + thigh + forearm + 
+    abd_wt + abd_wrist + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- hip         1     22.51 4212.5 729.73
+<none>                    4190.0 730.38
+- height      1     39.53 4229.5 730.75
+- thigh       1     45.85 4235.9 731.12
+- neck        1     71.10 4261.1 732.62
+- age         1     82.53 4272.6 733.30
+- weight      1    140.44 4330.5 736.69
+- abd_wt      1    410.59 4600.6 751.94
+- abd_wrist   1   2295.97 6486.0 838.49
+- wrist_fore  1   2440.17 6630.2 844.03
+- forearm     1   2453.75 6643.8 844.55
+
+Step:  AIC=729.73
+fat ~ age + weight + height + neck + thigh + forearm + abd_wt + 
+    abd_wrist + wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+- thigh       1     28.10 4240.6 729.41
+- height      1     30.96 4243.5 729.58
+<none>                    4212.5 729.73
+- neck        1     57.46 4270.0 731.14
+- age         1     89.66 4302.2 733.04
+- weight      1    122.98 4335.5 734.98
+- abd_wt      1    445.40 4657.9 753.06
+- abd_wrist   1   2284.98 6497.5 836.94
+- wrist_fore  1   2435.73 6648.3 842.72
+- forearm     1   2465.96 6678.5 843.86
+
+Step:  AIC=729.41
+fat ~ age + weight + height + neck + forearm + abd_wt + abd_wrist + 
+    wrist_fore
+
+             Df Sum of Sq    RSS    AIC
+<none>                    4240.6 729.41
+- neck        1     56.31 4296.9 730.73
+- height      1     57.48 4298.1 730.80
+- age         1     64.82 4305.4 731.23
+- weight      1    195.98 4436.6 738.79
+- abd_wt      1    487.70 4728.3 754.84
+- abd_wrist   1   2425.74 6666.4 841.40
+- wrist_fore  1   2585.34 6826.0 847.36
+- forearm     1   2602.96 6843.6 848.01

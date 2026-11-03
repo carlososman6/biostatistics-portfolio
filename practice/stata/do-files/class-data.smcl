@@ -1,0 +1,420 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}24 Mar 2026, 11:47:51
+{txt}
+{com}. ***always log using; at the begining of every do file
+. 
+. import excel "data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.xlsx", sheet("Sheet1") firstrow
+{res}{txt}
+{com}. 
+. *Exploring data
+. 
+. browse
+{txt}
+{com}. *****show excel sheet
+. 
+. describe
+
+{txt}Contains data
+  obs:{res}             8                          
+{txt} vars:{res}             5                          
+{txt} size:{res}            40                          
+{txt}{hline}
+              storage   display    value
+variable name   type    format     label      variable label
+{hline}
+{p 0 48}{res}{bind:ID             }{txt}{bind: byte    }{bind:{txt}%10.0g    }{space 1}{bind:         }{bind:  }{res}{res}ID{p_end}
+{p 0 48}{bind:Weight         }{txt}{bind: byte    }{bind:{txt}%10.0g    }{space 1}{bind:         }{bind:  }{res}{res}Weight{p_end}
+{p 0 48}{bind:Age            }{txt}{bind: byte    }{bind:{txt}%10.0g    }{space 1}{bind:         }{bind:  }{res}{res}Age{p_end}
+{p 0 48}{bind:Sex            }{txt}{bind: str1    }{bind:{txt}%9s       }{space 1}{bind:         }{bind:  }{res}{res}Sex{p_end}
+{p 0 48}{bind:Religion       }{txt}{bind: str1    }{bind:{txt}%9s       }{space 1}{bind:         }{bind:  }{res}{res}Religion{p_end}
+{txt}{hline}
+Sorted by: 
+{res}     Note: Dataset has changed since last saved.
+{txt}
+{com}. ***** Summary about data
+. 
+. summarize
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 10}ID {c |}{res}          8         4.5     2.44949          1          8
+{txt}{space 6}Weight {c |}{res}          8      70.125    7.395703         62         80
+{txt}{space 9}Age {c |}{res}          8      27.875     .834523         27         29
+{txt}{space 9}Sex {c |}{res}          0
+{txt}{space 4}Religion {c |}{res}          0
+{txt}
+{com}. ******give details about data
+. 
+. codebook
+
+{txt}{hline}
+{res}ID{right:ID}
+{txt}{hline}
+
+{col 19}type:  numeric ({res}byte{txt})
+
+{col 18}range:  [{res}1{txt},{res}8{txt}]{col 55}units:  {res}1
+{col 10}{txt}unique values:  {res}8{col 51}{txt}missing .:  {res}0{txt}/{res}8
+
+{txt}{col 13}tabulation:  Freq.  Value
+{col 21}{res}         1{col 33}1
+{col 21}         1{col 33}2
+{col 21}         1{col 33}3
+{col 21}         1{col 33}4
+{col 21}         1{col 33}5
+{col 21}         1{col 33}6
+{col 21}         1{col 33}7
+{col 21}         1{col 33}8
+
+{txt}{hline}
+{res}Weight{right:Weight}
+{txt}{hline}
+
+{col 19}type:  numeric ({res}byte{txt})
+
+{col 18}range:  [{res}62{txt},{res}80{txt}]{col 55}units:  {res}1
+{col 10}{txt}unique values:  {res}6{col 51}{txt}missing .:  {res}0{txt}/{res}8
+
+{txt}{col 13}tabulation:  Freq.  Value
+{col 21}{res}         2{col 33}62
+{col 21}         1{col 33}63
+{col 21}         2{col 33}70
+{col 21}         1{col 33}75
+{col 21}         1{col 33}79
+{col 21}         1{col 33}80
+
+{txt}{hline}
+{res}Age{right:Age}
+{txt}{hline}
+
+{col 19}type:  numeric ({res}byte{txt})
+
+{col 18}range:  [{res}27{txt},{res}29{txt}]{col 55}units:  {res}1
+{col 10}{txt}unique values:  {res}3{col 51}{txt}missing .:  {res}0{txt}/{res}8
+
+{txt}{col 13}tabulation:  Freq.  Value
+{col 21}{res}         3{col 33}27
+{col 21}         3{col 33}28
+{col 21}         2{col 33}29
+
+{txt}{hline}
+{res}Sex{right:Sex}
+{txt}{hline}
+
+{col 19}type:  string ({res}str1{txt})
+
+{col 10}unique values:  {res}2{col 51}{txt}missing "":  {res}0{txt}/{res}8
+
+{txt}{col 13}tabulation:  Freq.  Value
+{col 21}{res}         3{col 33}"F"
+{col 21}         5{col 33}"M"
+
+{txt}{hline}
+{res}Religion{right:Religion}
+{txt}{hline}
+
+{col 19}type:  string ({res}str1{txt})
+
+{col 10}unique values:  {res}3{col 51}{txt}missing "":  {res}0{txt}/{res}8
+
+{txt}{col 13}tabulation:  Freq.  Value
+{col 21}{res}         1{col 33}"C"
+{col 21}         1{col 33}"M"
+{col 21}         6{col 33}"P"
+{txt}
+{com}. ********Give details of all data
+. 
+. 
+. summarize, detail
+
+                             {txt}ID
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}        1              1
+{txt} 5%    {res}        1              2
+{txt}10%    {res}        1              3       {txt}Obs         {res}          8
+{txt}25%    {res}      2.5              4       {txt}Sum of Wgt. {res}          8
+
+{txt}50%    {res}      4.5                      {txt}Mean          {res}      4.5
+                        {txt}Largest       Std. Dev.     {res}  2.44949
+{txt}75%    {res}      6.5              5
+{txt}90%    {res}        8              6       {txt}Variance      {res}        6
+{txt}95%    {res}        8              7       {txt}Skewness      {res}        0
+{txt}99%    {res}        8              8       {txt}Kurtosis      {res} 1.761905
+
+                           {txt}Weight
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}       62             62
+{txt} 5%    {res}       62             62
+{txt}10%    {res}       62             63       {txt}Obs         {res}          8
+{txt}25%    {res}     62.5             70       {txt}Sum of Wgt. {res}          8
+
+{txt}50%    {res}       70                      {txt}Mean          {res}   70.125
+                        {txt}Largest       Std. Dev.     {res} 7.395703
+{txt}75%    {res}       77             70
+{txt}90%    {res}       80             75       {txt}Variance      {res} 54.69643
+{txt}95%    {res}       80             79       {txt}Skewness      {res} .1296486
+{txt}99%    {res}       80             80       {txt}Kurtosis      {res} 1.504648
+
+                             {txt}Age
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}       27             27
+{txt} 5%    {res}       27             27
+{txt}10%    {res}       27             27       {txt}Obs         {res}          8
+{txt}25%    {res}       27             28       {txt}Sum of Wgt. {res}          8
+
+{txt}50%    {res}       28                      {txt}Mean          {res}   27.875
+                        {txt}Largest       Std. Dev.     {res}  .834523
+{txt}75%    {res}     28.5             28
+{txt}90%    {res}       29             28       {txt}Variance      {res} .6964286
+{txt}95%    {res}       29             29       {txt}Skewness      {res} .2217159
+{txt}99%    {res}       29             29       {txt}Kurtosis      {res} 1.670611
+
+                             {txt}Sex
+{hline 61}
+no observations
+
+                          Religion
+{hline 61}
+no observations
+
+{com}. ******** gives details of numeric data
+. 
+. 
+. rename ID studynumber
+{res}{txt}
+{com}. *** renaming a variable
+. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. ****renaming variable label
+. label variable studynumber "ID given to the study participants"
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. tabulate Sex
+
+        {txt}Sex {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          F {c |}{res}          3       37.50       37.50
+{txt}          M {c |}{res}          5       62.50      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}          8      100.00
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. tab Sex
+
+        {txt}Sex {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          F {c |}{res}          3       37.50       37.50
+{txt}          M {c |}{res}          5       62.50      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}          8      100.00
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. tab Sex Religion
+
+           {txt}{c |}             Religion
+       Sex {c |}         C          M          P {c |}     Total
+{hline 11}{c +}{hline 33}{c +}{hline 10}
+         F {c |}{res}         0          0          3 {txt}{c |}{res}         3 
+{txt}         M {c |}{res}         1          1          3 {txt}{c |}{res}         5 
+{txt}{hline 11}{c +}{hline 33}{c +}{hline 10}
+     Total {c |}{res}         1          1          6 {txt}{c |}{res}         8 
+
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. tab Sex Religion, row
+{txt}
+{c TLC}{hline 16}{c TRC}
+{c |} Key{col 18}{c |}
+{c LT}{hline 16}{c RT}
+{c |}{space 3}{it:frequency}{col 18}{c |}
+{c |}{space 1}{it:row percentage}{col 18}{c |}
+{c BLC}{hline 16}{c BRC}
+
+           {c |}             Religion
+       Sex {c |}         C          M          P {c |}     Total
+{hline 11}{c +}{hline 33}{c +}{hline 10}
+         F {c |}{res}         0          0          3 {txt}{c |}{res}         3 
+           {txt}{c |}{res}      0.00       0.00     100.00 {txt}{c |}{res}    100.00 
+{txt}{hline 11}{c +}{hline 33}{c +}{hline 10}
+         M {c |}{res}         1          1          3 {txt}{c |}{res}         5 
+           {txt}{c |}{res}     20.00      20.00      60.00 {txt}{c |}{res}    100.00 
+{txt}{hline 11}{c +}{hline 33}{c +}{hline 10}
+     Total {c |}{res}         1          1          6 {txt}{c |}{res}         8 
+           {txt}{c |}{res}     12.50      12.50      75.00 {txt}{c |}{res}    100.00 
+
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. tab Sex Religion, col
+{txt}
+{c TLC}{hline 19}{c TRC}
+{c |} Key{col 21}{c |}
+{c LT}{hline 19}{c RT}
+{c |}{space 5}{it:frequency}{col 21}{c |}
+{c |}{space 1}{it:column percentage}{col 21}{c |}
+{c BLC}{hline 19}{c BRC}
+
+           {c |}             Religion
+       Sex {c |}         C          M          P {c |}     Total
+{hline 11}{c +}{hline 33}{c +}{hline 10}
+         F {c |}{res}         0          0          3 {txt}{c |}{res}         3 
+           {txt}{c |}{res}      0.00       0.00      50.00 {txt}{c |}{res}     37.50 
+{txt}{hline 11}{c +}{hline 33}{c +}{hline 10}
+         M {c |}{res}         1          1          3 {txt}{c |}{res}         5 
+           {txt}{c |}{res}    100.00     100.00      50.00 {txt}{c |}{res}     62.50 
+{txt}{hline 11}{c +}{hline 33}{c +}{hline 10}
+     Total {c |}{res}         1          1          6 {txt}{c |}{res}         8 
+           {txt}{c |}{res}    100.00     100.00     100.00 {txt}{c |}{res}    100.00 
+
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. sort Age
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. browse
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. sort studynumber
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. browse
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. generate Sex2 =
+{err}invalid syntax
+{txt}{search r(198), local:r(198);}
+
+end of do-file
+
+{search r(198), local:r(198);}
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. generate Sex2 =.
+{txt}(8 missing values generated)
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. browse
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. browse
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. replace Sex2=1 if Sex=="F"
+{txt}(3 real changes made)
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. browse
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. replace Sex2=2 if Sex=="M"
+{txt}(5 real changes made)
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. browse
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. tab Sex Sex2
+
+           {txt}{c |}         Sex2
+       Sex {c |}         1          2 {c |}     Total
+{hline 11}{c +}{hline 22}{c +}{hline 10}
+         F {c |}{res}         3          0 {txt}{c |}{res}         3 
+{txt}         M {c |}{res}         0          5 {txt}{c |}{res}         5 
+{txt}{hline 11}{c +}{hline 22}{c +}{hline 10}
+     Total {c |}{res}         3          5 {txt}{c |}{res}         8 
+
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+{txt}
+{com}. encode Sex, gen (Sex3)
+{txt}
+{com}. bro
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. save "data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.dta", replace
+{txt}file data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.dta saved
+
+{com}. exit

@@ -1,0 +1,50 @@
+---
+title: "Exploratory analysis after cleaninh"
+author: "FAROUK OSMAN"
+date: "`r Sys.Date()`"
+editor: source
+output:
+  html_document:
+    theme:
+      version: 5
+      bg: "#FAF9F6"
+      fg: "#212529"
+      primary: "#2C3E50"
+      secondary: "#5D6D7E"
+      base_font:
+        google: "Lato"
+      heading_font:
+        google: "Lato"
+      code_font:
+        google: "Source Code Pro"
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+    code_folding: show
+    df_print: paged
+    number_sections: true
+    highlight: textmate
+params:
+  data_path: "data/raw/realworld_medical_dirty.csv"
+  seed: 2847
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# INTRODUCTION
+
+This is an exploratory analysis of a raw medical dataset that was posted on Kaggle.
+
+The dataset contains 100 patient records with 10 variables capturing demographic characteristics, clinical measurements and diagnostic outcomes. Following a data cleaning exercise conducted in R, the cleaned dataset is used here to explore patterns in clinical characteristics and their relationship to patient diagnosis.
+
+The analysis is guided by three objectives: to describe the distribution of key clinical characteristics across diagnosis groups; to examine associations between patient characteristics and Heart Disease; and to identify the strongest independent predictors of Heart Disease using logistic regression.
+
+This dataset is synthetic; useful for learning purposes and findings cannot be generalised to real clinical populations.
+
+
+
+

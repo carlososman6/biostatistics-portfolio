@@ -1,0 +1,4414 @@
+
+
+      name:  <unnamed>
+       log:  data/Assgn survival analysis\STATA Files\Number 1.smcl
+  log type:  smcl
+ opened on:  13 Oct 2026, 12:48:46
+
+. 
+. **Import data
+. import excel "data/Assgn survival analysis\Data\survival_assignment_Number_I_2026.xlsx", sheet("Sheet1") firstrow
+(11 vars, 337 obs)
+
+. 
+. * Rename columns 
+. rename Column1  ptid
+
+. rename Column2  occ
+
+. rename Column3  survmonth
+
+. rename Column4  energy
+
+. rename Column5  ht
+
+. rename Column6  wt
+
+. rename Column7  hienergy
+
+. rename Column8  dentry
+
+. rename Column9  dexit
+
+. rename Column10 dbirth
+
+. rename Column11 fail
+
+. 
+. * Variable labels 
+. label variable ptid      "Patient ID"
+
+. label variable occ       "Occupation (0/1/2)"
+
+. label variable survmonth "Survey month"
+
+. label variable energy    "Total energy intake (1000 kcal/day)"
+
+. label variable ht        "Height (cm)"
+
+. label variable wt        "Weight (kg)"
+
+. label variable hienergy  "High energy intake indicator"
+
+. label variable dentry    "Date of study entry (SAS date)"
+
+. label variable dexit     "Date of study exit (SAS date)"
+
+. label variable dbirth    "Date of birth (SAS date)"
+
+. label variable fail      "Failure indicator (1=CHD diagnosed)"
+
+. 
+. *Value labels
+. 
+. label define occlab  0 "Occ 0" 1 "Occ 1" 2 "Occ 2"
+
+. label values occ occlab
+
+. 
+. label define hienergylab 0 "Low energy" 1 "High energy"
+
+. label values hienergy hienergylab
+
+. 
+. label define faillab 0 "Censored" 1 "CHD diagnosed"
+
+. label values fail faillab
+
+. 
+. *DATA INSPECTION AND CLEANING
+. describe
+
+Contains data
+ Observations:           337                  
+    Variables:            11                  
+
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+
+Patient ID
+Occupation (0/1/2)
+Survey month
+Total energy intake (1000 kcal/day)
+Height (cm)
+Weight (kg)
+hienergylab
+High energy intake indicator
+Date of study entry (SAS date)
+Date of study exit (SAS date)
+Date of birth (SAS date)
+Failure indicator (1=CHD diagnosed)
+
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. 
+. * Check missingness;
+. 
+. mdesc
+
+    Variable     Missing          Total     Percent Missing
+
+           ptid           0            337           0.00
+            occ           0            337           0.00
+      survmonth           0            337           0.00
+         energy           0            337           0.00
+             ht           5            337           1.48
+             wt           4            337           1.19
+       hienergy           0            337           0.00
+         dentry           0            337           0.00
+          dexit           0            337           0.00
+         dbirth           0            337           0.00
+           fail           0            337           0.00
+
+
+. *variables height has 5 missing values while weight has 4 missing values
+. 
+. *Due to minimal missingness we shall proceed
+. 
+. * Duplicate observations
+. 
+. duplicates report
+
+Duplicates in terms of  all variables
+
+
+   Copies  Observations       Surplus
+
+        1           337             0
+
+
+. *no duplicates noted
+. 
+. 
+. *Consistency of categorical variables;
+. 
+. tab1 occ hienergy fail
+
+-> tabulation of occ  
+
+ Occupation 
+    (0/1/2)       Freq.     Percent        Cum.
+
+      Occ 0         102       30.27       30.27
+      Occ 1          84       24.93       55.19
+      Occ 2         151       44.81      100.00
+
+      Total         337      100.00
+
+-> tabulation of hienergy  
+
+High energy 
+     intake 
+  indicator       Freq.     Percent        Cum.
+
+ Low energy         155       45.99       45.99
+High energy         182       54.01      100.00
+
+      Total         337      100.00
+
+-> tabulation of fail  
+
+      Failure 
+    indicator 
+       (1=CHD 
+   diagnosed)       Freq.     Percent        Cum.
+
+     Censored         257       76.26       76.26
+CHD diagnosed          80       23.74      100.00
+
+        Total         337      100.00
+
+. *All the categorical variables have consistent categories
+. 
+. 
+. *Generate surival time variables
+. gen years = (dexit - dentry) / 365.25
+
+. gen survtime = years * 12
+
+. 
+. *Generate participant Age in Years
+. gen ageyrs = (dentry - dbirth)/365.25
+
+. 
+. *round up
+. gen age = ceil(ageyrs)
+
+. label variable age "Age in years"
+
+. drop ageyrs
+
+. 
+. 
+. *Create bmi variable
+. gen bmi = wt/((ht/100)^2)
+(5 missing values generated)
+
+. label variable bmi "Body mass index (kg/m2)"
+
+. 
+. *Plausability of numeric variables;
+. 
+. estpost summarize
+
+
+
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}{ralign 9:{res:}}
+
+. *All numeric variables are plausible and fall within expected range
+. 
+. 
+. *Check distribution of the numeric variables
+. histogram survtime, normal
+(bin=18, start=3.449692, width=13.169061)
+
+. histogram age, normal
+(bin=18, start=24, width=2.1111111)
+
+. histogram ht, normal
+(bin=18, start=152.39999, width=2.116667)
+
+. histogram wt, normal
+(bin=18, start=46.720798, width=3.3012002)
+
+. histogram bmi, normal
+(bin=18, start=15.875263, width=.96764967)
+
+. histogram energy, normal
+(bin=18, start=1.74843, width=.14707334)
+
+. 
+. *Height, weight, BMI, and energy intake are approximately normally distributed. Age is left-skewed, concentrated around 45–55 years. Survival time is irregular, with a spike near 190–215 months and another near the maximum, likely reflecting censoring.
+. 
+. 
+. *CATEGORIZE THE CONTINOUS VARIABLES FOR LATER CHECKS
+. 
+. *Age(<45, 45-55,>55)
+. gen agegroups = .
+(337 missing values generated)
+
+. replace agegroups = 1 if age < 45
+(79 real changes made)
+
+. replace agegroups = 2 if age >= 45 & age <= 55
+(190 real changes made)
+
+. replace agegroups = 3 if age > 55
+(68 real changes made)
+
+. 
+. tab agegroups
+
+  agegroups       Freq.     Percent        Cum.
+
+          1          79       23.44       23.44
+          2         190       56.38       79.82
+          3          68       20.18      100.00
+
+      Total         337      100.00
+
+. 
+. *BMI(<18.5, 18.5-24.9, >= 25)
+. gen bmicat = .
+(337 missing values generated)
+
+. replace bmicat = 1 if bmi < 18.5
+(11 real changes made)
+
+. replace bmicat = 2 if bmi >= 18.5 & bmi < 25
+(188 real changes made)
+
+. replace bmicat = 3 if bmi >= 25
+(138 real changes made)
+
+. 
+. tab bmicat
+
+     bmicat       Freq.     Percent        Cum.
+
+          1          11        3.26        3.26
+          2         188       55.79       59.05
+          3         138       40.95      100.00
+
+      Total         337      100.00
+
+. 
+. *Height using median
+. gen htcat = .
+(337 missing values generated)
+
+. replace htcat = 0 if ht <= 172.9994 
+(166 real changes made)
+
+. replace htcat = 1 if ht > 172.9994
+(171 real changes made)
+
+. 
+. tab htcat
+
+      htcat       Freq.     Percent        Cum.
+
+          0         166       49.26       49.26
+          1         171       50.74      100.00
+
+      Total         337      100.00
+
+. 
+. *Weight using median
+. gen wtcat = .
+(337 missing values generated)
+
+. replace wtcat = 0 if wt <=  72.8028  
+(164 real changes made)
+
+. replace wtcat = 1 if wt >  72.8028 
+(173 real changes made)
+
+. 
+. tab wtcat
+
+      wtcat       Freq.     Percent        Cum.
+
+          0         164       48.66       48.66
+          1         173       51.34      100.00
+
+      Total         337      100.00
+
+. 
+. 
+. 
+. **TEST ASSUMPTIONS
+. *Declare survival data
+. stset survtime, failure(fail)
+
+Survival-time data settings
+
+Failure event: fail!=0 & fail<.
+Observed time interval: (0, survtime]
+Exit on or before: failure
+
+
+        337  total observations
+          0  exclusions
+
+        337  observations remaining, representing
+         80  failures in single-record/single-failure data
+ 55,244.025  total analysis time at risk and under observation
+                                                At risk from t =         0
+                                     Earliest observed entry t =         0
+                                          Last observed exit t =  240.4928
+
+. 
+. *Fit model
+. stcox i.occ ht wt i.hienergy age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -424.16273
+Iteration 2:   log likelihood = -424.14271
+Iteration 3:   log likelihood = -424.14271
+Refining estimates:
+Iteration 0:   log likelihood = -424.14271
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -424.14271 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9528422 .2951283   -0.160.876 .5192474 1.748508
+Occ 2   .8964776 .2589912   -0.380.705 .5088953 1.579249
+ 
+ht  .9507017 .0196627   -2.440.015 .9129342 .9900317
+wt  .9981086 .0130661   -0.140.885 .9728252 1.024049
+ 
+hienergy 
+High energy   .8432719 .2002631   -0.720.473 .5294457 1.343117
+age  1.030834 .0189087    1.660.098 .9944324 1.068569
+
+
+. 
+. 
+. 
+. *Plots
+. *loglog survival vs time
+. 
+. *occupation
+. stphplot, by(occ) nolntime
+
+Failure : fail
+Analysis time : survtime
+
+. *The 3 curves appear to overlap and arent parallel; possible PH violation
+. 
+. *hienergy
+. stphplot, by( hienergy ) nolntime
+
+Failure : fail
+Analysis time : survtime
+
+. * the groups dont overlap and appear to be parallel; PH not violated by this plot
+. 
+. *age groups
+. stphplot, by( agegroups ) nolntime
+
+Failure : fail
+Analysis time : survtime
+
+. *The 3 groups appear to overlap around 40 months but age group 1 stays seperate and above the other 2 age groups afterwards. The other two age groups appear to move together but dont overlap; possible PH violation according to this plot
+. 
+. *bmicat
+. stphplot, by( bmicat ) nolntime
+
+Failure : fail
+Analysis time : survtime
+
+. *The normal and overweight group appear to move togerther an not overlap ; however the under weight group appears to overlap with the other two groups at around 90 monhs and 130months ; Possible PH violation; However note that the underweight group had few observations
+. 
+. 
+. *height categorical
+. stphplot, by( htcat ) nolntime
+
+Failure : fail
+Analysis time : survtime
+
+. *The two groups dont appeas to overlap at any points ; They initially move together in the first 50months but appear to move parallel after that; PH assumption holds according to this plot
+. 
+. *weight categorical
+. stphplot, by( wtcat ) nolntime
+
+Failure : fail
+Analysis time : survtime
+
+. *Groups dont overlap at any point; PH assumption holds
+. 
+. 
+. *loglog survival vs logtime
+. 
+. *occupation
+. stphplot, by(occ)
+
+Failure : fail
+Analysis time : survtime
+
+. *Occupation, log-log vs ln(time): the three curves are approximately linear with mild curvature, so no PH violation is indicated by this plot
+. 
+. 
+. **hienergy
+. stphplot, by( hienergy )
+
+Failure : fail
+Analysis time : survtime
+
+. *both curves are approximately linear; no pH violation
+. 
+. **agegroups
+. stphplot, by( agegroups )
+
+Failure : fail
+Analysis time : survtime
+
+. *age groups 2 and 3 are approximately linear; however group 1 is not clearly linear
+. 
+. 
+. **bmicat
+. stphplot, by( bmicat )
+
+Failure : fail
+Analysis time : survtime
+
+. *normal and overwight bmi groups are approximately linear ; however the undeweight group isnt linear ; probably due to the few observations
+. 
+. **htcat
+. stphplot, by( htcat )
+
+Failure : fail
+Analysis time : survtime
+
+. *both curves are approximately linear; no ph violation
+. 
+. 
+. **wtcat
+. stphplot, by( wtcat )
+
+Failure : fail
+Analysis time : survtime
+
+. *both curves are approximately linear; no ph violation
+. 
+. 
+. 
+. *Observed vs expected plots;
+. *occupation
+. stcoxkm, by(occ)
+
+Failure : fail
+Analysis time : survtime
+
+. *the observed and expected for each of the 3 groups appear to move toether; no ph violation
+. 
+. *hienergy
+. stcoxkm, by( hienergy )
+
+Failure : fail
+Analysis time : survtime
+
+. *the observed and expected for each of the 2 groups appear to move toether; no ph violation
+. 
+. 
+. 
+. 
+. *agegroups
+. stcoxkm, by( agegroups )
+
+Failure : fail
+Analysis time : survtime
+
+. *the observed and expected for each of the 3 groups appear to move toether; no ph violation
+. 
+. 
+. *bmicat
+. stcoxkm, by( bmicat )
+
+Failure : fail
+Analysis time : survtime
+
+. *normal and overwight observed and expected curves appear to move togtehrr; however ; the observed and expected for the underweigh group dont move closesly; possible ph violation
+. 
+. 
+. 
+. *htcat
+. stcoxkm, by( htcat )
+
+Failure : fail
+Analysis time : survtime
+
+. *the observed and expected for each of the 2 groups appear to move toether; no ph violation
+. 
+. 
+. 
+. *wtcat
+. stcoxkm, by( wtcat )
+
+Failure : fail
+Analysis time : survtime
+
+. *the observed and expected for each of the 2 groups appear to move toether; no ph violation
+. 
+. 
+. 
+. 
+. ***Schonfeld residuals plots
+. 
+. *Fit model 1 (with ht and wt)
+. stcox i.occ ht wt energy age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.40438
+Iteration 2:   log likelihood = -423.37678
+Iteration 3:   log likelihood = -423.37678
+Refining estimates:
+Iteration 0:   log likelihood = -423.37678
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.37678 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9831576 .3062466   -0.050.957 .5339246 1.810366
+Occ 2   .8858376 .2559581   -0.420.675   .50281 1.560646
+ 
+ht  .9522309 .0197117   -2.360.018   .91437 .9916595
+wt  1.001001 .0130842    0.080.939 .9756824 1.026977
+energy  .6731041 .1885056   -1.410.158 .3887762 1.165373
+age  1.028574 .0189024    1.530.125 .9921856 1.066298
+
+
+. 
+. **ocuppation
+. *1.occ
+. estat phtest, plot(1.occ) yline(0)
+
+. * 1.occ, scaled Schoenfeld residual plot: the smoothed curve is approximately constant over time (small upward drift, well within the spread of the residuals); no clear trend, so this plot gives no evidence against PH for Occ 1. To be confirmed with the Schoenfeld test (estat phtest, detail).
+. 
+. *2.occ
+. estat phtest, plot(2.occ) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. 
+. **energy 
+. estat phtest, plot(energy) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. 
+. *age
+. estat phtest, plot(age) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. *height
+. estat phtest, plot( ht ) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. *weight
+. estat phtest, plot(wt) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. *Fit model 2 with bmi 
+. stcox i.occ bmi energy age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood =  -426.3369
+Iteration 2:   log likelihood = -426.32727
+Iteration 3:   log likelihood = -426.32727
+Refining estimates:
+Iteration 0:   log likelihood = -426.32727
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -426.32727 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.177914 .3603999    0.540.593 .6466599 2.145611
+Occ 2    .716865 .1990919   -1.200.231 .4159458 1.235486
+ 
+bmi  1.019237 .0382219    0.510.611   .94701 1.096972
+energy  .5853068 .1611278   -1.950.052 .3412387 1.003943
+age  1.028026 .0187749    1.510.130 .9918787  1.06549
+
+
+. 
+. **ocuppation
+. *1.occ
+. estat phtest, plot(1.occ) yline(0)
+
+. * 1.occ, scaled Schoenfeld residual plot: the smoothed curve is approximately constant over time (small upward drift, well within the spread of the residuals); no clear trend, so this plot gives no evidence against PH for Occ 1. To be confirmed with the Schoenfeld test (estat phtest, detail).
+. 
+. *2.occ
+. estat phtest, plot(2.occ) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. 
+. **energy categorical
+. estat phtest, plot(energy) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. 
+. *age
+. estat phtest, plot(age) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. *bmi
+. estat phtest, plot(bmi) yline(0)
+
+. **the estimates appear approximately constant over time; hence no evidence of ph violation
+. 
+. 
+. *All schonfeld plots show no PH violation
+. 
+. 
+. *STATITICAL CHECKS FOR ASSUMPTIONS
+. *Model 1; no bmi
+. stcox i.occ ht wt energy age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.40438
+Iteration 2:   log likelihood = -423.37678
+Iteration 3:   log likelihood = -423.37678
+Refining estimates:
+Iteration 0:   log likelihood = -423.37678
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.37678 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9831576 .3062466   -0.050.957 .5339246 1.810366
+Occ 2   .8858376 .2559581   -0.420.675   .50281 1.560646
+ 
+ht  .9522309 .0197117   -2.360.018   .91437 .9916595
+wt  1.001001 .0130842    0.080.939 .9756824 1.026977
+energy  .6731041 .1885056   -1.410.158 .3887762 1.165373
+age  1.028574 .0189024    1.530.125 .9921856 1.066298
+
+
+. 
+. *test
+. estat phtest, detail
+
+Test of proportional-hazards assumption
+
+Time function: Analysis time
+
+                     rho     chi2       df    Prob>chi2
+
+0b.occ       .        .    1    .
+1.occ 0.14298     1.42    10.2328
+2.occ 0.01518     0.02    10.8884
+ht-0.07814     0.49    10.4851
+wt 0.02682     0.07    10.7924
+energy 0.14878     1.77    10.1835
+age 0.07248     0.40    10.5270
+
+ Global test      5.18    60.5213
+
+
+. *Schoenfeld test: no variable (all p > 0.18) or the global model (p = 0.52) violates proportional hazards
+. 
+. *Model 2; with bmi
+. stcox i.occ bmi energy age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood =  -426.3369
+Iteration 2:   log likelihood = -426.32727
+Iteration 3:   log likelihood = -426.32727
+Refining estimates:
+Iteration 0:   log likelihood = -426.32727
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -426.32727 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.177914 .3603999    0.540.593 .6466599 2.145611
+Occ 2    .716865 .1990919   -1.200.231 .4159458 1.235486
+ 
+bmi  1.019237 .0382219    0.510.611   .94701 1.096972
+energy  .5853068 .1611278   -1.950.052 .3412387 1.003943
+age  1.028026 .0187749    1.510.130 .9918787  1.06549
+
+
+. 
+. *test
+. estat phtest, detail
+
+Test of proportional-hazards assumption
+
+Time function: Analysis time
+
+                     rho     chi2       df    Prob>chi2
+
+0b.occ       .        .    1    .
+1.occ 0.14780     1.63    10.2018
+2.occ-0.01450     0.02    10.8981
+bmi 0.02333     0.05    10.8217
+energy 0.14395     1.69    10.1935
+age 0.06301     0.30    10.5847
+
+ Global test      4.86    50.4327
+
+
+. *No PH volation noted here as well
+. 
+. *test using extended cox model
+. *create dummy variables occupation
+. gen occ1 = (occ == 1) if !missing(occ)
+
+. gen occ2 = (occ == 2) if !missing(occ)
+
+. 
+. *model 1 with no bmi
+. stcox occ1 occ2 energy ht wt age, tvc(occ1 occ2 energy ht wt age) texp(_t)
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.60343
+Iteration 2:   log likelihood = -420.42523
+Iteration 3:   log likelihood = -420.42511
+Refining estimates:
+Iteration 0:   log likelihood = -420.42511
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.42511 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+main         
+occ1  .4625861 .3084121   -1.160.248 .1252234 1.708833
+occ2  .8474951 .4785164   -0.290.769 .2802387 2.562987
+energy  .3402236 .1985637   -1.850.065 .1083878 1.067944
+ht   .976681   .04078   -0.570.572 .8999367  1.05997
+wt  .9950956 .0257395   -0.190.849 .9459046 1.046845
+age    1.0026 .0369545    0.070.944  .932725  1.07771
+
+tvc          
+occ1  1.007977 .0060808    1.320.188 .9961291 1.019966
+occ2  1.000512 .0053678    0.100.924 .9900465 1.011088
+energy  1.006845 .0050284    1.370.172 .9970373 1.016749
+ht  .9997471 .0003724   -0.680.497 .9990174 1.000477
+wt  1.000061 .0002371    0.260.797 .9995966 1.000526
+age  1.000333 .0003772    0.880.378 .9995936 1.001072
+
+Note: Variables in  equation interacted with .
+
+. 
+. *Conclusion: no tvc term is significant (all p > 0.17), so the extended Cox test gives no evidence of a PH violation for any variable. This agrees with the Schoenfeld test.
+. 
+. *model 2; with bmi
+. stcox occ1 occ2 energy bmi age, tvc(occ1 occ2 energy bmi age) texp(_t)
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.68997
+Iteration 2:   log likelihood = -423.52469
+Iteration 3:   log likelihood = -423.52459
+Refining estimates:
+Iteration 0:   log likelihood = -423.52459
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.52459 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+main         
+occ1  .5361636 .3513342   -0.950.341 .1484318 1.936724
+occ2  .7803624  .425682   -0.450.649 .2678996 2.273111
+energy  .3008179 .1731849   -2.090.037  .097332 .9297191
+bmi  1.004187 .0751214    0.060.955 .8672374 1.162764
+age  1.004561 .0370248    0.120.902 .9345528 1.079813
+
+tvc          
+occ1  1.008235 .0060116    1.380.169 .9965206 1.020086
+occ2  .9991817 .0051579   -0.160.874 .9891234 1.009342
+energy  1.006738 .0050186    1.350.178 .9969492 1.016622
+bmi   1.00015 .0006804    0.220.825 .9988178 1.001485
+age  1.000305 .0003744    0.810.415 .9995713 1.001039
+
+Note: Variables in  equation interacted with .
+
+. *same concluson as in extended model 1
+. 
+. 
+. 
+. ** PH VERDICT: Graphical checks flagged possible violations for occupation, age and underweight BMI (log-log crossings in sparse regions); the Schoenfeld test (all p > 0.18; global p = 0.52) and the extended Cox model (all tvc p > 0.17; 332 subjects, 78 events) found no evidence of violation for any variable. PH is accepted for all variables; no stratification or time-extension is applied. Power is limited by the number of events.
+. 
+. *UNIVARIATE SCREENING
+. *since sample size is adequate; this step is skipped
+. 
+. 
+. 
+. *Functional forms
+. *fit null model
+. stcox, estimate
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -442.59555
+Refining estimates:
+Iteration 0:   log likelihood = -442.59555
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -442.59555 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+
+. 
+. *save martingale residuals
+. predict mgale, mgale
+
+. 
+. *Plots
+. *energy
+. twoway (scatter mgale energy) (lowess mgale energy )
+
+. 
+. * energy: lowess of martingale residuals declines roughly linearly from 2 to 3.7 (1000 kcal/day), flattening above 3.7 where data are sparse; approximately linear, but to be later compared to other forms
+. 
+. 
+. *height
+. twoway (scatter mgale ht) (lowess mgale ht )
+
+. ** Height: the lowess line is not linear (nearly flat from about 163 to 176 cm, then falling steeply), so height will be categorized at 178 cm, where the fall begins
+. 
+. *weight
+. twoway (scatter mgale wt) (lowess mgale wt )
+
+. ** Weight: the lowess line is not linear (flat at about 50-55 kg, falling from about 57 kg, then flat again above about 73 kg), so weight will be categorized at 60 kg, where the fall starts
+. 
+. *bmi
+. twoway (scatter mgale bmi) (lowess mgale bmi)
+
+. *non linear 
+. 
+. *age
+. twoway (scatter mgale age) (lowess mgale age)
+
+. * Age: the lowess line is close to flat (about -0.07 to +0.06) and rises slowly from about age 40, with the left end based on very few patients; if categorized, age will be split at 45, ignoring the sparse left end
+. 
+. 
+. *GENERATE the functional forms
+. 
+. *energy
+. gen energy2 = energy^2
+
+. gen energy3 = energy^3
+
+. 
+. *height
+. gen ht2 = ht^2
+(5 missing values generated)
+
+. gen ht3 = ht^3
+(5 missing values generated)
+
+. 
+. *ht cat 2 from the mgale residuals plot
+. gen htcat2 = . 
+(337 missing values generated)
+
+. replace htcat2 = 0 if ht <= 178 
+(259 real changes made)
+
+. replace htcat2 = 1 if ht > 178
+(78 real changes made)
+
+. tab htcat2
+
+     htcat2       Freq.     Percent        Cum.
+
+          0         259       76.85       76.85
+          1          78       23.15      100.00
+
+      Total         337      100.00
+
+. 
+. *weight
+. gen wt2 = wt^2
+(4 missing values generated)
+
+. gen wt3 = wt^3
+(4 missing values generated)
+
+. *ht cat 2 from the mgale residuals plot
+. gen wtcat2 = .
+(337 missing values generated)
+
+. replace wtcat2 = 0 if wt <=  60  
+(45 real changes made)
+
+. replace wtcat2 = 1 if wt >  60 
+(292 real changes made)
+
+. tab wtcat2
+
+     wtcat2       Freq.     Percent        Cum.
+
+          0          45       13.35       13.35
+          1         292       86.65      100.00
+
+      Total         337      100.00
+
+. 
+. 
+. *bmi
+. gen bmi2 = bmi^2
+(5 missing values generated)
+
+. gen bmi3 = bmi^3
+(5 missing values generated)
+
+. 
+. *age
+. gen age2 = age^2
+
+. gen age3 = age^3
+
+. 
+. *agecat2 from mgale plot
+. gen agecat = .
+(337 missing values generated)
+
+. replace agecat = 0 if age <=  45  
+(89 real changes made)
+
+. replace agecat = 1 if age >  45 
+(248 real changes made)
+
+. tab agecat
+
+     agecat       Freq.     Percent        Cum.
+
+          0          89       26.41       26.41
+          1         248       73.59      100.00
+
+      Total         337      100.00
+
+. 
+. *for the missingness
+. replace htcat  = . if missing(ht)
+(5 real changes made, 5 to missing)
+
+. replace htcat2 = . if missing(ht)
+(5 real changes made, 5 to missing)
+
+. replace wtcat  = . if missing(wt)
+(4 real changes made, 4 to missing)
+
+. replace wtcat2 = . if missing(wt)
+(4 real changes made, 4 to missing)
+
+. replace bmicat = . if missing(bmi)
+(5 real changes made, 5 to missing)
+
+. 
+. 
+. *COMPARING MODELS
+. *ENERGY  
+. 
+. stcox i.occ energy ht wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.40438
+Iteration 2:   log likelihood = -423.37678
+Iteration 3:   log likelihood = -423.37678
+Refining estimates:
+Iteration 0:   log likelihood = -423.37678
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.37678 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9831576 .3062466   -0.050.957 .5339246 1.810366
+Occ 2   .8858376 .2559581   -0.420.675   .50281 1.560646
+ 
+energy  .6731041 .1885056   -1.410.158 .3887762 1.165373
+ht  .9522309 .0197117   -2.360.018   .91437 .9916595
+wt  1.001001 .0130842    0.080.939 .9756824 1.026977
+age  1.028574 .0189024    1.530.125 .9921856 1.066298
+
+
+. estimates store en_num
+
+. 
+. stcox i.occ i.hienergy ht wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -424.16273
+Iteration 2:   log likelihood = -424.14271
+Iteration 3:   log likelihood = -424.14271
+Refining estimates:
+Iteration 0:   log likelihood = -424.14271
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -424.14271 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9528422 .2951283   -0.160.876 .5192474 1.748508
+Occ 2   .8964776 .2589912   -0.380.705 .5088953 1.579249
+ 
+hienergy 
+High energy   .8432719 .2002631   -0.720.473 .5294457 1.343117
+ht  .9507017 .0196627   -2.440.015 .9129342 .9900317
+wt  .9981086 .0130661   -0.140.885 .9728252 1.024049
+age  1.030834 .0189087    1.660.098 .9944324 1.068569
+
+
+. estimates store en_cat
+
+. 
+. stcox i.occ energy2 ht wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.43622
+Iteration 2:   log likelihood = -423.41065
+Iteration 3:   log likelihood = -423.41065
+Refining estimates:
+Iteration 0:   log likelihood = -423.41065
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.41065 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9781378 .3045599   -0.070.943 .5313294 1.800679
+Occ 2   .8839056 .2553886   -0.430.669  .501726 1.557203
+ 
+energy2   .934842 .0459746   -1.370.171 .8489399 1.029436
+ht  .9519639 .0197151   -2.380.017 .9140968 .9913996
+wt  1.000822 .0130783    0.060.950 .9755144 1.026786
+age  1.028672 .0188894    1.540.124 .9923082 1.066369
+
+
+. estimates store en_sqd
+
+. 
+. stcox i.occ energy3 ht wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.49674
+Iteration 2:   log likelihood = -423.47022
+Iteration 3:   log likelihood = -423.47022
+Refining estimates:
+Iteration 0:   log likelihood = -423.47022
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.47022 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9723936 .3025784   -0.090.928 .5284147 1.789408
+Occ 2   .8825384 .2550157   -0.430.665 .5009252 1.554871
+ 
+energy3  .9856142 .0109101   -1.310.191  .964461 1.007231
+ht  .9516267 .0197181   -2.390.017 .9137542 .9910688
+wt  1.000521 .0130629    0.040.968 .9752426 1.026454
+age  1.028851 .0188752    1.550.121 .9925134 1.066519
+
+
+. estimates store en_cub
+
+. 
+. estimates stats en_num en_cat en_sqd en_cub
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-431.5091-423.3768     6 858.7536 881.5844
+       332-431.5091-424.1427     6 860.2854 883.1162
+       332-431.5091-423.4107     6 858.8213 881.6521
+       332-431.5091-423.4702     6 858.9404 881.7712
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. *The model with energy as a numeric variable had the lowest aic/bic ; hence energy is better analysed as a numeric variable
+. 
+. *HEIGHT  
+. stcox i.occ energy ht wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.40438
+Iteration 2:   log likelihood = -423.37678
+Iteration 3:   log likelihood = -423.37678
+Refining estimates:
+Iteration 0:   log likelihood = -423.37678
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.37678 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9831576 .3062466   -0.050.957 .5339246 1.810366
+Occ 2   .8858376 .2559581   -0.420.675   .50281 1.560646
+ 
+energy  .6731041 .1885056   -1.410.158 .3887762 1.165373
+ht  .9522309 .0197117   -2.360.018   .91437 .9916595
+wt  1.001001 .0130842    0.080.939 .9756824 1.026977
+age  1.028574 .0189024    1.530.125 .9921856 1.066298
+
+
+. estimates store ht_num
+
+. 
+. stcox i.occ energy i.htcat2 wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.12058
+Iteration 2:   log likelihood = -419.35989
+Iteration 3:   log likelihood = -419.34044
+Iteration 4:   log likelihood = -419.34042
+Refining estimates:
+Iteration 0:   log likelihood = -419.34042
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.34042 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.099155 .3412127    0.300.761 .5981623 2.019757
+Occ 2   .9822987 .2795933   -0.060.950 .5622957  1.71602
+ 
+energy  .6384082 .1784171   -1.610.108 .3691575 1.104041
+1.htcat2   .241719 .1080228   -3.180.001 .1006732 .5803737
+wt  1.000488 .0127613    0.040.969 .9757866 1.025815
+age  1.028544  .018722    1.550.122 .9924967 1.065901
+
+
+. estimates store ht_cat2
+
+. 
+. stcox i.occ energy ht2 wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.30401
+Iteration 2:   log likelihood = -423.28409
+Iteration 3:   log likelihood = -423.28409
+Refining estimates:
+Iteration 0:   log likelihood = -423.28409
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.28409 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9833489 .3062088   -0.050.957 .5341321 1.810367
+Occ 2   .8918763 .2579056   -0.400.692 .5060122 1.571984
+ 
+energy  .6716922 .1881238   -1.420.155 .3879453 1.162974
+ht2  .9998546 .0000607   -2.390.017 .9997356 .9999736
+wt  1.001154 .0130892    0.090.930 .9758259  1.02714
+age  1.028506 .0188922    1.530.126  .992137 1.066209
+
+
+. estimates store ht_sqd
+
+. 
+. stcox i.occ energy ht3 wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -423.20645
+Iteration 2:   log likelihood =  -423.1899
+Iteration 3:   log likelihood =  -423.1899
+Refining estimates:
+Iteration 0:   log likelihood =  -423.1899
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -423.1899 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9836706 .3062202   -0.050.958 .5344015 1.810639
+Occ 2    .897776 .2597819   -0.370.709 .5091701 1.582971
+ 
+energy  .6702116 .1877333   -1.430.153 .3870628 1.160493
+ht3  .9999994 2.37e-07   -2.420.015  .999999 .9999999
+wt  1.001298 .0130932    0.100.921 .9759613 1.027291
+age  1.028436 .0188819    1.530.127 .9920864 1.066118
+
+
+. estimates store ht_cub
+
+. 
+. estimates stats ht_num ht_cat2 ht_sqd ht_cub
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-431.5091-423.3768     6 858.7536 881.5844
+       332-431.5091-419.3404     6 850.6808 873.5117
+       332-431.5091-423.2841     6 858.5682  881.399
+       332-431.5091-423.1899     6 858.3798 881.2106
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. *htcat2 has the lowest aic/bic ; hence height is better as htcat2 in the model
+. 
+. *WEIGHT 
+. stcox i.occ energy i.htcat2 wt age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.12058
+Iteration 2:   log likelihood = -419.35989
+Iteration 3:   log likelihood = -419.34044
+Iteration 4:   log likelihood = -419.34042
+Refining estimates:
+Iteration 0:   log likelihood = -419.34042
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.34042 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.099155 .3412127    0.300.761 .5981623 2.019757
+Occ 2   .9822987 .2795933   -0.060.950 .5622957  1.71602
+ 
+energy  .6384082 .1784171   -1.610.108 .3691575 1.104041
+1.htcat2   .241719 .1080228   -3.180.001 .1006732 .5803737
+wt  1.000488 .0127613    0.040.969 .9757866 1.025815
+age  1.028544  .018722    1.550.122 .9924967 1.065901
+
+
+. estimates store wt_num
+
+. 
+. stcox i.occ energy i.htcat2 i.wtcat2 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -419.80545
+Iteration 2:   log likelihood = -418.95061
+Iteration 3:   log likelihood =  -418.9339
+Iteration 4:   log likelihood = -418.93388
+Refining estimates:
+Iteration 0:   log likelihood = -418.93388
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -418.93388 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.044898 .3159472    0.150.885 .5776903 1.889961
+Occ 2    1.02344 .2939113    0.080.936 .5829273 1.796844
+ 
+energy   .685221 .1887549   -1.370.170 .3993501  1.17573
+1.htcat2  .2461221 .1085752   -3.180.001 .1036689 .5843229
+1.wtcat2  .7504457 .2347098   -0.920.359 .4065341 1.385293
+age   1.02913 .0188179    1.570.116 .9929011 1.066682
+
+
+. estimates store wt_cat2
+
+. 
+. stcox i.occ energy i.htcat2 wt2 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.11235
+Iteration 2:   log likelihood = -419.34825
+Iteration 3:   log likelihood = -419.32866
+Iteration 4:   log likelihood = -419.32864
+Refining estimates:
+Iteration 0:   log likelihood = -419.32864
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.32864 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.110496 .3439244    0.340.735 .6051973 2.037685
+Occ 2   .9795314  .278364   -0.070.942 .5612072 1.709675
+ 
+energy  .6322395  .175411   -1.650.098 .3670464 1.089036
+1.htcat2  .2392828 .1072409   -3.190.001 .0994084   .57597
+wt2  1.000014 .0000875    0.160.874 .9998424 1.000185
+age  1.028564 .0187169    1.550.122 .9925255  1.06591
+
+
+. estimates store wt_sqd
+
+. 
+. stcox i.occ energy i.htcat2 wt3 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.09213
+Iteration 2:   log likelihood = -419.32214
+Iteration 3:   log likelihood = -419.30236
+Iteration 4:   log likelihood = -419.30234
+Refining estimates:
+Iteration 0:   log likelihood = -419.30234
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.30234 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.120769 .3458635    0.370.712 .6121247 2.052072
+Occ 2   .9777755 .2774883   -0.080.937 .5606244 1.705322
+ 
+energy  .6271899 .1725947   -1.700.090 .3657289 1.075571
+1.htcat2  .2364892 .1063219   -3.210.001  .097977 .5708189
+wt3         1 7.71e-07    0.280.779 .9999987 1.000002
+age  1.028599  .018715    1.550.121 .9925645 1.065941
+
+
+. estimates store wt_cub
+
+. 
+. estimates stats wt_num wt_cat2 wt_sqd wt_cub
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-431.5091-419.3404     6 850.6808 873.5117
+       332-431.5091-418.9339     6 849.8678 872.6986
+       332-431.5091-419.3286     6 850.6573 873.4881
+       332-431.5091-419.3023     6 850.6047 873.4355
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. *wtcub has the lowest aic/bic ; hence weight is better as wt3 in the model
+. 
+. 
+. 
+. *BMI  
+. stcox i.occ energy bmi age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood =  -426.3369
+Iteration 2:   log likelihood = -426.32727
+Iteration 3:   log likelihood = -426.32727
+Refining estimates:
+Iteration 0:   log likelihood = -426.32727
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -426.32727 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.177914 .3603999    0.540.593 .6466599 2.145611
+Occ 2    .716865 .1990919   -1.200.231 .4159458 1.235486
+ 
+energy  .5853068 .1611278   -1.950.052 .3412387 1.003943
+bmi  1.019237 .0382219    0.510.611   .94701 1.096972
+age  1.028026 .0187749    1.510.130 .9918787  1.06549
+
+
+. estimates store bmi_num
+
+. 
+. stcox i.occ energy i.bmicat age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -426.46213
+Iteration 2:   log likelihood = -426.44431
+Iteration 3:   log likelihood =  -426.4443
+Iteration 4:   log likelihood =  -426.4443
+Refining estimates:
+Iteration 0:   log likelihood =  -426.4443
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -426.4443 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.122688 .3481017    0.370.709 .6114128   2.0615
+Occ 2   .7113247 .1981824   -1.220.221 .4120162 1.228065
+ 
+energy  .6061484 .1651408   -1.840.066 .3553654  1.03391
+ 
+bmicat 
+2   1.031189 .6304976    0.050.960 .3110927 3.418114
+3   .9944692 .6303792   -0.010.993 .2870962 3.444731
+ 
+age  1.028064 .0189267    1.500.133 .9916293 1.065837
+
+
+. estimates store bmi_cat
+
+. 
+. stcox i.occ energy bmi2 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -426.27951
+Iteration 2:   log likelihood = -426.27003
+Iteration 3:   log likelihood = -426.27003
+Refining estimates:
+Iteration 0:   log likelihood = -426.27003
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -426.27003 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.184969 .3618708    0.560.578 .6512739 2.156009
+Occ 2   .7183615 .1995643   -1.190.234 .4167495 1.238258
+ 
+energy  .5824493 .1599471   -1.970.049 .3400233 .9977175
+bmi2  1.000465 .0007575    0.610.539 .9989812 1.001951
+age  1.027986 .0187726    1.510.131 .9918425 1.065446
+
+
+. estimates store bmi_sqd
+
+. 
+. stcox i.occ energy bmi3 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -426.21888
+Iteration 2:   log likelihood = -426.20928
+Iteration 3:   log likelihood = -426.20928
+Refining estimates:
+Iteration 0:   log likelihood = -426.20928
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -426.20928 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.189624  .362268    0.570.569 .6549366 2.160829
+Occ 2   .7198682 .2000347   -1.180.237 .4175648  1.24103
+ 
+energy   .580368 .1589634   -1.990.047 .3392802 .9927696
+bmi3  1.000014 .0000198    0.710.477 .9999752 1.000053
+age   1.02793 .0187719    1.510.131 .9917888 1.065389
+
+
+. estimates store bmi_cub
+
+. 
+. estimates stats bmi_num bmi_cat bmi_sqd bmi_cub
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-431.5091-426.3273     5 862.6545 881.6802
+       332-431.5091-426.4443     6 864.8886 887.7194
+       332-431.5091  -426.27     5 862.5401 881.5657
+       332-431.5091-426.2093     5 862.4186 881.4442
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. *bmi3 has the lowest aic/bic ; hence bmi is better as bmi3 in the model
+. 
+. *Now to dediced whether to use ht/wt or bmi; we shall compare models oh htcat2 wtcat 2 bmi3
+. 
+. estimates stats ht_cat2 wt_cub bmi_cub 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-431.5091-419.3404     6 850.6808 873.5117
+       332-431.5091-419.3023     6 850.6047 873.4355
+       332-431.5091-426.2093     5 862.4186 881.4442
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. *the model with htcat2 and wtc_cub had the lowest aic/bic; hence we shall run height as htcat2 and weight as wt3
+. 
+. * AGE  
+. stcox i.occ energy i.htcat2 wt3 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.09213
+Iteration 2:   log likelihood = -419.32214
+Iteration 3:   log likelihood = -419.30236
+Iteration 4:   log likelihood = -419.30234
+Refining estimates:
+Iteration 0:   log likelihood = -419.30234
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.30234 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.120769 .3458635    0.370.712 .6121247 2.052072
+Occ 2   .9777755 .2774883   -0.080.937 .5606244 1.705322
+ 
+energy  .6271899 .1725947   -1.700.090 .3657289 1.075571
+1.htcat2  .2364892 .1063219   -3.210.001  .097977 .5708189
+wt3         1 7.71e-07    0.280.779 .9999987 1.000002
+age  1.028599  .018715    1.550.121 .9925645 1.065941
+
+
+. estimates store age_num
+
+. 
+. stcox i.occ energy i.htcat2 wt3 i.agecat
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.36039
+Iteration 2:   log likelihood = -419.54573
+Iteration 3:   log likelihood = -419.52472
+Iteration 4:   log likelihood = -419.52469
+Refining estimates:
+Iteration 0:   log likelihood = -419.52469
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.52469 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.155218 .3552467    0.470.639 .6322758 2.110673
+Occ 2   .9877174  .280245   -0.040.965 .5663975  1.72244
+ 
+energy  .6203468 .1702623   -1.740.082 .3622523 1.062326
+1.htcat2  .2322396 .1045232   -3.240.001 .0961256 .5610913
+wt3         1 7.73e-07    0.270.791 .9999987 1.000002
+1.agecat  1.459932 .4042879    1.370.172 .8484297 2.512172
+
+
+. estimates store age_cat
+
+. 
+. stcox i.occ energy i.htcat2 wt3 age2
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.14061
+Iteration 2:   log likelihood = -419.36653
+Iteration 3:   log likelihood = -419.34676
+Iteration 4:   log likelihood = -419.34674
+Refining estimates:
+Iteration 0:   log likelihood = -419.34674
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.34674 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.126003 .3472005    0.380.700 .6152805 2.060656
+Occ 2   .9906499 .2809545   -0.030.974 .5682169 1.727135
+ 
+energy  .6261615 .1724024   -1.700.089 .3650255 1.074112
+1.htcat2  .2368388 .1064664   -3.200.001 .0981322 .5716026
+wt3         1 7.71e-07    0.270.783 .9999987 1.000002
+age2  1.000282 .0001841    1.530.125 .9999216 1.000643
+
+
+. estimates store age_sqd
+
+. 
+. stcox i.occ energy i.htcat2 wt3 age3
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.22427
+Iteration 2:   log likelihood = -419.44559
+Iteration 3:   log likelihood = -419.42586
+Iteration 4:   log likelihood = -419.42584
+Refining estimates:
+Iteration 0:   log likelihood = -419.42584
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.42584 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.131943 .3487564    0.400.687 .6188217 2.070538
+Occ 2   1.002861  .284395    0.010.992 .5752464 1.748347
+ 
+energy  .6245969 .1720415   -1.710.088 .3640335 1.071663
+1.htcat2  .2371611 .1066002   -3.200.001 .0982747 .5723282
+wt3         1 7.70e-07    0.270.787 .9999987 1.000002
+age3  1.000004 2.43e-06    1.490.136 .9999989 1.000008
+
+
+. estimates store age_cub
+
+. 
+. estimates stats age_num age_cat age_sqd age_cub
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-431.5091-419.3023     6 850.6047 873.4355
+       332-431.5091-419.5247     6 851.0494 873.8802
+       332-431.5091-419.3467     6 850.6935 873.5243
+       332-431.5091-419.4258     6 850.8517 873.6825
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. *model with age as numeric appears as the best
+. 
+. *Model with the correct variables
+. stcox i.occ energy i.htcat2 wt3 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.09213
+Iteration 2:   log likelihood = -419.32214
+Iteration 3:   log likelihood = -419.30236
+Iteration 4:   log likelihood = -419.30234
+Refining estimates:
+Iteration 0:   log likelihood = -419.30234
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.30234 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.120769 .3458635    0.370.712 .6121247 2.052072
+Occ 2   .9777755 .2774883   -0.080.937 .5606244 1.705322
+ 
+energy  .6271899 .1725947   -1.700.090 .3657289 1.075571
+1.htcat2  .2364892 .1063219   -3.210.001  .097977 .5708189
+wt3         1 7.71e-07    0.280.779 .9999987 1.000002
+age  1.028599  .018715    1.550.121 .9925645 1.065941
+
+
+. 
+. 
+. *INTERACTION
+. 
+. *reduced model
+. stcox i.occ energy htcat2 wt3 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.09213
+Iteration 2:   log likelihood = -419.32214
+Iteration 3:   log likelihood = -419.30236
+Iteration 4:   log likelihood = -419.30234
+Refining estimates:
+Iteration 0:   log likelihood = -419.30234
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.30234 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.120769 .3458635    0.370.712 .6121247 2.052072
+Occ 2   .9777755 .2774883   -0.080.937 .5606244 1.705322
+ 
+energy  .6271899 .1725947   -1.700.090 .3657289 1.075571
+htcat2  .2364892 .1063219   -3.210.001  .097977 .5708189
+wt3         1 7.71e-07    0.280.779 .9999987 1.000002
+age  1.028599  .018715    1.550.121 .9925645 1.065941
+
+
+. *store estimates
+. estimates store reduced
+
+. 
+. 
+. *Full models
+. stcox i.occ##c.energy i.htcat2##c.energy c.wt3##c.energy c.age##c.energy
+
+Failure : fail
+Analysis time : survtime
+
+note:  omitted because of collinearity.
+note:  omitted because of collinearity.
+note:  omitted because of collinearity.
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -419.00781
+Iteration 2:   log likelihood = -418.11857
+Iteration 3:   log likelihood = -418.10285
+Iteration 4:   log likelihood = -418.10284
+Refining estimates:
+Iteration 0:   log likelihood = -418.10284
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -418.10284 = 
+
+
+             _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .7744205   1.4666   -0.130.893 .0189221 31.69459
+Occ 2   4.248572 7.692464    0.800.424 .1221961 147.7163
+ 
+energy  .3177085 .7069757   -0.520.606 .0040542 24.89725
+ 
+occ#c.energy 
+Occ 1   1.140343  .761852    0.200.844  .307862 4.223913
+Occ 2   .5845149 .3831263   -0.820.413 .1617584 2.112148
+ 
+1.htcat2  .0094518 .0279009   -1.580.114  .000029   3.0775
+energy         1  (omitted)
+ 
+htcat2#c.energy 
+1   3.101207 3.075991    1.140.254 .4438647 21.66761
+ 
+wt3  1.000001 3.96e-06    0.250.800 .9999932 1.000009
+energy         1  (omitted)
+ 
+c.wt3#c.energy  .9999997 1.44e-06   -0.200.844 .9999969 1.000003
+ 
+age  .9772826  .115745   -0.190.846 .7748322  1.23263
+energy         1  (omitted)
+ 
+c.age#c.energy   1.01789 .0425389    0.420.671 .9378388 1.104775
+
+
+. *estimates
+. 
+. estimates store full
+
+. 
+. *LR test
+. lrtest ( reduced ) ( full ), stats
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-431.5091-419.3023     6 850.6047 873.4355
+       332-431.5091-418.1028    11 858.2057 900.0622
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *Reduced model is better; so, no evidence of inetarction
+. 
+. *Model after checking for interaction
+. stcox i.occ energy htcat2 wt3 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.09213
+Iteration 2:   log likelihood = -419.32214
+Iteration 3:   log likelihood = -419.30236
+Iteration 4:   log likelihood = -419.30234
+Refining estimates:
+Iteration 0:   log likelihood = -419.30234
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.30234 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.120769 .3458635    0.370.712 .6121247 2.052072
+Occ 2   .9777755 .2774883   -0.080.937 .5606244 1.705322
+ 
+energy  .6271899 .1725947   -1.700.090 .3657289 1.075571
+htcat2  .2364892 .1063219   -3.210.001  .097977 .5708189
+wt3         1 7.71e-07    0.280.779 .9999987 1.000002
+age  1.028599  .018715    1.550.121 .9925645 1.065941
+
+
+. 
+. 
+. *stepwise estimation to determine order of confounding
+. 
+. stepwise, pr(0.05) lockterm1 lr : stcox energy i.occ htcat2 wt3 age
+note:  omitted because of estimability.
+
+
+LR test, begin with full model:
+{p2col:p =  >= 0.0500,}removing 
+{p2col:p =  >= 0.0500,}removing 
+{p2col:p =  >= 0.0500,}removing 
+{p2col:p =  >= 0.0500,}removing 
+
+
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.71071 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6129104 .1617356   -1.860.064 .3654103 1.028048
+htcat2  .2366372  .100892   -3.380.001 .1026047 .5457565
+
+
+. 
+. 
+. *Fit crude models
+. stcox energy htcat2 
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -421.48899
+Iteration 2:   log likelihood = -420.73095
+Iteration 3:   log likelihood = -420.71074
+Iteration 4:   log likelihood = -420.71071
+Refining estimates:
+Iteration 0:   log likelihood = -420.71071
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.71071 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6129104 .1617356   -1.860.064 .3654103 1.028048
+htcat2  .2366372  .100892   -3.380.001 .1026047 .5457565
+
+
+. 
+. 
+. *reintroduce age
+. stcox energy htcat2 age
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -420.19169
+Iteration 2:   log likelihood = -419.43898
+Iteration 3:   log likelihood = -419.41921
+Iteration 4:   log likelihood = -419.41919
+Refining estimates:
+Iteration 0:   log likelihood = -419.41919
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -419.41919 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6418402 .1699337   -1.670.094 .3819994 1.078428
+htcat2  .2354016 .1004066   -3.390.001 .1020337 .5430943
+age  1.029293 .0186688    1.590.111  .993346 1.066542
+
+
+. *percent change = 4.77%; age not confounder
+. 
+. *reintroduced occ
+. 
+. stcox energy htcat2 i.occ
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -421.33137
+Iteration 2:   log likelihood =  -420.5735
+Iteration 3:   log likelihood = -420.55384
+Iteration 4:   log likelihood = -420.55382
+Refining estimates:
+Iteration 0:   log likelihood = -420.55382
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.55382 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6127354 .1619325   -1.850.064 .3650221 1.028553
+htcat2  .2433247 .1072426   -3.210.001  .102572 .5772229
+ 
+occ 
+Occ 1   1.164561 .3437333    0.520.606 .6530112 2.076845
+Occ 2   1.019578 .2880919    0.070.945   .58601 1.773928
+
+
+. *occupation not a confounder
+. 
+. 
+. *reintroduce wt3
+. stcox energy htcat2 wt3
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -421.49182
+Iteration 2:   log likelihood = -420.72935
+Iteration 3:   log likelihood = -420.70916
+Iteration 4:   log likelihood = -420.70914
+Refining estimates:
+Iteration 0:   log likelihood = -420.70914
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.70914 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6105022 .1666353   -1.810.071 .3575638 1.042368
+htcat2  .2352007 .1034868   -3.290.001 .0992923 .5571368
+wt3         1 7.26e-07    0.060.955 .9999986 1.000001
+
+
+. *weight not confounder
+. 
+. *Final model after confounding
+. stcox energy htcat2 
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -421.48899
+Iteration 2:   log likelihood = -420.73095
+Iteration 3:   log likelihood = -420.71074
+Iteration 4:   log likelihood = -420.71071
+Refining estimates:
+Iteration 0:   log likelihood = -420.71071
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.71071 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6129104 .1617356   -1.860.064 .3654103 1.028048
+htcat2  .2366372  .100892   -3.380.001 .1026047 .5457565
+
+
+. 
+. 
+. 
+. *Goodness of fit check
+. *fit model
+. stcox energy htcat2 
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -421.48899
+Iteration 2:   log likelihood = -420.73095
+Iteration 3:   log likelihood = -420.71074
+Iteration 4:   log likelihood = -420.71071
+Refining estimates:
+Iteration 0:   log likelihood = -420.71071
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.71071 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6129104 .1617356   -1.860.064 .3654103 1.028048
+htcat2  .2366372  .100892   -3.380.001 .1026047 .5457565
+
+
+. 
+. *predict mgale residuals from final model
+. predict mgalefinal, mgale
+(5 missing values generated)
+
+. 
+. *Predict the Cox-Snell residuals
+. predict csnellr, csnell
+(5 missing values generated)
+
+. 
+. 
+. *Reset the survival-time setting
+. stset csnellr, failure(fail) scale(1)
+
+Survival-time data settings
+
+Failure event: fail!=0 & fail<.
+Observed time interval: (0, csnellr]
+Exit on or before: failure
+
+
+        337  total observations
+          5  event time missing (csnellr>=.)PROBABLE ERROR
+
+        332  observations remaining, representing
+         78  failures in single-record/single-failure data
+         78  total analysis time at risk and under observation
+                                                At risk from t =         0
+                                     Earliest observed entry t =         0
+                                          Last observed exit t =  .5864865
+
+. 
+. *Nelson-Aalen cumulative hazard:
+. sts generate NA_cs = na
+
+. 
+. *Plot Nelson-Aalen against Cox-Snell
+. twoway (scatter NA_cs csnellr) (function x)
+
+. 
+. *The Nelson-Aalen cumulative hazard plotted against the Cox-Snell residuals follows the 45° reference line closely, suggesting the Cox model provides a good fit to the data.
+. 
+. 
+. *regress test line
+. regress NA_cs csnellr
+
+      Source        SS           df       MS      Number of obs   =       332
+   F(1, 330)       =  40513.13
+       Model   6.62194817         1  6.62194817   Prob > F        =    0.0000
+    Residual   .053939126       330  .000163452   R-squared       =    0.9919
+   Adj R-squared   =    0.9919
+       Total   6.67588729       331  .020168844   Root MSE        =    .01278
+
+
+       NA_cs Coefficient  Std. err.      t   P>|t|     [95% conf. interval]
+
+csnellr  .9976708 .0049567  201.280.000 .9879201 1.007421
+_cons  .0005472 .0013596    0.400.688-.0021273 .0032217
+
+
+. 
+. *Cox-Snell residuals were used to assess overall goodness of fit. After resetting the survival-time data to use the Cox-Snell residuals as the time variable, the Nelson-Aalen cumulative hazard was plotted against the Cox-Snell residuals. The points followed the 45° reference line closely. A regression of the Nelson-Aalen cumulative hazard on the Cox-Snell residuals confirmed this: the intercept was not significantly different from zero and the 95% confidence interval for the slope included 1, indicating that the final Cox model fits the data well.
+. 
+. *redeclare survival data
+. stset survtime, failure(fail) scale(1)
+
+Survival-time data settings
+
+Failure event: fail!=0 & fail<.
+Observed time interval: (0, survtime]
+Exit on or before: failure
+
+
+        337  total observations
+          0  exclusions
+
+        337  observations remaining, representing
+         80  failures in single-record/single-failure data
+ 55,244.025  total analysis time at risk and under observation
+                                                At risk from t =         0
+                                     Earliest observed entry t =         0
+                                          Last observed exit t =  240.4928
+
+. 
+. 
+. *check for influential observations
+. *refit model
+. 
+. stcox energy htcat2 
+
+Failure : fail
+Analysis time : survtime
+
+Iteration 0:   log likelihood = -431.50906
+Iteration 1:   log likelihood = -421.48899
+Iteration 2:   log likelihood = -420.73095
+Iteration 3:   log likelihood = -420.71074
+Iteration 4:   log likelihood = -420.71071
+Refining estimates:
+Iteration 0:   log likelihood = -420.71071
+
+Cox regression with no ties
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -420.71071 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6129104 .1617356   -1.860.064 .3654103 1.028048
+htcat2  .2366372  .100892   -3.380.001 .1026047 .5457565
+
+
+. 
+. 
+. *Predict dfbeta residuals
+. predict db1 db2, scores
+
+. *db1-energy, db2- htcat2
+. 
+. *dbetas plot for energy
+. twoway (scatter db1 ptid)
+
+. 
+. 
+. *Influential observations were assessed using dfbeta residuals. For total energy intake, one patient (approximately ID 120) had a dfbeta value of approximately 1.5, exceeding the conventional threshold of 1, suggesting this patient exerts undue influence on the energy coefficient. For height category, no patients exceeded the threshold. The influential patient was not removed, as there was no evidence of a data error; however, its presence should be noted as a limitation of the model.
+. 
+. 
+. *PARAMETRIC MODELS
+. 
+. stset survtime, id(ptid) failure(fail) scale(1)
+
+Survival-time data settings
+
+ID variable: ptid
+Failure event: fail!=0 & fail<.
+Observed time interval: (survtime[_n-1], survtime]
+Exit on or before: failure
+
+
+        337  total observations
+          0  exclusions
+
+        337  observations remaining, representing
+        337  subjects
+         80  failures in single-failure-per-subject data
+ 55,244.025  total analysis time at risk and under observation
+                                                At risk from t =         0
+                                     Earliest observed entry t =         0
+                                          Last observed exit t =  240.4928
+
+. 
+. *generate the hazard function
+. sts generate Hazard_ht = h
+
+. twoway (lowess Hazard_ht _t)
+
+. 
+. *USING GRAPHICAL METHODS
+. sts generate survivor_function = s
+
+. 
+. *FOR EXPONENTIAL
+. gen neglogSt = -ln(survivor_function)
+
+. twoway (lowess neglogSt survtime) (scatter neglogSt survtime)
+
+. regress neglogSt survtime
+
+      Source        SS           df       MS      Number of obs   =       337
+   F(1, 335)       =  37889.17
+       Model   2.77139193         1  2.77139193   Prob > F        =    0.0000
+    Residual   .024503476       335  .000073145   R-squared       =    0.9912
+   Adj R-squared   =    0.9912
+       Total    2.7958954       336  .008321117   Root MSE        =    .00855
+
+
+    neglogSt Coefficient  Std. err.      t   P>|t|     [95% conf. interval]
+
+survtime  .0015842 8.14e-06  194.650.000 .0015682 .0016002
+_cons -.0217926 .0014132  -15.420.000-.0245724-.0190128
+
+
+. 
+. *WEIBULL
+. gen logneglogSt = ln(neglogSt)
+
+. gen logtime = ln(survtime)
+
+. twoway (lowess logneglogSt logtime) (scatter logneglogSt logtime)
+
+. 
+. *GOMPERTZ
+. gen loght = ln(Hazard_ht)
+(257 missing values generated)
+
+. twoway (lowess loght survtime) (scatter loght survtime)
+
+. 
+. *LOG-LOGISTIC MODEL
+. gen logodds = ln(survivor_function/(1-survivor_function))
+
+. twoway (lowess logodds logtime) (scatter logodds logtime)
+
+. 
+. *COMPARING AIC AND BIC
+. streg i.occ energy ht wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.45199 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9857135 .3071335   -0.050.963  .535216   1.8154
+Occ 2   .9280079 .2645967   -0.260.793 .5307063 1.622741
+ 
+energy  .6722954 .1884686   -1.420.157 .3880947 1.164615
+ht  .9528726 .0196562   -2.340.019 .9151156 .9921875
+wt  1.001105 .0130526    0.080.932 .9758465 1.027017
+age  1.023024 .0181246    1.280.199 .9881102 1.059172
+_cons  5.746304 19.49895    0.520.606 .0074303 4443.996
+
+Note:  estimates baseline hazard.
+
+. estimates store exponential
+
+. 
+. streg i.occ energy ht wt age, distribution(weibull)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Fitting constant-only model:
+Iteration 0:   log likelihood = -249.93441
+Iteration 1:   log likelihood = -248.80202
+Iteration 2:   log likelihood = -248.79598
+Iteration 3:   log likelihood = -248.79598
+
+Fitting full model:
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Weibull PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -240.50211 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9790735 .3047798   -0.070.946 .5319138 1.802143
+Occ 2    .887619 .2546075   -0.420.678 .5059006 1.557356
+ 
+energy  .6660684 .1866794   -1.450.147 .3845493 1.153681
+ht  .9518617 .0197206   -2.380.017 .9139843 .9913089
+wt  1.001332 .0130954    0.100.919 .9759912  1.02733
+age  1.027653 .0186011    1.510.132 .9918349 1.064765
+_cons  1.597445 5.546412    0.130.893 .0017702  1441.59
+
+/ln_p  .2206837 .1074279    2.050.040 .0101289 .4312386
+
+           p  1.246929  .133955  1.01018 1.539163
+         1/p  .8019703  .086154 .6497039 .9899222
+
+Note:  estimates baseline hazard.
+
+. estimates store weibull
+
+. 
+. streg i.occ energy ht wt age, distribution(gompertz)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Fitting constant-only model:
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+
+Fitting full model:
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Gompertz PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -240.95008 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9815531 .3054439   -0.060.952 .5333758 1.806318
+Occ 2   .8751476 .2522187   -0.460.644 .4974666 1.539567
+ 
+energy  .6663116 .1868045   -1.450.148 .3846253 1.154295
+ht  .9516833 .0197225   -2.390.017 .9138024 .9911346
+wt  1.001417 .0130986    0.110.914 .9760702 1.027421
+age  1.028588 .0188225    1.540.123 .9923508 1.066149
+_cons  4.032997 13.74527    0.410.682 .0050648 3211.411
+
+/gamma  .0034988 .0020142    1.740.082 -.000449 .0074466
+
+Note:  estimates baseline hazard.
+
+. estimates store Gompertz
+
+. 
+. streg i.occ energy ht wt age, distribution(loglogistic)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Fitting constant-only model:
+Iteration 0:log likelihood =   (not concave)
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Fitting full model:
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Loglogistic AFT regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -240.65663 = 
+
+
+          _t Coefficient  Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1    .090458 .2722108    0.330.740-.4430653 .6239813
+Occ 2   .1292982 .2417656    0.530.593-.3445537 .6031501
+ 
+energy  .3693698 .2371278    1.560.119-.0953922 .8341318
+ht  .0410372 .0181988    2.250.024 .0053683 .0767062
+wt -.0001935 .0109349   -0.020.986-.0216255 .0212384
+age -.0218707 .0151476   -1.440.149-.0515594 .0078181
+_cons -1.032301 3.041234   -0.340.734-6.993011 4.928408
+
+/lngamma -.2946069  .104844   -2.810.005-.5000973-.0891164
+
+       gamma  .7448244 .0780904 .6064716 .9147391
+
+
+. estimates store loglogistic
+
+. 
+. streg i.occ energy ht wt age, distribution(lognormal)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Fitting constant-only model:
+Iteration 0:log likelihood =   (not concave)
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+Iteration 5:log likelihood =   
+Iteration 6:log likelihood =   
+
+Fitting full model:
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+Iteration 5:log likelihood =   
+
+Lognormal AFT regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -241.88639 = 
+
+
+          _t Coefficient  Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1    .189604 .3125182    0.610.544-.4229205 .8021285
+Occ 2   .2063247 .2692704    0.770.444-.3214357 .7340851
+ 
+energy  .4861965   .26909    1.810.071-.0412102 1.013603
+ht  .0445102 .0207841    2.140.032 .0037741 .0852463
+wt  .0024166 .0121219    0.200.842-.0213418 .0261751
+age -.0174516 .0170378   -1.020.306-.0508451 .0159419
+_cons -2.210654  3.51384   -0.630.529-9.097655 4.676346
+
+/lnsigma  .4095601  .092278    4.440.000 .2286987 .5904216
+
+       sigma  1.506155 .1389849 1.256963 1.804749
+
+
+. estimates store lognormal
+
+. 
+. streg i.occ energy ht wt age, distribution(ggamma)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Fitting constant-only model:
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+Iteration 5:log likelihood =   
+
+Fitting full model:
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   (not concave)
+Iteration 4:log likelihood =   
+Iteration 5:log likelihood =   
+Iteration 6:log likelihood =   
+Iteration 7:log likelihood =   
+Iteration 8:log likelihood =   
+Iteration 9:log likelihood =   
+Iteration 10:log likelihood =   
+Iteration 11:log likelihood =   
+Iteration 12:log likelihood =   
+Iteration 13:log likelihood =   (not concave)
+Iteration 14:log likelihood =   
+Iteration 15:log likelihood =   
+
+Generalized gamma AFT regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -240.42137 = 
+
+
+          _t Coefficient  Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1  -.0601938  .220105   -0.270.784-.4915918 .3712042
+Occ 2   .0645804  .213954    0.300.763-.3547617 .4839225
+ 
+energy  .2702965  .213679    1.260.206-.1485068 .6890997
+ht  .0381431  .015712    2.430.015 .0073482  .068938
+wt  -.001689 .0097077   -0.170.862-.0207158 .0173378
+age -.0220543 .0133934   -1.650.100 -.048305 .0041963
+_cons  .2226913 2.576911    0.090.931-4.827962 5.273345
+
+/lnsigma -1.682538 4.712052   -0.360.721-10.91799 7.552915
+/kappa  4.666853 21.98524    0.210.832-38.42343 47.75714
+
+       sigma  .1859015 .8759776 .0000181 1906.291
+
+
+. estimates store ggamma
+
+. 
+. estimates stats exponential weibull Gompertz loglogistic lognormal ggamma
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344 -242.452     7  498.904 525.5399
+       332 -248.796-240.5021     8 497.0042 527.4453
+       332-249.3444-240.9501     8 497.9002 528.3412
+       332-248.6685-240.6566     8 497.3133 527.7543
+       332-249.5693-241.8864     8 499.7728 530.2139
+       332-248.6977-240.4214     9 498.8427  533.089
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. streg i.occ energy ht wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.45199 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9857135 .3071335   -0.050.963  .535216   1.8154
+Occ 2   .9280079 .2645967   -0.260.793 .5307063 1.622741
+ 
+energy  .6722954 .1884686   -1.420.157 .3880947 1.164615
+ht  .9528726 .0196562   -2.340.019 .9151156 .9921875
+wt  1.001105 .0130526    0.080.932 .9758465 1.027017
+age  1.023024 .0181246    1.280.199 .9881102 1.059172
+_cons  5.746304 19.49895    0.520.606 .0074303 4443.996
+
+Note:  estimates baseline hazard.
+
+. 
+. *CHECKING FUNCTIONAL FORM
+. 
+. *AGE
+. tab agecat
+
+     agecat       Freq.     Percent        Cum.
+
+          0          89       26.41       26.41
+          1         248       73.59      100.00
+
+      Total         337      100.00
+
+. 
+. 
+. 
+. 
+. streg i.occ energy ht wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.45199 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9857135 .3071335   -0.050.963  .535216   1.8154
+Occ 2   .9280079 .2645967   -0.260.793 .5307063 1.622741
+ 
+energy  .6722954 .1884686   -1.420.157 .3880947 1.164615
+ht  .9528726 .0196562   -2.340.019 .9151156 .9921875
+wt  1.001105 .0130526    0.080.932 .9758465 1.027017
+age  1.023024 .0181246    1.280.199 .9881102 1.059172
+_cons  5.746304 19.49895    0.520.606 .0074303 4443.996
+
+Note:  estimates baseline hazard.
+
+. estimates store AGE_exp
+
+. 
+. streg i.occ energy ht wt age2, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.49895 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9905432 .3083173   -0.030.976 .5381803 1.823136
+Occ 2   .9385972 .2675929   -0.220.824  .536788 1.641178
+ 
+energy  .6708472 .1881042   -1.420.155 .3872117 1.162248
+ht  .9528549 .0196593   -2.340.019  .915092  .992176
+wt  1.001085 .0130495    0.080.934 .9758322 1.026991
+age2  1.000225  .000179    1.260.209 .9998742 1.000576
+_cons  10.16641 33.57778    0.700.483 .0156966 6584.591
+
+Note:  estimates baseline hazard.
+
+. estimates store Agesqd_exp
+
+. 
+. streg i.occ energy ht wt age3, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.57036 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9958697 .3096607   -0.010.989 .5414092 1.831806
+Occ 2   .9479892  .270446   -0.190.851 .5419627 1.658202
+ 
+energy  .6688602 .1875588   -1.430.152 .3860514 1.158845
+ht  .9528402 .0196616   -2.340.019 .9150731  .992166
+wt  1.001071 .0130477    0.080.935 .9758222 1.026974
+age3  1.000003 2.36e-06    1.200.228 .9999982 1.000007
+_cons  12.46062 40.93052    0.770.443 .0199307 7790.349
+
+Note:  estimates baseline hazard.
+
+. estimates store agecubed_exp
+
+. 
+. streg i.occ energy ht wt i.agecat, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.63067 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.014506 .3144053    0.050.963 .5526615 1.862303
+Occ 2   .9268603 .2652622   -0.270.791 .5289385  1.62414
+ 
+energy  .6660048 .1862287   -1.450.146 .3850027 1.152102
+ht  .9533442 .0195758   -2.330.020 .9157383 .9924946
+wt  1.000889 .0130939    0.070.946  .975552 1.026885
+1.agecat  1.359868 .3758314    1.110.266 .7911286 2.337471
+_cons  13.23668 43.16026    0.790.428 .0221975 7893.215
+
+Note:  estimates baseline hazard.
+
+. estimates store ageCat_exp
+
+. 
+. lrtest (AGE_exp) (Agesqd_exp), stats force
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344 -242.499     7 498.9979 525.6338
+       332-249.9344 -242.452     7  498.904 525.5399
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. lrtest (AGE_exp) (agecubed_exp), stats force
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-242.5704     7 499.1407 525.7767
+       332-249.9344 -242.452     7  498.904 525.5399
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. estimates stats AGE_exp ageCat_exp
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344 -242.452     7  498.904 525.5399
+       332-249.9344-242.6307     7 499.2613 525.8973
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *TOTAL ENERGY
+. streg i.occ energy ht wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.45199 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9857135 .3071335   -0.050.963  .535216   1.8154
+Occ 2   .9280079 .2645967   -0.260.793 .5307063 1.622741
+ 
+energy  .6722954 .1884686   -1.420.157 .3880947 1.164615
+ht  .9528726 .0196562   -2.340.019 .9151156 .9921875
+wt  1.001105 .0130526    0.080.932 .9758465 1.027017
+age  1.023024 .0181246    1.280.199 .9881102 1.059172
+_cons  5.746304 19.49895    0.520.606 .0074303 4443.996
+
+Note:  estimates baseline hazard.
+
+. estimates store energy_exp
+
+. 
+. streg i.occ i.hienergy ht wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -243.18806 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9553393 .2959164   -0.150.883 .5205926 1.753143
+Occ 2   .9372779 .2672403   -0.230.820  .536007 1.638952
+ 
+hienergy 
+High energy    .834426 .1980753   -0.760.446  .523999 1.328756
+ht  .9512843 .0195901   -2.430.015  .913653 .9904655
+wt  .9983424 .0130269   -0.130.899 .9731339 1.024204
+age  1.025358  .018131    1.420.157 .9904311 1.061517
+_cons  3.029665 10.26995    0.330.744 .0039445 2326.991
+
+Note:  estimates baseline hazard.
+
+. estimates store Indicator_exp
+
+. 
+. estimates stats energy_exp Indicator_exp
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344 -242.452     7  498.904 525.5399
+       332-249.9344-243.1881     7 500.3761 527.0121
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *HEIGHT
+. tab htcat2
+
+     htcat2       Freq.     Percent        Cum.
+
+          0         259       78.01       78.01
+          1          73       21.99      100.00
+
+      Total         332      100.00
+
+. 
+. streg i.occ energy i.htcat2 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.58954 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.098347 .3409074    0.300.762 .5977807 2.018076
+Occ 2    1.03163 .2899017    0.110.912 .5947371 1.789464
+ 
+energy  .6405162 .1788973   -1.590.111 .3704998 1.107318
+1.htcat2  .2474686 .1105153   -3.130.002 .1031306 .5938166
+wt  1.000427 .0126856    0.030.973 .9758696 1.025602
+age  1.022943 .0179526    1.290.196 .9883551 1.058742
+_cons  .0019038 .0026216   -4.550.000 .0001281 .0282978
+
+Note:  estimates baseline hazard.
+
+. estimates store HeightCat2_exp
+
+. 
+. streg i.occ energy ht wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.45199 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9857135 .3071335   -0.050.963  .535216   1.8154
+Occ 2   .9280079 .2645967   -0.260.793 .5307063 1.622741
+ 
+energy  .6722954 .1884686   -1.420.157 .3880947 1.164615
+ht  .9528726 .0196562   -2.340.019 .9151156 .9921875
+wt  1.001105 .0130526    0.080.932 .9758465 1.027017
+age  1.023024 .0181246    1.280.199 .9881102 1.059172
+_cons  5.746304 19.49895    0.520.606 .0074303 4443.996
+
+Note:  estimates baseline hazard.
+
+. estimates store Height_exp
+
+. 
+. streg i.occ energy ht2 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.36226 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9858062 .3070716   -0.050.963 .5353629 1.815243
+Occ 2   .9343782 .2666556   -0.240.812 .5340775 1.634712
+ 
+energy  .6709932 .1881154   -1.420.155 .3873295   1.1624
+ht2  .9998566 .0000605   -2.370.018 .9997379 .9999752
+wt  1.001255 .0130574    0.100.923 .9759872 1.027177
+age  1.022949  .018114    1.280.200 .9880555 1.059075
+_cons  .0993286 .1909157   -1.200.230 .0022962 4.296714
+
+Note:  estimates baseline hazard.
+
+. estimates store Heightsdq_exp
+
+. 
+. streg i.occ energy ht3 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -242.271 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   .9860326 .3070585   -0.050.964 .5355749 1.815358
+Occ 2   .9406113 .2686431   -0.210.830 .5374065 1.646332
+ 
+energy  .6696225 .1877529   -1.430.153 .3865137 1.160099
+ht3  .9999994 2.36e-07   -2.400.016  .999999 .9999999
+wt  1.001395 .0130611    0.110.915 .9761201 1.027324
+age  1.022873 .0181033    1.280.201 .9879993 1.058977
+_cons  .0255805 .0400572   -2.340.019 .0011885 .5505905
+
+Note:  estimates baseline hazard.
+
+. estimates store Heightcubed_exp
+
+. 
+. lrtest (Height_exp) (Heightsdq_exp), stats force
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-242.3623     7 498.7245 525.3605
+       332-249.9344 -242.452     7  498.904 525.5399
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. lrtest (Height_exp) (Heightcubed_exp), stats force
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344 -242.271     7  498.542 525.1779
+       332-249.9344 -242.452     7  498.904 525.5399
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. estimates stats Height_exp HeightCat2_exp
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344 -242.452     7  498.904 525.5399
+       332-249.9344-238.5895     7 491.1791  517.815
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *WEIGHT
+. tab wtcat2
+
+     wtcat2       Freq.     Percent        Cum.
+
+          0          45       13.51       13.51
+          1         288       86.49      100.00
+
+      Total         333      100.00
+
+. 
+. streg i.occ energy i.htcat2 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.58954 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.098347 .3409074    0.300.762 .5977807 2.018076
+Occ 2    1.03163 .2899017    0.110.912 .5947371 1.789464
+ 
+energy  .6405162 .1788973   -1.590.111 .3704998 1.107318
+1.htcat2  .2474686 .1105153   -3.130.002 .1031306 .5938166
+wt  1.000427 .0126856    0.030.973 .9758696 1.025602
+age  1.022943 .0179526    1.290.196 .9883551 1.058742
+_cons  .0019038 .0026216   -4.550.000 .0001281 .0282978
+
+Note:  estimates baseline hazard.
+
+. estimates store Weight_exp
+
+. 
+. streg i.occ energy i.htcat2 i.wtcat2 age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.21167 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.045473 .3161969    0.150.883 .5779257  1.89127
+Occ 2   1.072389 .3042579    0.250.805 .6149645 1.870058
+ 
+energy  .6862201 .1890912   -1.370.172 .3998626  1.17765
+1.htcat2  .2518104 .1110732   -3.130.002 .1060742 .5977745
+1.wtcat2  .7584045 .2371737   -0.880.377 .4108725 1.399893
+age  1.023423  .018034    1.310.189 .9886801 1.059386
+_cons    .00198 .0023935   -5.150.000 .0001852 .0211661
+
+Note:  estimates baseline hazard.
+
+. estimates store Weightcat_exp
+
+. 
+. streg i.occ energy i.htcat2 wt2 age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.57958 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.108897 .3434086    0.330.739 .6043481 2.034677
+Occ 2    1.02909 .2887229    0.100.919 .5937986 1.783478
+ 
+energy   .634767 .1759678   -1.640.101 .3686781 1.092902
+1.htcat2  .2452116 .1097914   -3.140.002 .1019583 .5897381
+wt2  1.000013  .000087    0.150.884 .9998422 1.000183
+age  1.022956 .0179476    1.290.196 .9883768 1.058744
+_cons  .0018818 .0023085   -5.120.000   .00017 .0208344
+
+Note:  estimates baseline hazard.
+
+. estimates store Weightsqd_exp
+
+. 
+. streg i.occ energy i.htcat2 wt3 age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.5569 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.118539 .3451797    0.360.717 .6109022 2.048005
+Occ 2   1.027533 .2878977    0.100.923 .5933391  1.77946
+ 
+energy  .6300468  .173209   -1.680.093 .3675912 1.079892
+1.htcat2  .2426263 .1089345   -3.150.002 .1006386 .5849394
+wt3         1 7.66e-07    0.260.796 .9999987 1.000002
+age  1.022979 .0179451    1.300.195 .9884048 1.058762
+_cons  .0018962 .0022906   -5.190.000 .0001777 .0202352
+
+Note:  estimates baseline hazard.
+
+. estimates store Weightcubed_exp
+
+. 
+. lrtest (Weight_exp) (Weightsqd_exp), stats force
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-238.5796     7 491.1592 517.7951
+       332-249.9344-238.5895     7 491.1791  517.815
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. lrtest (Weight_exp) (Weightcubed_exp), stats force
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-238.5569     7 491.1138 517.7498
+       332-249.9344-238.5895     7 491.1791  517.815
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. estimates stats Weight_exp Weightcat_exp
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-238.5895     7 491.1791  517.815
+       332-249.9344-238.2117     7 490.4233 517.0593
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *MODEL FOR ANALYSIS
+. streg i.occ energy i.htcat2 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.58954 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+occ 
+Occ 1   1.098347 .3409074    0.300.762 .5977807 2.018076
+Occ 2    1.03163 .2899017    0.110.912 .5947371 1.789464
+ 
+energy  .6405162 .1788973   -1.590.111 .3704998 1.107318
+1.htcat2  .2474686 .1105153   -3.130.002 .1031306 .5938166
+wt  1.000427 .0126856    0.030.973 .9758696 1.025602
+age  1.022943 .0179526    1.290.196 .9883551 1.058742
+_cons  .0019038 .0026216   -4.550.000 .0001281 .0282978
+
+Note:  estimates baseline hazard.
+
+. 
+. *INTERACTION
+. display (9*40)
+360
+
+. 
+. streg energy i.occ i.htcat2 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.58954 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6405162 .1788973   -1.590.111 .3704998 1.107318
+ 
+occ 
+Occ 1   1.098347 .3409074    0.300.762 .5977807 2.018076
+Occ 2    1.03163 .2899017    0.110.912 .5947371 1.789464
+ 
+1.htcat2  .2474686 .1105153   -3.130.002 .1031306 .5938166
+wt  1.000427 .0126856    0.030.973 .9758696 1.025602
+age  1.022943 .0179526    1.290.196 .9883551 1.058742
+_cons  .0019038 .0026216   -4.550.000 .0001281 .0282978
+
+Note:  estimates baseline hazard.
+
+. estimates store withweight
+
+. 
+. *DROP WEIGHT
+. streg energy i.occ i.htcat2 age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.59011 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6424345 .1701249   -1.670.095 .3823136 1.079538
+ 
+occ 
+Occ 1   1.095051  .325459    0.310.760 .6115753 1.960736
+Occ 2   1.032587 .2887975    0.110.909 .5968423 1.786461
+ 
+1.htcat2  .2480815 .1092773   -3.160.002 .1046283   .58822
+age   1.02294 .0179543    1.290.196 .9883491 1.058742
+_cons  .0019471 .0023451   -5.180.000 .0001837 .0206352
+
+Note:  estimates baseline hazard.
+
+. estimates store no_weight
+
+. 
+. lrtest (withweight) (no_weight), stats 
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-238.5901     6 489.1802  512.011
+       332-249.9344-238.5895     7 491.1791  517.815
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *DROP OCCUPATION
+. streg energy i.htcat2 age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.63792 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6432424 .1700896   -1.670.095 .3830852 1.080075
+1.htcat2  .2461291 .1047217   -3.290.001  .106905 .5666669
+age   1.02366 .0177823    1.350.178 .9893941 1.059113
+_cons  .0019501 .0023281   -5.230.000 .0001879  .020241
+
+Note:  estimates baseline hazard.
+
+. estimates store no_occupation
+
+. 
+. lrtest (no_occupation) (no_weight), stats 
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-238.6379     4 485.2758 500.4964
+       332-249.9344-238.5901     6 489.1802  512.011
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *DROP AGE
+. streg energy i.htcat2, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -239.55225 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy   .617176 .1625578   -1.830.067 .3683081 1.034205
+1.htcat2  .2449491 .1042154   -3.310.001 .1063961 .5639308
+_cons  .0068899 .0050498   -6.790.000 .0016381 .0289786
+
+Note:  estimates baseline hazard.
+
+. estimates store no_age
+
+. 
+. lrtest (no_occupation) (no_age), stats 
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-239.5523     3 485.1045 496.5199
+       332-249.9344-238.6379     4 485.2758 500.4964
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *MODEL WITH SIGNIFICANT VARIABLES
+. streg energy i.htcat2, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -239.55225 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy   .617176 .1625578   -1.830.067 .3683081 1.034205
+1.htcat2  .2449491 .1042154   -3.310.001 .1063961 .5639308
+_cons  .0068899 .0050498   -6.790.000 .0016381 .0289786
+
+Note:  estimates baseline hazard.
+
+. 
+. *FORM INTERACTION TERM
+. streg energy i.occ i.htcat2 wt age c.energy#i.htcat2, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+Iteration 5:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.21702 = 
+
+
+             _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .5977292 .1740085   -1.770.077 .3378361 1.057555
+ 
+occ 
+Occ 1   1.098346   .34114    0.300.763 .5975318 2.018913
+Occ 2   1.025359  .288492    0.090.929 .5907239 1.779785
+ 
+1.htcat2  .0189964 .0577418   -1.300.192 .0000491 7.345144
+wt   1.00147 .0127623    0.120.908  .976766 1.026799
+age  1.023178 .0179267    1.310.191 .9886387 1.058924
+ 
+htcat2#c.energy 
+1   2.432865 2.477887    0.870.383 .3304946 17.90902
+ 
+_cons  .0021194 .0029299   -4.450.000 .0001411 .0318373
+
+Note:  estimates baseline hazard.
+
+. estimates store fullmodel_exp
+
+. 
+. streg energy i.occ i.htcat2 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.58954 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6405162 .1788973   -1.590.111 .3704998 1.107318
+ 
+occ 
+Occ 1   1.098347 .3409074    0.300.762 .5977807 2.018076
+Occ 2    1.03163 .2899017    0.110.912 .5947371 1.789464
+ 
+1.htcat2  .2474686 .1105153   -3.130.002 .1031306 .5938166
+wt  1.000427 .0126856    0.030.973 .9758696 1.025602
+age  1.022943 .0179526    1.290.196 .9883551 1.058742
+_cons  .0019038 .0026216   -4.550.000 .0001281 .0282978
+
+Note:  estimates baseline hazard.
+
+. estimates store reducedmodel_exp
+
+. 
+. lrtest (fullmodel_exp) (reducedmodel_exp), stats 
+
+Likelihood-ratio test
+Assumption:  nested within 
+
+{ralign 11:LR chi2()} = 
+ = 
+
+Akaike's information criterion and Bayesian information criterion
+
+
+       Model           N   ll(null)  ll(model)      df        AIC        BIC
+
+       332-249.9344-238.5895     7 491.1791  517.815
+       332-249.9344 -238.217     8  492.434 522.8751
+
+Note: BIC uses N = number of observations. See {helpb bic_note:}.
+
+. 
+. *CONFOUNDING
+. streg energy i.occ i.htcat2 wt age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.58954 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6405162 .1788973   -1.590.111 .3704998 1.107318
+ 
+occ 
+Occ 1   1.098347 .3409074    0.300.762 .5977807 2.018076
+Occ 2    1.03163 .2899017    0.110.912 .5947371 1.789464
+ 
+1.htcat2  .2474686 .1105153   -3.130.002 .1031306 .5938166
+wt  1.000427 .0126856    0.030.973 .9758696 1.025602
+age  1.022943 .0179526    1.290.196 .9883551 1.058742
+_cons  .0019038 .0026216   -4.550.000 .0001281 .0282978
+
+Note:  estimates baseline hazard.
+
+. 
+. *CRUDE MODEL
+. streg energy i.htcat2, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -239.55225 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy   .617176 .1625578   -1.830.067 .3683081 1.034205
+1.htcat2  .2449491 .1042154   -3.310.001 .1063961 .5639308
+_cons  .0068899 .0050498   -6.790.000 .0016381 .0289786
+
+Note:  estimates baseline hazard.
+
+. 
+. *BRING BACK AGE
+. streg energy i.htcat2 age, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -238.63792 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6432424 .1700896   -1.670.095 .3830852 1.080075
+1.htcat2  .2461291 .1047217   -3.290.001  .106905 .5666669
+age   1.02366 .0177823    1.350.178 .9893941 1.059113
+_cons  .0019501 .0023281   -5.230.000 .0001879  .020241
+
+Note:  estimates baseline hazard.
+
+. 
+. *BRING BACK OCCUPATION
+. streg energy i.htcat2 i.occ, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -239.43176 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6171682 .1628248   -1.830.067 .3679889 1.035076
+1.htcat2   .247952  .109258   -3.160.002 .1045425 .5880885
+ 
+occ 
+Occ 1   1.154053 .3403726    0.490.627 .6474037 2.057199
+Occ 2   1.052704 .2944547    0.180.854 .6084348  1.82137
+ 
+_cons  .0064713 .0048744   -6.690.000 .0014786 .0283232
+
+Note:  estimates baseline hazard.
+
+. 
+. *BRING BACK WEIGHT
+. streg energy i.htcat2 wt, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -239.54314 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6239046 .1719151   -1.710.087 .3635567 1.070691
+1.htcat2  .2483124 .1085865   -3.190.001 .1053828 .5850958
+wt  .9984263 .0116572   -0.130.893  .975838 1.021537
+_cons  .0074702  .007065   -5.180.000 .0011703 .0476837
+
+Note:  estimates baseline hazard.
+
+. 
+. *CHECKING WHETHER HEIGHT CONFOUNDS
+. streg energy, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -253.62658 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .5668814 .1502709   -2.140.032 .3371729 .9530851
+_cons  .0070914 .0052239   -6.720.000 .0016738 .0300447
+
+Note:  estimates baseline hazard.
+
+. 
+. *GOODNESS OF FIT
+. streg energy i.htcat2, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -239.55225 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy   .617176 .1625578   -1.830.067 .3683081 1.034205
+1.htcat2  .2449491 .1042154   -3.310.001 .1063961 .5639308
+_cons  .0068899 .0050498   -6.790.000 .0016381 .0289786
+
+Note:  estimates baseline hazard.
+
+. 
+. predict Mgalefinal_EXP, mgale
+(5 missing values generated)
+
+. predict Coxsnellfinal_EXP, csnell
+(5 missing values generated)
+
+. 
+. stset Coxsnellfinal_EXP, id(ptid) failure(fail) scale(1)
+
+Survival-time data settings
+
+ID variable: ptid
+Failure event: fail!=0 & fail<.
+Observed time interval: (Coxsnellfinal_EXP[_n-1], Coxsnellfinal_EXP]
+Exit on or before: failure
+
+
+        337  total observations
+          5  event time missing (Coxsnellfinal_EXP>=.)PROBABLE ERROR
+
+        332  observations remaining, representing
+        332  subjects
+         78  failures in single-failure-per-subject data
+         78  total analysis time at risk and under observation
+                                                At risk from t =         0
+                                     Earliest observed entry t =         0
+                                          Last observed exit t =  .5667894
+
+. 
+. sts generate Nelson_Aalen_EXP = na
+
+. 
+. twoway (scatter Nelson_Aalen_EXP Coxsnellfinal_EXP) (lowess Nelson_Aalen_EXP Coxsnellfinal_EXP)
+
+. 
+. stset survtime, id(ptid) failure(fail) scale(1)
+
+Survival-time data settings
+
+ID variable: ptid
+Failure event: fail!=0 & fail<.
+Observed time interval: (survtime[_n-1], survtime]
+Exit on or before: failure
+
+
+        337  total observations
+          0  exclusions
+
+        337  observations remaining, representing
+        337  subjects
+         80  failures in single-failure-per-subject data
+ 55,244.025  total analysis time at risk and under observation
+                                                At risk from t =         0
+                                     Earliest observed entry t =         0
+                                          Last observed exit t =  240.4928
+
+. 
+. streg energy ht, distribution(exponential)
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -243.33048 = 
+
+
+          _t Haz. ratio   Std. err.      z   P>|z|     [95% conf. interval]
+
+energy  .6513043 .1748097   -1.600.110 .3848771 1.102163
+ht  .9512507  .016121   -2.950.003  .920173 .9833779
+_cons  26.81612 76.57676    1.150.249 .0994681 7229.495
+
+Note:  estimates baseline hazard.
+
+. 
+. predict Deviance_EXP, deviance
+(5 missing values generated)
+
+. 
+. twoway (scatter Deviance_EXP survtime)
+
+. 
+. *FINAL MODEL
+. streg energy i.htcat2, distribution(exponential) nohr
+
+Failure : fail
+Analysis time : survtime
+ID variable: ptid
+
+Iteration 0:log likelihood =   
+Iteration 1:log likelihood =   
+Iteration 2:log likelihood =   
+Iteration 3:log likelihood =   
+Iteration 4:log likelihood =   
+
+Exponential PH regression
+
+No. of subjects =  = 
+No. of failures = 
+Time at risk    = 
+{lalign 13:LR chi2()} = 
+Log likelihood = -239.55225 = 
+
+
+          _t Coefficient  Std. err.      z   P>|z|     [95% conf. interval]
+
+energy -.4826011 .2633898   -1.830.067-.9988355 .0336334
+1.htcat2 -1.406705 .4254574   -3.310.001-2.240586-.5728237
+_cons -4.977697 .7329215   -6.790.000-6.414197-3.541197
+
+
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. log close
+      name:  <unnamed>
+       log:  data/Assgn survival analysis\STATA Files\Number 1.smcl
+  log type:  smcl
+ closed on:  13 Oct 2026, 12:49:17
+
+

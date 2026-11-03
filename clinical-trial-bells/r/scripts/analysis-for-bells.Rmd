@@ -1,0 +1,177 @@
+---
+title: "Analysis for BELLS"
+author: "FAROUK OSMAN"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(gtsummary)
+library(broom.helpers)
+library(ggplot2)
+library(sjPlot)
+library(cards)
+library(gt)
+# Analysis workflow:
+# 1. Load data
+# 2. Inspect data
+# 3. Process variables
+# 4. Descriptive analysis
+# 5. Exploratory tests
+# 6. Interpretation
+# 7. Visualizations
+
+
+```
+
+
+## Introduction
+Bell’s palsy is an acute peripheral facial nerve paralysis that can result in incomplete recovery and long-term morbidity. Corticosteroids and antiviral agents have been proposed as treatments, but their effectiveness has remained uncertain.
+
+## Study Objective
+
+To determine whether prednisolone or acyclovir used early in the course of Bell’s palsy improves the chances of recovery
+
+## Data and methods
+### Data source
+The data used in this analysis are from a randomized, double-blind, placebo-controlled clinical trial
+that investigated the effectiveness of prednisolone and acyclovir in patients with Bell’s palsy.
+The dataset contains individual-level participant data including demographic characteristics,
+baseline disease severity, treatment allocation, and recovery outcomes.
+
+### Study design
+Participants were randomly assigned using  a 2x2 factorial design to either of four groups, to receive prednisolone, acyclovir, both treatments, or placebo.
+The primary outcome was facial nerve recovery assessed after follow-up.
+
+### Data preparations
+```{r Load data}
+bells <- read.csv(here::here("data", "raw", "bells.csv"), check.names = FALSE)
+```
+The dataset was imported into R using the 'read.csv()' function and stored as an object named bells.This object contains participant level information used in the subsequent analysis.
+
+### Initial data inspection
+```{r Initial data inspection}
+dim(bells)
+```
+I used the dim() function to determine the number of observations/rows(494) and variables/columns(12)
+
+494 observations are noted which is fewer than the 496 mentioned in the trial publication, as having outcomes
+
+```{r Structure of data}
+str(bells)
+```
+
+I used the str() function to determine the structure of the data and identify variables that needed further processing 
+
+### Data processing
+
+```{r Data processing, out.width="80%"}
+
+cat_var <- c("Sex", "Time between onset of symptoms and start of treatment", "Treatment Group", "Received Prednisolone", "Received Acyclovir", "Full Recovery in 3 Months", "Full Recovery in 9 Months")
+
+bells[cat_var] <- lapply(bells[cat_var], factor)
+
+summary(bells)
+
+```
+Within the dataset, several variables required explicit conversion to factor type to ensure correct handling as categorical variables in subsequent analyses. A character vector of variable names was therefore created using the c() function, and these variables were simultaneously converted to factors using lapply(). The summary() function was then used to confirm that the conversions were successful.
+```{r Data Validation, out.width="80%"}
+colSums(is.na(bells))
+
+summary(bells$Age) 
+
+summary(bells$`Baseline Score on House–Brackmann scale`)
+
+summary(bells$`3-Month Score on House–Brackmann scale`)
+
+summary(bells$`9-Month Score on House–Brackmann scale`)
+
+table(bells$`Full Recovery in 3 Months`, bells$`Full Recovery in 9 Months`)
+```
+Data completeness was assessed by quantifying missing values across all variables using. Validity of age was assessed using range checks to confirm values were non-negative and within a biologically plausible range.Validity of House–Brackmann scores was assessed at baseline, 3 months, and 9 months. Baseline scores ranged from 2 to 6, while follow-up scores ranged from 1 to 6, consistent with the expected scale limits
+
+The logical consistency of the data was also assessed.Its not plausible for a participant to have recovered(Yes) at 3 months(rows) and not recovered(No) at 9 months (columns)
+
+
+### Descriptive analysis
+#### Baseline
+
+```{r}
+summary(bells$Age)
+```
+
+The median age of the participants was 44.0 with an Interquartile range of 34-55
+
+```{r}
+prop.table(table(bells$Sex))
+```
+
+Of the 494 participants, 48.2% were female and 51.8% were male
+
+```{r}
+addmargins(table(bells$`Treatment Group`))
+```
+
+Using the 2x2 factorial design, participants were randomized to the different treatments group  and evenly distributed as shown in the table above showing that randomization was successful
+
+#### Outcomes
+
+```{r}
+addmargins(table(bells$`Full Recovery in 3 Months`))
+
+prop.table(table(bells$`Full Recovery in 3 Months`)) * 100
+```
+
+After 3 months; 72.5% of the participants had recovered
+
+```{r}
+addmargins(table(bells$`Full Recovery in 9 Months`))
+
+prop.table(table(bells$`Full Recovery in 9 Months`)) * 100
+```
+
+After 9 months; 89.3% of participants had recovered
+
+### Baseline characteristics
+
+The baseline characteristics of the participants will now be assessed for each treatment group to determine if randomization was successful
+```{r Table of Baseline Characteristics}
+
+library(gtsummary)
+library(gt)
+
+theme_gtsummary_compact()
+
+bells %>% 
+  select(`Treatment Group`, Age, Sex, `Baseline Score on House–Brackmann scale`, `Time between onset of symptoms and start of treatment`) %>%
+  tbl_summary(`Treatment Group`)
+```
+
+The baseline characteristics of the 494 participants were evenly distributed across the 4 treatment groups as shown in the table above. Median Age(approximately 44 years old) across the four groups  was similar. The male to female ratio across the four groups was roughly similar. The median Baseline score on House-Brackmann scale was 4 for all the four groups. Additionally, the time between onset of symptoms and start of treatment was equally distributed amongst the four groups. This proves that randomisation was succesful
+
+
+### Exploratory Analysis
+#### Test for Interaction
+We shall first test the data for amongst the study groups using  Logistic Regression model; 
+
+```{r out.width="80%", out.height="80%"}
+#Build Logistic regression model
+interaction_model <- glm(`Full Recovery in 9 Months` ~ `Received Prednisolone`* `Received Acyclovir` + Age + Sex + `Baseline Score on House–Brackmann scale` + `Time between onset of symptoms and start of treatment`, data = bells, family = "binomial")
+tbl_regression(
+  interaction_model,
+  exponentiate = TRUE,
+  label = list(
+    `Received Prednisolone` = "Received Prednisolone",
+    `Received Acyclovir`    = "Received Acyclovir"
+  )
+)
+```
+Logistic regression was run to test for interaction between prednisolone and Acyclovir. It was adjusted for by  Age, Sex, Time between onset and treatment and Baseline severity. A p value of 0.6 confirms that no interaction occured if patients took both prednisolone and acyclovir. This means interaction between the two drugs was not significant
+
+

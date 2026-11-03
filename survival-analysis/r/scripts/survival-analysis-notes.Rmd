@@ -1,0 +1,315 @@
+---
+title: "Survival Analysis in R"
+author: "FAROUK OSMAN"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This markdown file are personal notes that follow the Survival Analysis in R tutorial  by Emily C. Zabor <https://www.emilyzabor.com/survival-analysis-in-r.html>
+
+### Load packages
+
+```{r}
+library(knitr)
+library(dplyr)
+library(survival)
+library(ggplot2)
+library(tibble)
+```
+
+# Part 1; The lung dataset
+
+### Load packages
+
+```{r}
+library(lubridate)
+library(ggsurvfit)
+library(gtsummary)
+library(tidycmprsk)
+library(condSURV)
+
+```
+
+The data contain subjects with advanced lung cancer from the North Central Cancer Treatment Group 
+
+Variables to focus on; 
+- time; Observed survival time in days 
+- status 1=censored, 2=dead 
+- sex; 1=Male, 2=Female
+
+First we recode status to a standard 1 0 formart
+```{r}
+data(cancer, package = "survival")
+
+lung <-
+  lung |> 
+  mutate(
+    status = recode(status, `1`= 0, `2` = 1)
+  )
+```
+
+Inspect First six observations
+```{r}
+head(lung[c("time", "status", "sex")])
+```
+
+NOTE; When using Surv() ; make sure the event column is properly formated to ; true/fales or 1/0 or 2/1 ; Otherwise you wont know if its wrong
+
+## Calculating Surival times
+Data will usually show up as start and end dates; rather than pre-calculated survival times.
+Create a small data frame (date_ex) with dates and convert it to survival times
+- sx_date ; surgery date
+- last_fup_date; last follow up date
+
+```{r}
+date_ex <- 
+  tibble(
+    sx_date = c("2007-06-22", "2004-02-13", "2010-10-27"),
+    last_fup_date = c("2017-04-15","2018-07-04", "2016-10-31")
+  )
+View(date_ex)
+```
+
+Using the lubridate package and ymd function; we convert date_ex from characters to dates
+```{r}
+date_ex <- date_ex |> 
+  mutate(
+    sx_date = ymd(sx_date),
+    last_fup_date = ymd(last_fup_date)
+  )
+
+#check if converted from character to date
+class(date_ex$sx_date)
+class(date_ex$last_fup_date)
+```
+Now that the dates are formatted, we need to calculate the difference between start and end dates in some units, usually months or years. Using the {lubridate} package, the operator %--% designates a time interval, which is then converted to the number of elapsed seconds using as.duration() and finally converted to years by dividing by dyears(1), which gives the number of seconds in a year.
+
+```{r}
+date_ex <- date_ex |> 
+  mutate(
+    os_years = as.duration(sx_date %--% last_fup_date) / dyears(1)
+  )
+
+#"Take the date_ex table, add a new column called os_yrs that contains the time in years between the surgery date and the last follow-up date, save it back into date_ex, then show me the table." / dyears(1) simply means "Divide by the number of seconds in one year." dyears(1) gives R the exact number of seconds in a year, so dividing converts your duration from seconds into years.
+```
+
+Now we have a column for survival times in years- Back to the Lung dataset
+
+##  Creating survival objects and curves
+Creating a Surv() object is the same as declaring survival data in stata
+Done as Surv(time, status)
+
+Lets create a surv() object of the first 10 rows
+```{r}
+Surv(lung$time, lung$status)[1:10]
+```
+Create an object s1 and use the survfit() function  ; this actually estimates the survival curve using the Kaplan-Meier method and computes all the survival probabilities at each time point, then look at the internal structure using str(). This basically produces a KM table
+```{r}
+s1 <- survfit(Surv(time, status) ~ 1, data = lung)
+str(s1)
+summary(s1)
+```
+Key components;
+time: the timepoints at which the curve has a step, i.e. at least one event occurred
+surv: the estimate of survival at the corresponding time
+
+
+## Kaplan-Meier plots
+We use the ggsurvfit package to generate KM plots
+It uses the already created survfit object using the survfit2() function
+```{r}
+survfit2(Surv(time, status) ~ 1, data = lung) |> 
+  ggsurvfit() + 
+  labs(
+    x = "Days",
+    y = " Overall survival probability"
+  )
+```
+
+This only shows the step function; we can add confidence intervals to the plot
+```{r}
+survfit2(Surv(time, status) ~ 1, data = lung) |> 
+  ggsurvfit() + 
+  labs(
+    x = "Days",
+    y = " Overall survival probability"
+  ) +
+  add_confidence_interval()
+
+```
+
+
+Typically we will also want to see the numbers at risk in a table below the x-axis. We can add this using add_risktable():
+
+
+```{r}
+survfit2(Surv(time, status) ~ 1, data = lung) |> 
+  ggsurvfit() +
+  labs(
+    x = "Days",
+    y = "Overall survival probability"
+  ) + 
+  add_confidence_interval() +
+  add_risktable()
+```
+
+## Estimating x-year survival
+We are extracting a single survival probability estimate at a specific time point from the KM curve, for example asking "what percentage of patients survived to 1 year?" and showing why the KM method gives a more accurate answer than a naive calculation that ignores censoring.
+
+ 
+REMEMBER; 
+
+**`survfit()` = Kaplan-Meier calculation**
+
+`Surv()` just labels your data. `survfit()` is what actually computes the KM estimate. Everything else — plots, tables, summary statistics — is just reading from what `survfit()` calculated.
+
+
+For example, to estimate the probability of surviving to 
+ year, use summary with the times argument 
+ (Note: the time variable in the lung data is actually in days, so we need to use times = 365.25)
+ 
+
+```{r}
+summary(survfit(Surv(time, status) ~ 1, data = lung), times = 365.25)
+```
+
+We find that the 1-year probability of survival in this study is 41%(0.409).
+
+The associated lower and upper bounds of the 95% confidence interval are also displayed.
+
+
+We can produce nice tables of x-time survival probability estimates using the tbl_survfit() function from the {gtsummary} package:
+```{r}
+survfit(Surv(time, status) ~ 1, data = lung) |> 
+  tbl_survfit(
+    times = 365.25,
+    label_header = "**1-year survival  (95% CI)"
+    )
+```
+
+
+## Estimating median survival time
+
+We can obtain the median survival directly from the survfit object:
+```{r}
+survfit(Surv(time, status) ~ 1, data = lung)
+```
+
+We see the median survival time is 310 days The lower and upper bounds of the 95% confidence interval are also displayed.
+We can display this in a table using tbl_survfit
+
+```{r}
+survfit(Surv(time, status) ~ 1, data = lung) |> 
+  tbl_survfit(
+    probs = 0.5,
+    label_header ="**Median survival (95% CI)**"
+  )
+```
+
+
+## Comparing survival times between groups
+This section compares survival times between two groups (males vs females) using the **log-rank test** (`survdiff()`), which is the survival analysis equivalent of a t-test or chi-square test. It tests whether the difference in survival between groups is statistically significant by comparing observed vs expected deaths in each group across the entire follow-up period, producing a p-value. It does not quantify the size of the difference — only whether one exists. For that, Cox regression is needed.
+
+```{r}
+survdiff(Surv(time, status) ~ sex, data = lung)
+```
+We see that there was a significant difference in overall survival according to sex in the lung data, with a p-value of p = 0.001.
+
+
+## The Cox regression model
+Cox regression (`coxph()`) is used to quantify the effect of a covariate on survival as a **hazard ratio (HR)**, and can handle multiple covariates simultaneously unlike the log-rank test. 
+A HR < 1 means reduced risk of death, HR > 1 means increased risk. Results are displayed using `tbl_regression(exp = TRUE)` which exponentiates the coefficients to give HRs instead of log HRs. 
+In this section sex is the only covariate used, giving HR = 0.59 meaning females have a 41% lower hazard of death than males. Note that the proportional hazards assumption is not checked here ; that is covered in Part 4.
+
+Lets run a cox model with only sex
+```{r}
+coxph(Surv(time, status) ~ sex, data = lung)
+```
+LOOK AT THE LR test (p=0.001111) ; This is saying the model with sex in it fits significantly better than an empty model ; confirming that sex is a meaningful predictor of survival.
+
+We can put the above results in a table using tbl_regression; and exponentionate is set to TRUE; so that the table shows HR rather than log HR
+
+```{r}
+coxph(Surv(time, status) ~sex, data = lung) |> 
+  tbl_regression(exponentiate = TRUE)
+```
+
+
+So the HR = 0.59 implies that 0.59 times as many females are dying as males, at any given time. Stated differently, females have a significantly lower hazard of death than males in these data.(Remember ; HR<1 indicates reduced hazard of death and vice versa)
+
+
+# Part 2: Landmark Analysis and Time Dependent Covariates
+Some covariates can change after baseline; we talked about sex previosuly but does not change after baseline; eg; after an intervention; some patients may develop complications over time and its important to determine; whether these complications can affect survival over time;
+Two approaches are sed;
+1. Land mark analysis
+2. Time varying covariates analysis
+
+
+ **Landmark analysis** selects a clinically meaningful time point, excludes patients who died before it, restarts the clock from that point, and applies standard KM plots, log-rank tests, or Cox regression — simple to implement and good for visualization but loses data through exclusions and treats all patients the same regardless of when exactly the covariate changed. 
+ **Time-dependent covariates** keep all patients, restructure the data into long format using `tmerge()` where each patient gets multiple rows representing periods before and after the covariate changed, and fit Cox regression using `Surv(tstart, tstop, event)` — more statistically rigorous, uses all available data, and captures the exact timing of covariate changes, but cannot be easily visualized. In practice, landmark is used for visualization and time-dependent Cox for modelling.
+
+## The BMT dataset
+We shall use the BMT dataset for this section
+The data consist of 137 bone marrow transplant patients. Variables of interest include:
+
+- T1 time (in days) to death or last follow-up
+- delta1 death indicator; 1=Dead, 0=Alive
+- TA time (in days) to acute graft-versus-host disease(the complication; ie the time varying covariate)
+- deltaA acute graft-versus-host disease indicator; 1-Developed O-note developed
+
+We shall use the semicomprisks package; make sure its installed
+
+Load the data
+```{r}
+data(BMT, package = "SemiCompRisks")
+
+head(BMT[c("T1", "delta1", "TA", "deltaA")])
+```
+
+## Landmark approach
+
+1. Select a fixed time after baseline as your landmark time. Note: this should be done based on clinical information, prior to data inspection
+2. Subset population for those followed at least until landmark time. Note: always report the number excluded due to the event of interest or censoring prior to the landmark time.
+3. Calculate follow-up from landmark time and apply traditional log-rank tests or Cox regression.
+
+#### Step 1; select landmark time
+Typically aGVHD occurs 90days following transplant
+
+#### Step 2; Subset the population who are followed until this landmark
+ie did not die or censored up to that point
+
+```{r}
+lm_dat <- 
+  BMT |> 
+  filter(T1 >= 90)
+```
+We note that 15 participants are excluded
+
+#### Step 3; Calculate new followup time(lm_T1) from land mark and plot the KM plot for each group
+
+```{r}
+lm_dat <- lm_dat |> 
+  mutate(
+    lm_T1 = T1-90
+  )
+```
+
+
+
+
+```{r}
+survfit2(Surv(lm_T1, delta1) ~ deltaA, data = lm_dat) |> 
+  ggsurvfit() +
+  labs(
+    x = "Days from 90 day landmark",
+    y = "Overall survival probability"
+  ) +
+  add_risktable()
+```
+

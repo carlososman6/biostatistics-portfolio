@@ -1,0 +1,243 @@
+---
+title: "Cleaning medical data"
+author: "FAROUK OSMAN"
+date: "`r Sys.Date()`"
+editor: source
+output:
+  html_document:
+    theme:
+      version: 5
+      bg: "#FAF9F6"
+      fg: "#212529"
+      primary: "#2C3E50"
+      secondary: "#5D6D7E"
+      base_font:
+        google: "Lato"
+      heading_font:
+        google: "Lato"
+      code_font:
+        google: "Source Code Pro"
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+    code_folding: show
+    df_print: paged
+    number_sections: true
+    highlight: textmate
+params:
+  data_path: "data/raw/realworld_medical_dirty.csv"
+  seed: 2847
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This is a data cleaning excercise on a raw dataset that was posted on Kaggle; <https://www.kaggle.com/datasets/aamir5659/raw-medical-dataset-for-cleaning-practice?resource=download>
+
+The dataset contains the following variables:
+
+- **Patient_ID** Unique patient identifier
+- **Age** Patient age in years(numeric variable)
+- **Gender** Patient gender(Categorical; Male/Female)
+- **Blood_Pressure** Systolic blood pressure in mmHg(numeric)
+- **Cholesterol** Total cholesterol in mg/dL(numeric)
+- **BMI** Body Mass Index(numeric)
+- **Smoker** Smoking status (Categorical; Yes/No)
+- **Diagnosis** Medical condition diagnosed(Categorical; Heart disease,Diabetes and None)
+- **Admission_Date** Date of hospital admission(date)
+- **Notes** Free text clinical notes(character)
+
+### Libraries
+
+```{r}
+library(readr)
+library(dplyr)
+library(janitor)
+library(skimr)
+library(here)
+```
+
+### Loading the Data
+
+```{r}
+medical <- read.csv(here::here("data", "raw", "realworld_medical_dirty.csv"))
+```
+
+## Inspection and Data Audit
+
+### Structure and Dimensions
+
+```{r}
+glimpse(medical)
+```
+
+This data set contains 7 variables, 1 column for the Patient ID, Admission dates and Clinical notes with 100 patients. There are multiple missing values and these will be investigated in several columns. Gender and Smoker appear to have multiple iterations of Male/Female or Yes/No
+
+### Assess missingness and Plausability
+
+```{r}
+skim(medical)
+```
+
+For numeric variables; There are ;
+
+- 17 missing values in the Age variable
+- 14 missing values in the Blood_Pressure
+- 20 missing values in the Cholesterol column
+- 20 missing values in the BMI column
+
+All numeric variables are within clinicaly plausible range
+
+### Identify Fake "nan" Strings
+
+```{r}
+# Count how many cells contain the string "nan" in each column
+colSums(medical == "nan", na.rm = TRUE)
+```
+
+Results showed:
+
+- Gender: 15
+- Smoker: 20
+- Diagnosis: 21
+
+### Distribution of the categorical variables
+
+Gender
+
+```{r}
+#Gender
+tabyl(medical$Gender)
+```
+
+Gender should be distributed as follows; Male, Female or NA for missing values; - "FEMALE" should be Female - "MALE" should be Male - "male" should be Male - "nan" should be NA
+
+Smoker
+
+```{r}
+tabyl(medical$Smoker)
+```
+
+Smoker should be "Yes/No" 
+- "N" should be "No" 
+- "Y" should be "Yes" 
+- "nan" should be "NA"
+
+Diagnosis
+
+```{r}
+tabyl(medical$Diagnosis)
+
+```
+
+Diagnosis should have Diabetes, Heart Disease and None - "nan" should be NA
+
+## Cleaning
+
+We have to address the following in this order
+
+1.  remove the fake "nan" strings and convert to a missing value
+2.  Correct  the distribution of categorical variables
+3.  Convert the empty strings in notes to NA
+4.  Impute missing numeric variables using median
+5.  Convert admission date to real dates
+
+### Remove "nan" to NA
+
+```{r}
+
+medical$Gender[medical$Gender == "nan"] <- NA
+medical$Smoker[medical$Smoker == "nan"] <- NA
+medical$Diagnosis[medical$Diagnosis == "nan"] <- NA
+```
+
+Check
+
+```{r}
+colSums(medical == "nan", na.rm = TRUE )
+```
+
+All "nan" strings removed
+
+
+### Correct distribution of categorical variables
+
+Gender
+```{r}
+medical$Gender[medical$Gender == "FEMALE"] <- "Female"
+medical$Gender[medical$Gender == "MALE"] <- "Male"
+medical$Gender[medical$Gender == "male"] <- "Male"
+tabyl(medical$Gender)
+```
+Smoker
+```{r}
+medical$Smoker[medical$Smoker == "N"] <- "No"
+medical$Smoker[medical$Smoker == "Y"] <- "Yes"
+tabyl(medical$Smoker)
+```
+Diagnosis
+```{r}
+
+tabyl(medical$Diagnosis)
+```
+
+### Convert the empty strings and N/A in notes to NA
+```{r}
+medical$Notes[medical$Notes == ""] <- NA
+medical$Notes[medical$Notes == "N/A"] <- NA
+tabyl(medical$Notes)
+
+```
+### Impute missing numeric variables using median
+Imputing shall be done for; Age, Blood pressure, Cholesterol and BMI
+
+```{r}
+medical$Age[is.na(medical$Age)] <- median(medical$Age, na.rm = TRUE)
+medical$Blood_Pressure[is.na(medical$Blood_Pressure)] <- median(medical$Blood_Pressure, na.rm = TRUE)
+medical$Cholesterol[is.na(medical$Cholesterol)] <- median(medical$Cholesterol, na.rm = TRUE)
+medical$BMI[is.na(medical$BMI)] <- median(medical$BMI, na.rm = TRUE)
+```
+
+Check
+```{r}
+colSums(is.na(medical))
+
+```
+None of the numeric variables now have missing values
+
+### Convert Admission date to date format
+
+```{r}
+medical <-  medical |> 
+  mutate(
+    Admission_Date = as.Date(Admission_Date, format = "%Y-%m-%d")
+  )
+class(medical$Admission_Date)
+```
+### Convert the categorical variables to factor
+```{r}
+medical <- medical |> 
+  mutate(
+    Gender = as.factor(Gender),
+    Smoker = as.factor(Smoker),
+    Diagnosis = as.factor(Diagnosis),
+    Notes     = as.character(Notes)
+  )
+glimpse(medical)
+```
+As noted all variables are now in their appropriate classes.
+
+## Export the cleaned file
+
+```{r}
+write.csv(medical, here::here("data", "processed", "medical_clean.csv"))
+```
+
+
+
+

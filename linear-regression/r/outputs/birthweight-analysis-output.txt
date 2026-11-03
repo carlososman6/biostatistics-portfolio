@@ -1,0 +1,497 @@
+==============================================================================
+STEP 1: DATA IMPORT AND PREPARATION
+==============================================================================
+
+-/                                                                                                   /                                                                                                   -                                                                                                   First 6 rows of raw data:
+# A tibble: 6 × 10
+  Column1 Column2 Column3 Column4 Column5 Column6 Column7 Column8 Column9 Column10
+    <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>    <dbl>
+1      85      19     182       2       0       0       0       1       0     2523
+2      86      33     155       3       0       0       0       0       3     2551
+3      87      20     105       1       1       0       0       0       1     2557
+4      88      21     108       1       1       0       0       1       2     2594
+5      89      18     107       1       1       0       0       1       0     2600
+6      91      21     124       3       0       0       0       0       0     2622
+
+Variable names after renaming:
+ [1] "id"    "age"   "lwt"   "race"  "smoke" "ptl"   "ht"    "ui"    "ftv"   "bwt"  
+
+Data structure:
+tibble [189 × 10] (S3: tbl_df/tbl/data.frame)
+ $ id   : num [1:189] 85 86 87 88 89 91 92 93 94 95 ...
+ $ age  : num [1:189] 19 33 20 21 18 21 22 17 29 26 ...
+ $ lwt  : num [1:189] 182 155 105 108 107 124 118 103 123 113 ...
+ $ race : num [1:189] 2 3 1 1 1 3 1 3 1 1 ...
+ $ smoke: num [1:189] 0 0 1 1 1 0 0 0 1 1 ...
+ $ ptl  : num [1:189] 0 0 0 0 0 0 0 0 0 0 ...
+ $ ht   : num [1:189] 0 0 0 0 0 0 0 0 0 0 ...
+ $ ui   : num [1:189] 1 0 0 1 1 0 0 0 0 0 ...
+ $ ftv  : num [1:189] 0 3 1 2 0 0 1 1 1 0 ...
+ $ bwt  : num [1:189] 2523 2551 2557 2594 2600 ...
+
+Total sample size: n = 189
+
+----------------------------------------------------------------------
+FREQUENCY TABLES FOR CATEGORICAL VARIABLES (checking for sparse cells)
+----------------------------------------------------------------------
+
+Race distribution:
+
+ 1  2  3 
+96 26 67 
+
+Smoke distribution:
+
+  0   1 
+115  74 
+
+Hypertension (ht) distribution:
+
+  0   1 
+177  12 
+
+Uterine irritability (ui) distribution:
+
+  0   1 
+161  28 
+
+Premature labor history (ptl) distribution:
+
+  0   1   2   3 
+159  24   5   1 
+
+Physician visits (ftv) distribution:
+
+  0   1   2   3   4   6 
+100  47  30   7   4   1 
+
+----------------------------------------------------------------------
+COLLAPSING SPARSE CATEGORIES
+----------------------------------------------------------------------
+
+Created ptl_any (0=No prior premature labour, 1=Any prior premature labour):
+
+  0   1 
+159  30 
+
+Created ftv2 (0=None, 1=One visit, 2=Two visits, 3=Three or more visits):
+
+  0   1   2   3 
+100  47  30  12 
+
+Factors created with labels applied.
+
+----------------------------------------------------------------------
+SAMPLE SIZE ADEQUACY CHECK
+----------------------------------------------------------------------
+Variables in full model (including dummy variables): 11
+Required sample size (40 per variable): 440
+Actual sample size: 189
+Sample size is INSUFFICIENT (short by 251 observations).
+Univariable screening at p<0.2 will be required before multivariable analysis.
+
+
+==============================================================================
+STEP 2: UNIVARIABLE SCREENING (p < 0.2 criterion)
+==============================================================================
+Because sample size is insufficient, we screen each predictor individually.
+Main predictors (smoke, race) are kept regardless of p-value.
+
+Univariable screening results:
+ Variable P_value              Include
+    smoke  0.0092 YES (main predictor)
+     race  0.0079 YES (main predictor)
+      age  0.2188       NO (p = 0.219)
+      lwt  0.0105        YES (p < 0.2)
+  ptl_any  0.0026        YES (p < 0.2)
+       ht  0.0449        YES (p < 0.2)
+       ui  0.0001        YES (p < 0.2)
+     ftv2  0.2369       NO (p = 0.237)
+
+Variables selected for multivariable model:
+smoke, race, lwt, ptl_any, ht, ui
+
+
+==============================================================================
+STEP 3: FIT INITIAL FULL MODEL
+==============================================================================
+
+Model formula:
+bwt ~ smoke + race + lwt + ptl_any + ht + ui
+<environment: 0x000001a571ab7178>
+
+Full model summary:
+
+Call:
+lm(formula = formula_full, data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1886.38  -441.03    53.55   494.17  1620.95 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        2871.985    243.673  11.786  < 2e-16 ***
+smokeYes           -323.570    104.956  -3.083 0.002371 ** 
+raceBlack          -466.324    145.134  -3.213 0.001555 ** 
+raceOther          -335.684    112.276  -2.990 0.003180 ** 
+lwt                   4.041      1.673   2.415 0.016730 *  
+ptl_anyAny history -208.437    133.503  -1.561 0.120202    
+htYes              -573.686    198.961  -2.883 0.004411 ** 
+uiYes              -489.960    135.930  -3.605 0.000404 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 643.3 on 181 degrees of freedom
+Multiple R-squared:  0.2503,	Adjusted R-squared:  0.2214 
+F-statistic: 8.635 on 7 and 181 DF,  p-value: 3.96e-09
+
+
+
+==============================================================================
+STEP 4: CHECK ASSUMPTIONS
+==============================================================================
+
+----------------------------------------------------------------------
+4.1 EXISTENCE OF RELATIONSHIP
+----------------------------------------------------------------------
+Method 1: Zero-order correlations (professor's threshold: |r| >= 0.3)
+
+Correlation matrix:
+      lwt   bwt
+lwt 1.000 0.186
+bwt 0.186 1.000
+
+Correlations with birthweight (bwt):
+[1] 0.186
+
+No individual predictor has |r| >= 0.3 with birthweight.
+
+Method 2: F-test from full model regression
+F(7, 181) = 8.64, p = 0.0000
+F-test is significant (p < 0.05). Existence assumption is MET.
+
+----------------------------------------------------------------------
+4.2 LINEARITY
+----------------------------------------------------------------------
+Professor's method: Component + Residual plots for continuous predictors.
+For categorical predictors: straight line by definition, linearity fulfilled.
+
+Saved: cpr_lwt.png
+
+Visual inspection: Check saved plots for curvature.
+If reference line is straight with no curvature → linearity fulfilled.
+
+----------------------------------------------------------------------
+4.3 INDEPENDENCE OF RESIDUALS
+----------------------------------------------------------------------
+Professor's method: Durbin-Watson statistic (range 0-4, acceptable 1-3)
+
+Durbin-Watson statistic: 0.6090
+D-W statistic is OUTSIDE 1-3 range. Independence may be violated.
+
+Saving Residuals vs Predictor plots for visual inspection...
+Saved: rvp_lwt.png
+
+----------------------------------------------------------------------
+4.4 NORMALITY OF RESIDUALS
+----------------------------------------------------------------------
+Professor's method: Shapiro-Wilk test (preferred for n<2000)
+Null hypothesis: residuals are normally distributed
+Want p > 0.05 to FAIL to reject null (i.e., normality is acceptable)
+
+Shapiro-Wilk W = 0.9941, p = 0.6515
+p > 0.05. Fail to reject null. Normality assumption is MET.
+
+Saved: qq_plot.png
+
+----------------------------------------------------------------------
+4.5 HOMOSCEDASTICITY (EQUAL VARIANCE)
+----------------------------------------------------------------------
+Professor's method: Breusch-Pagan test
+Null hypothesis: constant variance (homoscedasticity)
+Want p > 0.05 to FAIL to reject null
+
+Breusch-Pagan test: BP = 5.7281, df = 7, p = 0.5718
+p > 0.05. Fail to reject null. Homoscedasticity assumption is MET.
+
+Saved: resid_vs_fitted.png
+
+----------------------------------------------------------------------
+4.6 MULTICOLLINEARITY
+----------------------------------------------------------------------
+Professor's method: VIF (Variance Inflation Factor)
+Threshold: VIF > 10 indicates problematic multicollinearity
+
+VIF values:
+        GVIF Df GVIF^(1/(2*Df))
+smoke   1.20  1            1.09
+race    1.27  2            1.06
+lwt     1.19  1            1.09
+ptl_any 1.09  1            1.04
+ht      1.08  1            1.04
+ui      1.06  1            1.03
+
+All VIF values < 10. No multicollinearity assumption is MET.
+
+
+==============================================================================
+STEP 5: CHECK FOR OUTLIERS AND INFLUENTIAL OBSERVATIONS
+==============================================================================
+
+----------------------------------------------------------------------
+5.1 COOK'S DISTANCE
+----------------------------------------------------------------------
+Professor's threshold: Cook's D < 1 (values > 1 are influential)
+
+Maximum Cook's Distance: 0.0651
+Number of observations with Cook's D > 1: 0
+No influential observations detected by Cook's Distance.
+
+Saved: cooks_distance.png
+
+----------------------------------------------------------------------
+5.2 DFBETAS
+----------------------------------------------------------------------
+Professor's threshold: |DFBetas| > 2/sqrt(n) = 2/sqrt( 189 ) =  0.1455 
+
+Number of observations exceeding DFBetas threshold per coefficient:
+       (Intercept)           smokeYes          raceBlack          raceOther                lwt 
+                14                 17                  9                 15                 11 
+ptl_anyAny history              htYes              uiYes 
+                17                  9                 13 
+
+Some observations have high influence on specific coefficients.
+Review case-by-case if removal is justified.
+
+
+==============================================================================
+STEP 6: INTERACTION TESTING
+==============================================================================
+Research question has TWO main predictors: smoke AND race
+Sample size (n=189) is insufficient for comprehensive interaction testing.
+Strategy: Test smoke × race interaction only (most scientifically critical).
+
+Created interaction terms:
+  smoke_rblack = smoke × (race==Black)
+  smoke_rother = smoke × (race==Other)
+
+Model with interactions:
+bwt ~ smoke + race + lwt + ptl_any + ht + ui + smoke_rblack + 
+    smoke_rother
+<environment: 0x000001a571ab7178>
+
+Full model with interactions (before backward elimination):
+
+Call:
+lm(formula = interaction_formula, data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1931.15  -392.70     6.38   440.40  1549.32 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        3003.046    253.984  11.824  < 2e-16 ***
+smokeYes           -445.455    135.602  -3.285 0.001227 ** 
+raceBlack          -491.479    189.319  -2.596 0.010214 *  
+raceOther          -468.878    134.948  -3.475 0.000642 ***
+lwt                   3.558      1.684   2.112 0.036033 *  
+ptl_anyAny history -211.104    132.914  -1.588 0.113989    
+htYes              -528.863    199.776  -2.647 0.008838 ** 
+uiYes              -513.437    136.864  -3.751 0.000237 ***
+smoke_rblack         25.625    292.583   0.088 0.930307    
+smoke_rother        468.776    246.774   1.900 0.059091 .  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 640.2 on 179 degrees of freedom
+Multiple R-squared:  0.2658,	Adjusted R-squared:  0.2288 
+F-statistic: 7.199 on 9 and 179 DF,  p-value: 6.751e-09
+
+
+----------------------------------------------------------------------
+BACKWARD ELIMINATION (p < 0.05 criterion)
+----------------------------------------------------------------------
+Using stepAIC with backward direction.
+NOTE: Main predictors (smoke, race) will be manually retained if dropped.
+
+Model after backward elimination:
+
+Call:
+lm(formula = bwt ~ smoke + race + lwt + ptl_any + ht + ui + smoke_rother, 
+    data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1927.1  -390.1     0.2   440.1  1552.0 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        2999.840    250.639  11.969  < 2e-16 ***
+smokeYes           -440.014    120.199  -3.661 0.000330 ***
+raceBlack          -480.779    144.229  -3.333 0.001041 ** 
+raceOther          -465.836    130.042  -3.582 0.000438 ***
+lwt                   3.562      1.679   2.122 0.035229 *  
+ptl_anyAny history -211.406    132.502  -1.595 0.112357    
+htYes              -530.096    198.730  -2.667 0.008341 ** 
+uiYes              -514.867    135.511  -3.799 0.000198 ***
+smoke_rother        463.550    238.790   1.941 0.053790 .  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 638.4 on 180 degrees of freedom
+Multiple R-squared:  0.2657,	Adjusted R-squared:  0.2331 
+F-statistic: 8.142 on 8 and 180 DF,  p-value: 2.26e-09
+
+
+Variables remaining after backward elimination:
+(Intercept), smokeYes, raceBlack, raceOther, lwt, ptl_anyAny history, htYes, uiYes, smoke_rother
+
+
+==============================================================================
+STEP 7: CONFOUNDING CHECK
+==============================================================================
+Variables dropped during backward elimination are checked for confounding.
+Professor's rule: If adding back a dropped variable changes ANY coefficient
+of variables that interact by >=10%, it's a confounder and stays.
+
+Variables dropped during backward elimination:
+smoke_rblack
+
+No non-interacting variables were dropped. Confounding check not needed.
+
+
+==============================================================================
+STEP 8: FINAL MODEL
+==============================================================================
+
+Final model (no confounders to add back):
+
+Final Model Formula:
+bwt ~ smoke + race + lwt + ptl_any + ht + ui + smoke_rother
+<environment: 0x000001a571ab7178>
+
+Final Model Summary:
+
+Call:
+lm(formula = formula_final, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1927.1  -390.1     0.2   440.1  1552.0 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        2999.840    250.639  11.969  < 2e-16 ***
+smokeYes           -440.014    120.199  -3.661 0.000330 ***
+raceBlack          -480.779    144.229  -3.333 0.001041 ** 
+raceOther          -465.836    130.042  -3.582 0.000438 ***
+lwt                   3.562      1.679   2.122 0.035229 *  
+ptl_anyAny history -211.406    132.502  -1.595 0.112357    
+htYes              -530.096    198.730  -2.667 0.008341 ** 
+uiYes              -514.867    135.511  -3.799 0.000198 ***
+smoke_rother        463.550    238.790   1.941 0.053790 .  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 638.4 on 180 degrees of freedom
+Multiple R-squared:  0.2657,	Adjusted R-squared:  0.2331 
+F-statistic: 8.142 on 8 and 180 DF,  p-value: 2.26e-09
+
+
+Final Model ANOVA:
+Analysis of Variance Table
+
+Response: bwt
+              Df   Sum Sq Mean Sq F value    Pr(>F)    
+smoke          1  3573406 3573406  8.7671 0.0034808 ** 
+race           2  8768299 4384149 10.7562 3.867e-05 ***
+lwt            1  2464180 2464180  6.0457 0.0148860 *  
+ptl_any        1  2069773 2069773  5.0780 0.0254375 *  
+ht             1  2761766 2761766  6.7758 0.0100109 *  
+ui             1  5376658 5376658 13.1912 0.0003666 ***
+smoke_rother   1  1535989 1535989  3.7684 0.0537904 .  
+Residuals    180 73366981  407594                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+
+==============================================================================
+STEP 9: MODEL INTERPRETATION
+==============================================================================
+
+Coefficients table:
+                    Estimate Std. Error t value Pr(>|t|)
+(Intercept)        2999.8400   250.6391 11.9688   0.0000
+smokeYes           -440.0141   120.1995 -3.6607   0.0003
+raceBlack          -480.7792   144.2286 -3.3335   0.0010
+raceOther          -465.8363   130.0425 -3.5822   0.0004
+lwt                   3.5622     1.6789  2.1217   0.0352
+ptl_anyAny history -211.4060   132.5023 -1.5955   0.1124
+htYes              -530.0958   198.7296 -2.6674   0.0083
+uiYes              -514.8669   135.5108 -3.7995   0.0002
+smoke_rother        463.5502   238.7904  1.9412   0.0538
+
+----------------------------------------------------------------------
+INTERPRETATION GUIDELINES (from professor's notes):
+----------------------------------------------------------------------
+1. F-test (overall model significance): Check Prob > F first
+2. R-squared: Proportion of variance explained (higher is better)
+3. Individual coefficients: p < 0.05 indicates significance
+4. Coefficient sign (+/-): Direction of effect on birthweight
+5. Coefficient magnitude: Size of effect in grams
+6. t-statistic = coefficient/SE (higher |t| = stronger signal)
+
+Overall Model F(8, 180) = 8.14, p < 0.0000
+R-squared: 0.2657 (explains 26.6% of variance in birthweight)
+Adjusted R-squared: 0.2331
+
+----------------------------------------------------------------------
+COEFFICIENT INTERPRETATION
+----------------------------------------------------------------------
+
+smokeYes: -440.01 grams *** (p = 0.0003)
+raceBlack: -480.78 grams ** (p = 0.0010)
+raceOther: -465.84 grams *** (p = 0.0004)
+lwt: 3.56 grams * (p = 0.0352)
+ptl_anyAny history: -211.41 grams  (p = 0.1124)
+htYes: -530.10 grams ** (p = 0.0083)
+uiYes: -514.87 grams *** (p = 0.0002)
+smoke_rother: 463.55 grams  (p = 0.0538)
+
+Significance codes: *** p<0.001, ** p<0.01, * p<0.05
+
+
+==============================================================================
+STEP 10: MODEL DIAGNOSTICS ON FINAL MODEL
+==============================================================================
+
+Re-checking assumptions on final model...
+
+Durbin-Watson: 0.6676 (acceptable range: 1-3)
+Shapiro-Wilk: W = 0.9959, p = 0.8928
+Breusch-Pagan: BP = 7.1347, p = 0.5222
+
+VIF values (final model):
+             GVIF Df GVIF^(1/(2*Df))
+smoke        1.60  1            1.26
+race         1.74  2            1.15
+lwt          1.22  1            1.10
+ptl_any      1.09  1            1.04
+ht           1.09  1            1.04
+ui           1.07  1            1.04
+smoke_rother 1.57  1            1.25
+
+Saved: final_diagnostics.png
+
+
+==============================================================================
+ANALYSIS COMPLETE
+==============================================================================
+
+  - birthweight-analysis-output.txt (all text output)
+  - *.png files (all plots)
+
+Next step: Review outputs, then replicate in STATA using point-and-click.
+

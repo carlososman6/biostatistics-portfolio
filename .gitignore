@@ -1,0 +1,14 @@
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Rdata
+*.rds
+*.Rproj
+renv/
+# Stata/R by-products
+r_output.txt
+# OS / editor
+.DS_Store
+Thumbs.db
+~$*

@@ -1,0 +1,1364 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}data/STATA\assignment 2_Number one baby outcomes.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}17 May 2026, 23:01:26
+{txt}
+{com}. 
+. *import data
+. import excel "data/STATA\assignment 2_Number one_2025_2026_revised.xls", sheet("Sheet1") firstrow
+{res}{text}(15 vars, 669 obs)
+
+{com}. 
+. *inspect data
+. bro
+{txt}
+{com}. 
+. 
+. *RENAME VARIABLES
+. 
+. rename Column3  platelet
+{res}{txt}
+{com}. rename Column4  race
+{res}{txt}
+{com}. rename Column5  birthwt
+{res}{txt}
+{com}. rename Column6  gestage
+{res}{txt}
+{com}. rename Column7  placedev
+{res}{txt}
+{com}. rename Column8  multpreg
+{res}{txt}
+{com}. rename Column9  betamet
+{res}{txt}
+{com}. rename Column10 tocolys
+{res}{txt}
+{com}. rename Column11 modedev
+{res}{txt}
+{com}. rename Column12 apgar1
+{res}{txt}
+{com}. rename Column13 ventil
+{res}{txt}
+{com}. rename Column14 pneumo
+{res}{txt}
+{com}. rename Column15 pda
+{res}{txt}
+{com}. rename Column16 sexbaby
+{res}{txt}
+{com}. rename Column17 died
+{res}{txt}
+{com}. 
+.  *LABEL VARIABLES
+. 
+. label variable platelet  "Platelet count"
+{txt}
+{com}. label variable race      "Race of mother (1=white,2=black,3=native American,4=oriental)"
+{txt}
+{com}. label variable birthwt   "Birth weight of baby (grams)"
+{txt}
+{com}. label variable gestage   "Gestation age"
+{txt}
+{com}. label variable placedev  "Place of delivery (1=this hospital,2=elsewhere)"
+{txt}
+{com}. label variable multpreg  "Multiple pregnancy (1=yes,0=no)"
+{txt}
+{com}. label variable betamet   "Mother treated with betamethasone (1=yes,0=no)"
+{txt}
+{com}. label variable tocolys   "Tocolysis (1=yes,0=no)"
+{txt}
+{com}. label variable modedev   "Mode of delivery (1=abdominal,2=vaginal)"
+{txt}
+{com}. label variable apgar1    "Apgar score at 1 minute"
+{txt}
+{com}. label variable ventil    "Assisted ventilation used (1=yes,0=no)"
+{txt}
+{com}. label variable pneumo    "Pneumothorax occurred (1=yes,0=no)"
+{txt}
+{com}. label variable pda       "Patent ductus arteriosus occurred (1=yes,0=no)"
+{txt}
+{com}. label variable sexbaby   "Sex of baby (1=female,2=male)"
+{txt}
+{com}. label variable died      "Baby died (1=yes,0=no)"
+{txt}
+{com}. 
+. *DATA INSPECTION
+. 
+. bro
+{txt}
+{com}. 
+. * Continuous variables
+. summarize platelet birthwt gestage apgar1
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}platelet {c |}{res}        669    199.6565    80.95436         16        571
+{txt}{space 5}birthwt {c |}{res}        669    1093.886    265.2247        400       1580
+{txt}{space 5}gestage {c |}{res}        669    28.87668    2.542624         22         40
+{txt}{space 6}apgar1 {c |}{res}        669    4.908819    2.624002          0          9
+{txt}
+{com}. 
+. * Categorical variables
+. tab race
+
+    {txt}Race of {c |}
+     mother {c |}
+(1=white,2= {c |}
+black,3=nat {c |}
+        ive {c |}
+American,4= {c |}
+  oriental) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          1 {c |}{res}        260       38.86       38.86
+{txt}          2 {c |}{res}        372       55.61       94.47
+{txt}          3 {c |}{res}         26        3.89       98.36
+{txt}          4 {c |}{res}         11        1.64      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab placedev
+
+   {txt}Place of {c |}
+   delivery {c |}
+    (1=this {c |}
+hospital,2= {c |}
+ elsewhere) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          1 {c |}{res}        546       81.61       81.61
+{txt}          2 {c |}{res}        123       18.39      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab multpreg
+
+   {txt}Multiple {c |}
+  pregnancy {c |}
+(1=yes,0=no {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        531       79.37       79.37
+{txt}          1 {c |}{res}        138       20.63      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab betamet
+
+     {txt}Mother {c |}
+    treated {c |}
+       with {c |}
+betamethaso {c |}
+         ne {c |}
+(1=yes,0=no {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        373       55.75       55.75
+{txt}          1 {c |}{res}        296       44.25      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab tocolys
+
+  {txt}Tocolysis {c |}
+(1=yes,0=no {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        508       75.93       75.93
+{txt}          1 {c |}{res}        161       24.07      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab modedev
+
+    {txt}Mode of {c |}
+   delivery {c |}
+(1=abdomina {c |}
+l,2=vaginal {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          1 {c |}{res}        323       48.28       48.28
+{txt}          2 {c |}{res}        346       51.72      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab ventil
+
+   {txt}Assisted {c |}
+ventilation {c |}
+       used {c |}
+(1=yes,0=no {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        284       42.45       42.45
+{txt}          1 {c |}{res}        385       57.55      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab pneumo
+
+{txt}Pneumothora {c |}
+ x occurred {c |}
+(1=yes,0=no {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        537       80.27       80.27
+{txt}          1 {c |}{res}        132       19.73      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab pda
+
+     {txt}Patent {c |}
+     ductus {c |}
+ arteriosus {c |}
+   occurred {c |}
+(1=yes,0=no {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        527       78.77       78.77
+{txt}          1 {c |}{res}        142       21.23      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab sexbaby
+
+{txt}Sex of baby {c |}
+(1=female,2 {c |}
+     =male) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          1 {c |}{res}        331       49.48       49.48
+{txt}          2 {c |}{res}        338       50.52      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab died
+
+  {txt}Baby died {c |}
+(1=yes,0=no {c |}
+          ) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        527       78.77       78.77
+{txt}          1 {c |}{res}        142       21.23      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. 
+. * Missing values
+. misstable summarize platelet race birthwt gestage placedev multpreg betamet tocolys modedev apgar1 ventil pneumo pda sexbaby died
+{txt}(variables nonmissing or string)
+
+{com}. 
+. * The outcome variable (died) has no missing values - all 669 observations are available for the outcome
+. 
+. * PRE-ANALYSIS DECISION I: WHICH RACE CODING IS BEST?
+. * The question asks us to compare 4 ways of coding race.
+. * Since these 4 models are non-nested, we compare using AIC and BIC.
+. * The model with the smallest BIC is preferred.
+. 
+. * Generate the 3 alternative race codings
+. 
+. * Option ii: White (0) vs All other races (1)
+. gen race_white_other = 0 if race == 1
+{txt}(409 missing values generated)
+
+{com}. replace race_white_other = 1 if race == 2 | race == 3 | race == 4
+{txt}(409 real changes made)
+
+{com}. label variable race_white_other "Race: White(0) vs Other races(1)"
+{txt}
+{com}. 
+. * Option iii: White (1) vs Black (2) vs Other races (3)
+. gen race_white_black_other = 1 if race == 1
+{txt}(409 missing values generated)
+
+{com}. replace race_white_black_other = 2 if race == 2
+{txt}(372 real changes made)
+
+{com}. replace race_white_black_other = 3 if race == 3 | race == 4
+{txt}(37 real changes made)
+
+{com}. label variable race_white_black_other "Race: White(1) vs Black(2) vs Other(3)"
+{txt}
+{com}. 
+. * Option iv: Black (1) vs All other races (0)
+. gen race_black_other = 0 if race == 1 | race == 3 | race == 4
+{txt}(372 missing values generated)
+
+{com}. replace race_black_other = 1 if race == 2
+{txt}(372 real changes made)
+
+{com}. label variable race_black_other "Race: Non-black(0) vs Black(1)"
+{txt}
+{com}. 
+. * Verify all three were generated correctly
+. tab race_white_other
+
+      {txt}Race: {c |}
+White(0) vs {c |}
+      Other {c |}
+   races(1) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        260       38.86       38.86
+{txt}          1 {c |}{res}        409       61.14      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab race_white_black_other
+
+      {txt}Race: {c |}
+White(1) vs {c |}
+Black(2) vs {c |}
+   Other(3) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          1 {c |}{res}        260       38.86       38.86
+{txt}          2 {c |}{res}        372       55.61       94.47
+{txt}          3 {c |}{res}         37        5.53      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. tab race_black_other
+
+      {txt}Race: {c |}
+Non-black(0 {c |}
+       ) vs {c |}
+   Black(1) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}        297       44.39       44.39
+{txt}          1 {c |}{res}        372       55.61      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}        669      100.00
+{txt}
+{com}. 
+. * Fit all 4 models using the full set of predictors - only race coding changes
+. * Option i: Race as it is (4 categories)
+. logit died i.race platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res: -224.3776}  
+Iteration 2:{space 3}log likelihood = {res: -203.5184}  
+Iteration 3:{space 3}log likelihood = {res:  -202.627}  
+Iteration 4:{space 3}log likelihood = {res:-202.62519}  
+Iteration 5:{space 3}log likelihood = {res:-202.62519}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:16})}{col 70} = {res}{ralign 6:286.40}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-202.62519}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4141}
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        died{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}race {c |}
+{space 10}2  {c |}{col 14}{res}{space 2} .5398888{col 26}{space 2} .2959089{col 37}{space 1}    1.82{col 46}{space 3}0.068{col 54}{space 4}-.0400819{col 67}{space 3}  1.11986
+{txt}{space 10}3  {c |}{col 14}{res}{space 2} 1.531819{col 26}{space 2} .5977242{col 37}{space 1}    2.56{col 46}{space 3}0.010{col 54}{space 4} .3603007{col 67}{space 3} 2.703336
+{txt}{space 10}4  {c |}{col 14}{res}{space 2} 1.759886{col 26}{space 2}  .864387{col 37}{space 1}    2.04{col 46}{space 3}0.042{col 54}{space 4} .0657186{col 67}{space 3} 3.454053
+{txt}{space 12} {c |}
+{space 4}platelet {c |}{col 14}{res}{space 2}-.0017418{col 26}{space 2} .0017536{col 37}{space 1}   -0.99{col 46}{space 3}0.321{col 54}{space 4}-.0051787{col 67}{space 3} .0016951
+{txt}{space 5}birthwt {c |}{col 14}{res}{space 2} -.001459{col 26}{space 2} .0008503{col 37}{space 1}   -1.72{col 46}{space 3}0.086{col 54}{space 4}-.0031256{col 67}{space 3} .0002076
+{txt}{space 5}gestage {c |}{col 14}{res}{space 2}-.5210846{col 26}{space 2} .1070366{col 37}{space 1}   -4.87{col 46}{space 3}0.000{col 54}{space 4}-.7308726{col 67}{space 3}-.3112967
+{txt}{space 2}2.placedev {c |}{col 14}{res}{space 2} .2323468{col 26}{space 2} .3109829{col 37}{space 1}    0.75{col 46}{space 3}0.455{col 54}{space 4}-.3771685{col 67}{space 3} .8418621
+{txt}{space 2}1.multpreg {c |}{col 14}{res}{space 2} .4922861{col 26}{space 2} .3473595{col 37}{space 1}    1.42{col 46}{space 3}0.156{col 54}{space 4} -.188526{col 67}{space 3} 1.173098
+{txt}{space 3}1.betamet {c |}{col 14}{res}{space 2}-.3393345{col 26}{space 2} .2806127{col 37}{space 1}   -1.21{col 46}{space 3}0.227{col 54}{space 4}-.8893254{col 67}{space 3} .2106563
+{txt}{space 3}1.tocolys {c |}{col 14}{res}{space 2}-.1278382{col 26}{space 2} .3210421{col 37}{space 1}   -0.40{col 46}{space 3}0.690{col 54}{space 4}-.7570691{col 67}{space 3} .5013928
+{txt}{space 3}2.modedev {c |}{col 14}{res}{space 2}-.0180172{col 26}{space 2} .2797831{col 37}{space 1}   -0.06{col 46}{space 3}0.949{col 54}{space 4}-.5663819{col 67}{space 3} .5303476
+{txt}{space 6}apgar1 {c |}{col 14}{res}{space 2}-.0356818{col 26}{space 2}  .057366{col 37}{space 1}   -0.62{col 46}{space 3}0.534{col 54}{space 4}-.1481172{col 67}{space 3} .0767535
+{txt}{space 4}1.ventil {c |}{col 14}{res}{space 2} .8334484{col 26}{space 2}  .381998{col 37}{space 1}    2.18{col 46}{space 3}0.029{col 54}{space 4}  .084746{col 67}{space 3} 1.582151
+{txt}{space 4}1.pneumo {c |}{col 14}{res}{space 2} 1.797991{col 26}{space 2}  .305966{col 37}{space 1}    5.88{col 46}{space 3}0.000{col 54}{space 4} 1.198309{col 67}{space 3} 2.397673
+{txt}{space 7}1.pda {c |}{col 14}{res}{space 2}-.3273395{col 26}{space 2} .2881446{col 37}{space 1}   -1.14{col 46}{space 3}0.256{col 54}{space 4}-.8920926{col 67}{space 3} .2374136
+{txt}{space 3}2.sexbaby {c |}{col 14}{res}{space 2}-.0538757{col 26}{space 2}  .265134{col 37}{space 1}   -0.20{col 46}{space 3}0.839{col 54}{space 4}-.5735288{col 67}{space 3} .4657775
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 13.74318{col 26}{space 2} 2.525019{col 37}{space 1}    5.44{col 46}{space 3}0.000{col 54}{space 4} 8.794234{col 67}{space 3} 18.69213
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store race_4cat
+{txt}
+{com}. 
+. * Option ii: White vs Other races
+. logit died i.race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-225.79538}  
+Iteration 2:{space 3}log likelihood = {res:-205.75002}  
+Iteration 3:{space 3}log likelihood = {res:-205.03588}  
+Iteration 4:{space 3}log likelihood = {res:-205.03418}  
+Iteration 5:{space 3}log likelihood = {res:-205.03418}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:14})}{col 70} = {res}{ralign 6:281.59}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-205.03418}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4071}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} .6674574{col 32}{space 2} .2889324{col 43}{space 1}    2.31{col 52}{space 3}0.021{col 60}{space 4} .1011603{col 73}{space 3} 1.233755
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2}-.0018765{col 32}{space 2} .0017351{col 43}{space 1}   -1.08{col 52}{space 3}0.279{col 60}{space 4}-.0052772{col 73}{space 3} .0015242
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0015043{col 32}{space 2} .0008374{col 43}{space 1}   -1.80{col 52}{space 3}0.072{col 60}{space 4}-.0031455{col 73}{space 3} .0001369
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.5211553{col 32}{space 2} .1042435{col 43}{space 1}   -5.00{col 52}{space 3}0.000{col 60}{space 4}-.7254688{col 73}{space 3}-.3168418
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} .2587623{col 32}{space 2} .3099849{col 43}{space 1}    0.83{col 52}{space 3}0.404{col 60}{space 4} -.348797{col 73}{space 3} .8663216
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} .4112682{col 32}{space 2} .3440374{col 43}{space 1}    1.20{col 52}{space 3}0.232{col 60}{space 4}-.2630326{col 73}{space 3} 1.085569
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2}-.2702313{col 32}{space 2} .2768959{col 43}{space 1}   -0.98{col 52}{space 3}0.329{col 60}{space 4}-.8129374{col 73}{space 3} .2724747
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2}-.1623952{col 32}{space 2} .3172102{col 43}{space 1}   -0.51{col 52}{space 3}0.609{col 60}{space 4}-.7841158{col 73}{space 3} .4593254
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2}-.0363512{col 32}{space 2} .2778797{col 43}{space 1}   -0.13{col 52}{space 3}0.896{col 60}{space 4}-.5809855{col 73}{space 3}  .508283
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2}-.0326145{col 32}{space 2} .0570096{col 43}{space 1}   -0.57{col 52}{space 3}0.567{col 60}{space 4}-.1443511{col 73}{space 3} .0791222
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .6936039{col 32}{space 2} .3660787{col 43}{space 1}    1.89{col 52}{space 3}0.058{col 60}{space 4}-.0238972{col 73}{space 3} 1.411105
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 1.826412{col 32}{space 2} .3078401{col 43}{space 1}    5.93{col 52}{space 3}0.000{col 60}{space 4} 1.223057{col 73}{space 3} 2.429768
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2}-.3204829{col 32}{space 2} .2878455{col 43}{space 1}   -1.11{col 52}{space 3}0.266{col 60}{space 4}-.8846497{col 73}{space 3} .2436838
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2}-.0524902{col 32}{space 2} .2626692{col 43}{space 1}   -0.20{col 52}{space 3}0.842{col 60}{space 4}-.5673124{col 73}{space 3} .4623319
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 13.90303{col 32}{space 2} 2.473213{col 43}{space 1}    5.62{col 52}{space 3}0.000{col 60}{space 4} 9.055622{col 73}{space 3} 18.75044
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store race_2cat_white
+{txt}
+{com}. 
+. * Option iii: White vs Black vs Other
+. logit died i.race_white_black_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-224.47493}  
+Iteration 2:{space 3}log likelihood = {res:-203.54187}  
+Iteration 3:{space 3}log likelihood = {res:-202.65274}  
+Iteration 4:{space 3}log likelihood = {res:-202.65097}  
+Iteration 5:{space 3}log likelihood = {res:-202.65097}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:15})}{col 70} = {res}{ralign 6:286.35}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-202.65097}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4140}
+
+{txt}{hline 23}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                  died{col 24}{c |} Coefficient{col 36}  Std. err.{col 48}      z{col 56}   P>|z|{col 64}     [95% con{col 77}f. interval]
+{hline 23}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race_white_black_other {c |}
+{space 20}2  {c |}{col 24}{res}{space 2} .5432139{col 36}{space 2} .2957105{col 47}{space 1}    1.84{col 56}{space 3}0.066{col 64}{space 4}-.0363681{col 77}{space 3} 1.122796
+{txt}{space 20}3  {c |}{col 24}{res}{space 2} 1.601926{col 36}{space 2} .5102698{col 47}{space 1}    3.14{col 56}{space 3}0.002{col 64}{space 4}  .601816{col 77}{space 3} 2.602037
+{txt}{space 22} {c |}
+{space 14}platelet {c |}{col 24}{res}{space 2} -.001694{col 36}{space 2} .0017417{col 47}{space 1}   -0.97{col 56}{space 3}0.331{col 64}{space 4}-.0051078{col 77}{space 3} .0017197
+{txt}{space 15}birthwt {c |}{col 24}{res}{space 2}-.0014415{col 36}{space 2} .0008471{col 47}{space 1}   -1.70{col 56}{space 3}0.089{col 64}{space 4}-.0031017{col 77}{space 3} .0002187
+{txt}{space 15}gestage {c |}{col 24}{res}{space 2}-.5248212{col 36}{space 2} .1059072{col 47}{space 1}   -4.96{col 56}{space 3}0.000{col 64}{space 4}-.7323956{col 77}{space 3}-.3172469
+{txt}{space 12}2.placedev {c |}{col 24}{res}{space 2} .2295473{col 36}{space 2} .3105838{col 47}{space 1}    0.74{col 56}{space 3}0.460{col 64}{space 4}-.3791858{col 77}{space 3} .8382803
+{txt}{space 12}1.multpreg {c |}{col 24}{res}{space 2} .4891163{col 36}{space 2} .3471322{col 47}{space 1}    1.41{col 56}{space 3}0.159{col 64}{space 4}-.1912504{col 77}{space 3} 1.169483
+{txt}{space 13}1.betamet {c |}{col 24}{res}{space 2} -.343665{col 36}{space 2} .2798652{col 47}{space 1}   -1.23{col 56}{space 3}0.219{col 64}{space 4}-.8921907{col 77}{space 3} .2048608
+{txt}{space 13}1.tocolys {c |}{col 24}{res}{space 2}-.1186554{col 36}{space 2} .3183101{col 47}{space 1}   -0.37{col 56}{space 3}0.709{col 64}{space 4}-.7425317{col 77}{space 3} .5052209
+{txt}{space 13}2.modedev {c |}{col 24}{res}{space 2}-.0216927{col 36}{space 2} .2792629{col 47}{space 1}   -0.08{col 56}{space 3}0.938{col 64}{space 4}-.5690379{col 77}{space 3} .5256524
+{txt}{space 16}apgar1 {c |}{col 24}{res}{space 2}-.0347054{col 36}{space 2} .0572185{col 47}{space 1}   -0.61{col 56}{space 3}0.544{col 64}{space 4}-.1468515{col 77}{space 3} .0774408
+{txt}{space 14}1.ventil {c |}{col 24}{res}{space 2} .8313328{col 36}{space 2} .3816744{col 47}{space 1}    2.18{col 56}{space 3}0.029{col 64}{space 4} .0832647{col 77}{space 3} 1.579401
+{txt}{space 14}1.pneumo {c |}{col 24}{res}{space 2} 1.801263{col 36}{space 2} .3057134{col 47}{space 1}    5.89{col 56}{space 3}0.000{col 64}{space 4} 1.202076{col 77}{space 3} 2.400451
+{txt}{space 17}1.pda {c |}{col 24}{res}{space 2}-.3230636{col 36}{space 2} .2874966{col 47}{space 1}   -1.12{col 56}{space 3}0.261{col 64}{space 4}-.8865466{col 77}{space 3} .2404195
+{txt}{space 13}2.sexbaby {c |}{col 24}{res}{space 2}-.0582843{col 36}{space 2} .2644548{col 47}{space 1}   -0.22{col 56}{space 3}0.826{col 64}{space 4}-.5766062{col 77}{space 3} .4600376
+{txt}{space 17}_cons {c |}{col 24}{res}{space 2} 13.81834{col 36}{space 2} 2.505519{col 47}{space 1}    5.52{col 56}{space 3}0.000{col 64}{space 4} 8.907612{col 77}{space 3} 18.72907
+{txt}{hline 23}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store race_3cat
+{txt}
+{com}. 
+. * Option iv: Black vs Rest
+. logit died i.race_black_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-227.64572}  
+Iteration 2:{space 3}log likelihood = {res:-208.17553}  
+Iteration 3:{space 3}log likelihood = {res:-207.47065}  
+Iteration 4:{space 3}log likelihood = {res:-207.46869}  
+Iteration 5:{space 3}log likelihood = {res:-207.46869}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:14})}{col 70} = {res}{ralign 6:276.72}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-207.46869}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4001}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_black_other {c |}{col 20}{res}{space 2}  .217086{col 32}{space 2} .2672294{col 43}{space 1}    0.81{col 52}{space 3}0.417{col 60}{space 4} -.306674{col 73}{space 3}  .740846
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2}-.0018768{col 32}{space 2} .0017189{col 43}{space 1}   -1.09{col 52}{space 3}0.275{col 60}{space 4}-.0052458{col 73}{space 3} .0014923
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0016059{col 32}{space 2}   .00083{col 43}{space 1}   -1.93{col 52}{space 3}0.053{col 60}{space 4}-.0032327{col 73}{space 3} .0000209
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.5227005{col 32}{space 2} .1032433{col 43}{space 1}   -5.06{col 52}{space 3}0.000{col 60}{space 4}-.7250535{col 73}{space 3}-.3203474
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} .2423597{col 32}{space 2} .3095612{col 43}{space 1}    0.78{col 52}{space 3}0.434{col 60}{space 4}-.3643692{col 73}{space 3} .8490886
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} .4263538{col 32}{space 2} .3422497{col 43}{space 1}    1.25{col 52}{space 3}0.213{col 60}{space 4}-.2444433{col 73}{space 3} 1.097151
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2}-.2372241{col 32}{space 2} .2757817{col 43}{space 1}   -0.86{col 52}{space 3}0.390{col 60}{space 4}-.7777464{col 73}{space 3} .3032981
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2} -.231783{col 32}{space 2} .3154361{col 43}{space 1}   -0.73{col 52}{space 3}0.462{col 60}{space 4}-.8500265{col 73}{space 3} .3864604
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2} .0148372{col 32}{space 2} .2758684{col 43}{space 1}    0.05{col 52}{space 3}0.957{col 60}{space 4}-.5258549{col 73}{space 3} .5555293
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2}-.0450826{col 32}{space 2} .0566265{col 43}{space 1}   -0.80{col 52}{space 3}0.426{col 60}{space 4}-.1560685{col 73}{space 3} .0659034
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .6482451{col 32}{space 2} .3644172{col 43}{space 1}    1.78{col 52}{space 3}0.075{col 60}{space 4}-.0659994{col 73}{space 3}  1.36249
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 1.717101{col 32}{space 2} .3011018{col 43}{space 1}    5.70{col 52}{space 3}0.000{col 60}{space 4} 1.126952{col 73}{space 3} 2.307249
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2}-.3098821{col 32}{space 2} .2849495{col 43}{space 1}   -1.09{col 52}{space 3}0.277{col 60}{space 4} -.868373{col 73}{space 3} .2486087
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2}-.0166445{col 32}{space 2} .2607285{col 43}{space 1}   -0.06{col 52}{space 3}0.949{col 60}{space 4}-.5276629{col 73}{space 3} .4943739
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 14.42524{col 32}{space 2} 2.447611{col 43}{space 1}    5.89{col 52}{space 3}0.000{col 60}{space 4} 9.628013{col 73}{space 3} 19.22247
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store race_2cat_black
+{txt}
+{com}. 
+. * Compare all four models - smaller AIC and BIC indicate better fit
+. estimates stats race_4cat race_2cat_white race_3cat race_2cat_black
+
+{txt}Akaike's information criterion and Bayesian information criterion
+
+{hline 13}{c TT}{hline 63}
+       Model {c |}          N   ll(null)  ll(model)      df        AIC        BIC
+{hline 13}{c +}{hline 63}
+{ralign 12:{stata estimates replay race_4cat:race_4cat}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39}-202.6252{col 50}    17{col 58} 439.2504{col 69} 515.8487
+{txt}{ralign 12:{stata estimates replay race_2cat_white:race_2cat_~e}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39}-205.0342{col 50}    15{col 58} 440.0684{col 69} 507.6551
+{txt}{ralign 12:{stata estimates replay race_3cat:race_3cat}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39} -202.651{col 50}    16{col 58} 437.3019{col 69} 509.3945
+{txt}{ralign 12:{stata estimates replay race_2cat_black:race_2cat_~k}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39}-207.4687{col 50}    15{col 58} 444.9374{col 69} 512.5241
+{txt}{hline 13}{c BT}{hline 63}
+{p 0 6 0 77}Note: BIC uses N = number of observations. See {helpb bic_note:{bind:[R] BIC note}}.{p_end}
+
+{com}. 
+. * Both AIC and BIC agreed that option (ii) - White vs Other races - provided
+. * the best fit. race_white_other will be used in all subsequent analysis.
+. 
+. * PRE-ANALYSIS DECISION II: BIRTHWEIGHT - CONTINUOUS OR CATEGORICAL?
+. * The question asks whether birthweight is better analyzed as continuous
+. * or categorized into <1000g vs >=1000g. AIC and BIC are used to compare.
+. 
+. * Generate categorical birthweight variable
+. gen birthwt_cat = 1 if birthwt >= 1000
+{txt}(231 missing values generated)
+
+{com}. replace birthwt_cat = 0 if birthwt < 1000
+{txt}(231 real changes made)
+
+{com}. label variable birthwt_cat "Birthweight: below 1000g(0) vs 1000g and above(1)"
+{txt}
+{com}. 
+. * Model with birthweight as continuous
+. logit died i.race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-225.79538}  
+Iteration 2:{space 3}log likelihood = {res:-205.75002}  
+Iteration 3:{space 3}log likelihood = {res:-205.03588}  
+Iteration 4:{space 3}log likelihood = {res:-205.03418}  
+Iteration 5:{space 3}log likelihood = {res:-205.03418}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:14})}{col 70} = {res}{ralign 6:281.59}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-205.03418}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4071}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} .6674574{col 32}{space 2} .2889324{col 43}{space 1}    2.31{col 52}{space 3}0.021{col 60}{space 4} .1011603{col 73}{space 3} 1.233755
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2}-.0018765{col 32}{space 2} .0017351{col 43}{space 1}   -1.08{col 52}{space 3}0.279{col 60}{space 4}-.0052772{col 73}{space 3} .0015242
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0015043{col 32}{space 2} .0008374{col 43}{space 1}   -1.80{col 52}{space 3}0.072{col 60}{space 4}-.0031455{col 73}{space 3} .0001369
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.5211553{col 32}{space 2} .1042435{col 43}{space 1}   -5.00{col 52}{space 3}0.000{col 60}{space 4}-.7254688{col 73}{space 3}-.3168418
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} .2587623{col 32}{space 2} .3099849{col 43}{space 1}    0.83{col 52}{space 3}0.404{col 60}{space 4} -.348797{col 73}{space 3} .8663216
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} .4112682{col 32}{space 2} .3440374{col 43}{space 1}    1.20{col 52}{space 3}0.232{col 60}{space 4}-.2630326{col 73}{space 3} 1.085569
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2}-.2702313{col 32}{space 2} .2768959{col 43}{space 1}   -0.98{col 52}{space 3}0.329{col 60}{space 4}-.8129374{col 73}{space 3} .2724747
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2}-.1623952{col 32}{space 2} .3172102{col 43}{space 1}   -0.51{col 52}{space 3}0.609{col 60}{space 4}-.7841158{col 73}{space 3} .4593254
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2}-.0363512{col 32}{space 2} .2778797{col 43}{space 1}   -0.13{col 52}{space 3}0.896{col 60}{space 4}-.5809855{col 73}{space 3}  .508283
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2}-.0326145{col 32}{space 2} .0570096{col 43}{space 1}   -0.57{col 52}{space 3}0.567{col 60}{space 4}-.1443511{col 73}{space 3} .0791222
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .6936039{col 32}{space 2} .3660787{col 43}{space 1}    1.89{col 52}{space 3}0.058{col 60}{space 4}-.0238972{col 73}{space 3} 1.411105
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 1.826412{col 32}{space 2} .3078401{col 43}{space 1}    5.93{col 52}{space 3}0.000{col 60}{space 4} 1.223057{col 73}{space 3} 2.429768
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2}-.3204829{col 32}{space 2} .2878455{col 43}{space 1}   -1.11{col 52}{space 3}0.266{col 60}{space 4}-.8846497{col 73}{space 3} .2436838
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2}-.0524902{col 32}{space 2} .2626692{col 43}{space 1}   -0.20{col 52}{space 3}0.842{col 60}{space 4}-.5673124{col 73}{space 3} .4623319
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 13.90303{col 32}{space 2} 2.473213{col 43}{space 1}    5.62{col 52}{space 3}0.000{col 60}{space 4} 9.055622{col 73}{space 3} 18.75044
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store bwt_continuous
+{txt}
+{com}. 
+. * Model with birthweight as categorical
+. logit died i.race_white_other platelet i.birthwt_cat gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-228.48336}  
+Iteration 2:{space 3}log likelihood = {res:-207.41818}  
+Iteration 3:{space 3}log likelihood = {res: -206.6295}  
+Iteration 4:{space 3}log likelihood = {res:-206.62789}  
+Iteration 5:{space 3}log likelihood = {res:-206.62789}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:14})}{col 70} = {res}{ralign 6:278.40}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-206.62789}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4025}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2}  .704464{col 32}{space 2} .2879205{col 43}{space 1}    2.45{col 52}{space 3}0.014{col 60}{space 4} .1401501{col 73}{space 3} 1.268778
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2}-.0023569{col 32}{space 2} .0017199{col 43}{space 1}   -1.37{col 52}{space 3}0.171{col 60}{space 4}-.0057279{col 73}{space 3}  .001014
+{txt}{space 5}1.birthwt_cat {c |}{col 20}{res}{space 2}-.0820385{col 32}{space 2} .3299519{col 43}{space 1}   -0.25{col 52}{space 3}0.804{col 60}{space 4}-.7287324{col 73}{space 3} .5646554
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.6501662{col 32}{space 2} .0897014{col 43}{space 1}   -7.25{col 52}{space 3}0.000{col 60}{space 4}-.8259778{col 73}{space 3}-.4743546
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} .2700039{col 32}{space 2}   .30717{col 43}{space 1}    0.88{col 52}{space 3}0.379{col 60}{space 4}-.3320383{col 73}{space 3}  .872046
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} .4315157{col 32}{space 2} .3409376{col 43}{space 1}    1.27{col 52}{space 3}0.206{col 60}{space 4}-.2367097{col 73}{space 3} 1.099741
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2}-.2623863{col 32}{space 2} .2751302{col 43}{space 1}   -0.95{col 52}{space 3}0.340{col 60}{space 4}-.8016317{col 73}{space 3}  .276859
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2}-.1875829{col 32}{space 2} .3144341{col 43}{space 1}   -0.60{col 52}{space 3}0.551{col 60}{space 4}-.8038625{col 73}{space 3} .4286967
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2}-.0611908{col 32}{space 2} .2769357{col 43}{space 1}   -0.22{col 52}{space 3}0.825{col 60}{space 4}-.6039748{col 73}{space 3} .4815932
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2}-.0440548{col 32}{space 2} .0565921{col 43}{space 1}   -0.78{col 52}{space 3}0.436{col 60}{space 4}-.1549734{col 73}{space 3} .0668638
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .7244835{col 32}{space 2} .3668896{col 43}{space 1}    1.97{col 52}{space 3}0.048{col 60}{space 4} .0053931{col 73}{space 3} 1.443574
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 1.741798{col 32}{space 2} .3041059{col 43}{space 1}    5.73{col 52}{space 3}0.000{col 60}{space 4} 1.145762{col 73}{space 3} 2.337835
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2}-.3144338{col 32}{space 2} .2867846{col 43}{space 1}   -1.10{col 52}{space 3}0.273{col 60}{space 4}-.8765214{col 73}{space 3} .2476538
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2}-.1021423{col 32}{space 2} .2611279{col 43}{space 1}   -0.39{col 52}{space 3}0.696{col 60}{space 4}-.6139436{col 73}{space 3}  .409659
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2}  16.1815{col 32}{space 2} 2.463262{col 43}{space 1}    6.57{col 52}{space 3}0.000{col 60}{space 4}  11.3536{col 73}{space 3} 21.00941
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store bwt_categorical
+{txt}
+{com}. 
+. * Compare the two models
+. estimates stats bwt_continuous bwt_categorical
+
+{txt}Akaike's information criterion and Bayesian information criterion
+
+{hline 13}{c TT}{hline 63}
+       Model {c |}          N   ll(null)  ll(model)      df        AIC        BIC
+{hline 13}{c +}{hline 63}
+{ralign 12:{stata estimates replay bwt_continuous:bwt_contin~s}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39}-205.0342{col 50}    15{col 58} 440.0684{col 69} 507.6551
+{txt}{ralign 12:{stata estimates replay bwt_categorical:bwt_catego~l}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39}-206.6279{col 50}    15{col 58} 443.2558{col 69} 510.8425
+{txt}{hline 13}{c BT}{hline 63}
+{p 0 6 0 77}Note: BIC uses N = number of observations. See {helpb bic_note:{bind:[R] BIC note}}.{p_end}
+
+{com}. 
+. * Both AIC and BIC agreed that birthweight is better analyzed as a continuous
+. * (numerical) variable. Birthweight will be kept as continuous going forward.
+. 
+. *CHECK FOR COLLINEARITY
+. * VIF cannot be run directly after logistic regression. We first predict the
+. * logit (the linear predictor), then run a linear regression using the logit
+. * as the outcome, and compute VIF from that linear model.
+. 
+. * Fit the full logistic model with finalised variable codings
+. logit died i.race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-225.79538}  
+Iteration 2:{space 3}log likelihood = {res:-205.75002}  
+Iteration 3:{space 3}log likelihood = {res:-205.03588}  
+Iteration 4:{space 3}log likelihood = {res:-205.03418}  
+Iteration 5:{space 3}log likelihood = {res:-205.03418}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:14})}{col 70} = {res}{ralign 6:281.59}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-205.03418}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4071}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} .6674574{col 32}{space 2} .2889324{col 43}{space 1}    2.31{col 52}{space 3}0.021{col 60}{space 4} .1011603{col 73}{space 3} 1.233755
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2}-.0018765{col 32}{space 2} .0017351{col 43}{space 1}   -1.08{col 52}{space 3}0.279{col 60}{space 4}-.0052772{col 73}{space 3} .0015242
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0015043{col 32}{space 2} .0008374{col 43}{space 1}   -1.80{col 52}{space 3}0.072{col 60}{space 4}-.0031455{col 73}{space 3} .0001369
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.5211553{col 32}{space 2} .1042435{col 43}{space 1}   -5.00{col 52}{space 3}0.000{col 60}{space 4}-.7254688{col 73}{space 3}-.3168418
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} .2587623{col 32}{space 2} .3099849{col 43}{space 1}    0.83{col 52}{space 3}0.404{col 60}{space 4} -.348797{col 73}{space 3} .8663216
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} .4112682{col 32}{space 2} .3440374{col 43}{space 1}    1.20{col 52}{space 3}0.232{col 60}{space 4}-.2630326{col 73}{space 3} 1.085569
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2}-.2702313{col 32}{space 2} .2768959{col 43}{space 1}   -0.98{col 52}{space 3}0.329{col 60}{space 4}-.8129374{col 73}{space 3} .2724747
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2}-.1623952{col 32}{space 2} .3172102{col 43}{space 1}   -0.51{col 52}{space 3}0.609{col 60}{space 4}-.7841158{col 73}{space 3} .4593254
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2}-.0363512{col 32}{space 2} .2778797{col 43}{space 1}   -0.13{col 52}{space 3}0.896{col 60}{space 4}-.5809855{col 73}{space 3}  .508283
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2}-.0326145{col 32}{space 2} .0570096{col 43}{space 1}   -0.57{col 52}{space 3}0.567{col 60}{space 4}-.1443511{col 73}{space 3} .0791222
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .6936039{col 32}{space 2} .3660787{col 43}{space 1}    1.89{col 52}{space 3}0.058{col 60}{space 4}-.0238972{col 73}{space 3} 1.411105
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 1.826412{col 32}{space 2} .3078401{col 43}{space 1}    5.93{col 52}{space 3}0.000{col 60}{space 4} 1.223057{col 73}{space 3} 2.429768
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2}-.3204829{col 32}{space 2} .2878455{col 43}{space 1}   -1.11{col 52}{space 3}0.266{col 60}{space 4}-.8846497{col 73}{space 3} .2436838
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2}-.0524902{col 32}{space 2} .2626692{col 43}{space 1}   -0.20{col 52}{space 3}0.842{col 60}{space 4}-.5673124{col 73}{space 3} .4623319
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 13.90303{col 32}{space 2} 2.473213{col 43}{space 1}    5.62{col 52}{space 3}0.000{col 60}{space 4} 9.055622{col 73}{space 3} 18.75044
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. * Predict the logit (linear prediction)
+. predict Logit, xb
+{txt}
+{com}. 
+. * Run linear regression with logit as outcome to allow VIF computation
+. regress Logit race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       669
+{txt}{hline 13}{c +}{hline 34}   F(14, 654)      = {res}        .
+{txt}       Model {c |} {res} 3285.78267        14  234.698762   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res}          0       654           0   {txt}R-squared       ={res}    1.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    1.0000
+{txt}       Total {c |} {res} 3285.78267       668  4.91883633   {txt}Root MSE        =   {res}      0
+
+{txt}{hline 17}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}           Logit{col 18}{c |} Coefficient{col 30}  Std. err.{col 42}      t{col 50}   P>|t|{col 58}     [95% con{col 71}f. interval]
+{hline 17}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+race_white_other {c |}{col 18}{res}{space 2} .6674574{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 8}platelet {c |}{col 18}{res}{space 2}-.0018765{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 9}birthwt {c |}{col 18}{res}{space 2}-.0015043{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 9}gestage {c |}{col 18}{res}{space 2}-.5211553{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 6}2.placedev {c |}{col 18}{res}{space 2} .2587623{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 6}1.multpreg {c |}{col 18}{res}{space 2} .4112682{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 7}1.betamet {c |}{col 18}{res}{space 2}-.2702313{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 7}1.tocolys {c |}{col 18}{res}{space 2}-.1623952{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 7}2.modedev {c |}{col 18}{res}{space 2}-.0363512{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 10}apgar1 {c |}{col 18}{res}{space 2}-.0326145{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 8}1.ventil {c |}{col 18}{res}{space 2} .6936039{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 8}1.pneumo {c |}{col 18}{res}{space 2} 1.826412{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 11}1.pda {c |}{col 18}{res}{space 2}-.3204829{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 7}2.sexbaby {c |}{col 18}{res}{space 2}-.0524902{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{space 11}_cons {c |}{col 18}{res}{space 2} 13.90303{col 30}{space 2}        .{col 41}{space 1}       .{col 50}{space 3}    .{col 58}{space 4}        .{col 71}{space 3}        .
+{txt}{hline 17}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. * Compute VIF - values >10 indicate collinearity
+. estat vif
+
+{txt}    Variable {c |}       VIF       1/VIF  
+{hline 13}{c +}{hline 22}
+race~e_other {c |} {res}     1.13    0.886958
+{txt}{space 4}platelet {c |} {res}     1.25    0.798083
+{txt}{space 5}birthwt {c |} {res}     2.64    0.378865
+{txt}{space 5}gestage {c |} {res}     2.66    0.376266
+{txt}{space 2}2.placedev {c |} {res}     1.11    0.898551
+{txt}{space 2}1.multpreg {c |} {res}     1.09    0.918641
+{txt}{space 3}1.betamet {c |} {res}     1.18    0.846617
+{txt}{space 3}1.tocolys {c |} {res}     1.13    0.886703
+{txt}{space 3}2.modedev {c |} {res}     1.15    0.872069
+{txt}{space 6}apgar1 {c |} {res}     1.31    0.764492
+{txt}{space 4}1.ventil {c |} {res}     1.63    0.614848
+{txt}{space 4}1.pneumo {c |} {res}     1.23    0.812403
+{txt}{space 7}1.pda {c |} {res}     1.18    0.847686
+{txt}{space 3}2.sexbaby {c |} {res}     1.05    0.950968
+{txt}{hline 13}{c +}{hline 22}
+    Mean VIF {c |} {res}     1.41
+{txt}
+{com}. 
+. * No VIF exceeded 10 - no multicollinearity detected between predictors.
+. 
+. * STEP 2: CHECK FOR OUTLIERS
+. * We assess overall influence using Dbeta (cutoff: max < 1) and
+. * leverage (cutoff: max < 0.5) after the logistic model.
+. 
+. * Re-fit the logistic model
+. logit died i.race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-225.79538}  
+Iteration 2:{space 3}log likelihood = {res:-205.75002}  
+Iteration 3:{space 3}log likelihood = {res:-205.03588}  
+Iteration 4:{space 3}log likelihood = {res:-205.03418}  
+Iteration 5:{space 3}log likelihood = {res:-205.03418}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:14})}{col 70} = {res}{ralign 6:281.59}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-205.03418}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4071}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} .6674574{col 32}{space 2} .2889324{col 43}{space 1}    2.31{col 52}{space 3}0.021{col 60}{space 4} .1011603{col 73}{space 3} 1.233755
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2}-.0018765{col 32}{space 2} .0017351{col 43}{space 1}   -1.08{col 52}{space 3}0.279{col 60}{space 4}-.0052772{col 73}{space 3} .0015242
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0015043{col 32}{space 2} .0008374{col 43}{space 1}   -1.80{col 52}{space 3}0.072{col 60}{space 4}-.0031455{col 73}{space 3} .0001369
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.5211553{col 32}{space 2} .1042435{col 43}{space 1}   -5.00{col 52}{space 3}0.000{col 60}{space 4}-.7254688{col 73}{space 3}-.3168418
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} .2587623{col 32}{space 2} .3099849{col 43}{space 1}    0.83{col 52}{space 3}0.404{col 60}{space 4} -.348797{col 73}{space 3} .8663216
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} .4112682{col 32}{space 2} .3440374{col 43}{space 1}    1.20{col 52}{space 3}0.232{col 60}{space 4}-.2630326{col 73}{space 3} 1.085569
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2}-.2702313{col 32}{space 2} .2768959{col 43}{space 1}   -0.98{col 52}{space 3}0.329{col 60}{space 4}-.8129374{col 73}{space 3} .2724747
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2}-.1623952{col 32}{space 2} .3172102{col 43}{space 1}   -0.51{col 52}{space 3}0.609{col 60}{space 4}-.7841158{col 73}{space 3} .4593254
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2}-.0363512{col 32}{space 2} .2778797{col 43}{space 1}   -0.13{col 52}{space 3}0.896{col 60}{space 4}-.5809855{col 73}{space 3}  .508283
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2}-.0326145{col 32}{space 2} .0570096{col 43}{space 1}   -0.57{col 52}{space 3}0.567{col 60}{space 4}-.1443511{col 73}{space 3} .0791222
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .6936039{col 32}{space 2} .3660787{col 43}{space 1}    1.89{col 52}{space 3}0.058{col 60}{space 4}-.0238972{col 73}{space 3} 1.411105
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 1.826412{col 32}{space 2} .3078401{col 43}{space 1}    5.93{col 52}{space 3}0.000{col 60}{space 4} 1.223057{col 73}{space 3} 2.429768
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2}-.3204829{col 32}{space 2} .2878455{col 43}{space 1}   -1.11{col 52}{space 3}0.266{col 60}{space 4}-.8846497{col 73}{space 3} .2436838
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2}-.0524902{col 32}{space 2} .2626692{col 43}{space 1}   -0.20{col 52}{space 3}0.842{col 60}{space 4}-.5673124{col 73}{space 3} .4623319
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 13.90303{col 32}{space 2} 2.473213{col 43}{space 1}    5.62{col 52}{space 3}0.000{col 60}{space 4} 9.055622{col 73}{space 3} 18.75044
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. * Overall influence (Dbeta) - max should not exceed 1
+. predict dbeta, dbeta
+{txt}
+{com}. 
+. * Leverage - values should not exceed 0.5
+. predict leverage, hat
+{txt}
+{com}. 
+. summarize dbeta leverage
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 7}dbeta {c |}{res}        669    .0244991    .0565576   4.98e-08   .3706556
+{txt}{space 4}leverage {c |}{res}        669    .0224215    .0199108   .0002422   .1033039
+{txt}
+{com}. 
+. * No outliers detected - Dbeta max < 1 and leverage max < 0.5.
+. 
+. 
+. * VARIABLE SELECTION 
+. * stepwise is used to identify independent predictors of death.
+. 
+. stepwise, pr(0.05): logit died i.race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+{res}{txt}note: {bf:0b.race_white_other} omitted because of estimability.
+note: {bf:1b.placedev} omitted because of estimability.
+note: {bf:0b.multpreg} omitted because of estimability.
+note: {bf:0b.betamet} omitted because of estimability.
+note: {bf:0b.tocolys} omitted because of estimability.
+note: {bf:1b.modedev} omitted because of estimability.
+note: {bf:0b.ventil} omitted because of estimability.
+note: {bf:0b.pneumo} omitted because of estimability.
+note: {bf:0b.pda} omitted because of estimability.
+note: {bf:1b.sexbaby} omitted because of estimability.
+
+{p2colset 0 23 32 2}{...}
+Wald test, begin with full model:
+{p2col:p = {res:0.8959} >= 0.0500,}removing {res:2.modedev}{p_end}
+{p2col:p = {res:0.8412} >= 0.0500,}removing {res:2.sexbaby}{p_end}
+{p2col:p = {res:0.6121} >= 0.0500,}removing {res:1.tocolys}{p_end}
+{p2col:p = {res:0.5716} >= 0.0500,}removing {res:apgar1}{p_end}
+{p2col:p = {res:0.4258} >= 0.0500,}removing {res:2.placedev}{p_end}
+{p2col:p = {res:0.2458} >= 0.0500,}removing {res:1.pda}{p_end}
+{p2col:p = {res:0.2537} >= 0.0500,}removing {res:platelet}{p_end}
+{p2col:p = {res:0.2023} >= 0.0500,}removing {res:1.multpreg}{p_end}
+{p2col:p = {res:0.2020} >= 0.0500,}removing {res:1.betamet}{p_end}
+{p2colset 0 12 32 2}{...}
+{p2colreset}{...}
+
+Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:5})}{col 70} = {res}{ralign 6:274.39}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.63109}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3967}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} .6996867{col 32}{space 2} .2788048{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} .1532393{col 73}{space 3} 1.246134
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2}  1.87839{col 32}{space 2} .3008724{col 43}{space 1}    6.24{col 52}{space 3}0.000{col 60}{space 4} 1.288691{col 73}{space 3}  2.46809
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0019013{col 32}{space 2} .0008042{col 43}{space 1}   -2.36{col 52}{space 3}0.018{col 60}{space 4}-.0034774{col 73}{space 3}-.0003251
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.4852203{col 32}{space 2} .0999582{col 43}{space 1}   -4.85{col 52}{space 3}0.000{col 60}{space 4}-.6811347{col 73}{space 3}-.2893058
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .7584576{col 32}{space 2} .3361824{col 43}{space 1}    2.26{col 52}{space 3}0.024{col 60}{space 4} .0995523{col 73}{space 3} 1.417363
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2}  12.5697{col 32}{space 2} 2.273295{col 43}{space 1}    5.53{col 52}{space 3}0.000{col 60}{space 4}  8.11412{col 73}{space 3} 17.02527
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. * Independent predictors retained: race_white_other, birthwt, gestage,
+. * ventil, pneumo; these form interaction terms
+. 
+. *ASSESS FOR INTERACTION
+. * A chunk test is performed by comparing a model with interaction terms
+. * (full model) against a model without them (reduced model) using the
+. * likelihood ratio test. A non-significant result means no interaction.
+. 
+. * Reduced model - basic variables only, no interaction terms
+. logit died i.race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-225.79538}  
+Iteration 2:{space 3}log likelihood = {res:-205.75002}  
+Iteration 3:{space 3}log likelihood = {res:-205.03588}  
+Iteration 4:{space 3}log likelihood = {res:-205.03418}  
+Iteration 5:{space 3}log likelihood = {res:-205.03418}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:14})}{col 70} = {res}{ralign 6:281.59}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-205.03418}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4071}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} .6674574{col 32}{space 2} .2889324{col 43}{space 1}    2.31{col 52}{space 3}0.021{col 60}{space 4} .1011603{col 73}{space 3} 1.233755
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2}-.0018765{col 32}{space 2} .0017351{col 43}{space 1}   -1.08{col 52}{space 3}0.279{col 60}{space 4}-.0052772{col 73}{space 3} .0015242
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0015043{col 32}{space 2} .0008374{col 43}{space 1}   -1.80{col 52}{space 3}0.072{col 60}{space 4}-.0031455{col 73}{space 3} .0001369
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.5211553{col 32}{space 2} .1042435{col 43}{space 1}   -5.00{col 52}{space 3}0.000{col 60}{space 4}-.7254688{col 73}{space 3}-.3168418
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} .2587623{col 32}{space 2} .3099849{col 43}{space 1}    0.83{col 52}{space 3}0.404{col 60}{space 4} -.348797{col 73}{space 3} .8663216
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} .4112682{col 32}{space 2} .3440374{col 43}{space 1}    1.20{col 52}{space 3}0.232{col 60}{space 4}-.2630326{col 73}{space 3} 1.085569
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2}-.2702313{col 32}{space 2} .2768959{col 43}{space 1}   -0.98{col 52}{space 3}0.329{col 60}{space 4}-.8129374{col 73}{space 3} .2724747
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2}-.1623952{col 32}{space 2} .3172102{col 43}{space 1}   -0.51{col 52}{space 3}0.609{col 60}{space 4}-.7841158{col 73}{space 3} .4593254
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2}-.0363512{col 32}{space 2} .2778797{col 43}{space 1}   -0.13{col 52}{space 3}0.896{col 60}{space 4}-.5809855{col 73}{space 3}  .508283
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2}-.0326145{col 32}{space 2} .0570096{col 43}{space 1}   -0.57{col 52}{space 3}0.567{col 60}{space 4}-.1443511{col 73}{space 3} .0791222
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .6936039{col 32}{space 2} .3660787{col 43}{space 1}    1.89{col 52}{space 3}0.058{col 60}{space 4}-.0238972{col 73}{space 3} 1.411105
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 1.826412{col 32}{space 2} .3078401{col 43}{space 1}    5.93{col 52}{space 3}0.000{col 60}{space 4} 1.223057{col 73}{space 3} 2.429768
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2}-.3204829{col 32}{space 2} .2878455{col 43}{space 1}   -1.11{col 52}{space 3}0.266{col 60}{space 4}-.8846497{col 73}{space 3} .2436838
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2}-.0524902{col 32}{space 2} .2626692{col 43}{space 1}   -0.20{col 52}{space 3}0.842{col 60}{space 4}-.5673124{col 73}{space 3} .4623319
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 13.90303{col 32}{space 2} 2.473213{col 43}{space 1}    5.62{col 52}{space 3}0.000{col 60}{space 4} 9.055622{col 73}{space 3} 18.75044
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store reducedmodel
+{txt}
+{com}. 
+. * Full model - basic variables plus plausible interaction terms
+. * Interaction terms are formed between the key predictors identified
+. * from clinical relevance and preliminary inspection
+. logit died i.race_white_other platelet birthwt gestage i.placedev i.multpreg i.betamet i.tocolys i.modedev apgar1 i.ventil i.pneumo i.pda i.sexbaby i.pneumo#c.birthwt i.pneumo#c.gestage i.pneumo#i.race_white_other i.pneumo#i.ventil c.birthwt#c.gestage c.birthwt#i.race_white_other c.birthwt#i.ventil c.gestage#i.race_white_other c.gestage#i.ventil i.race_white_other#i.ventil
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-216.37386}  
+Iteration 2:{space 3}log likelihood = {res:-201.68249}  
+Iteration 3:{space 3}log likelihood = {res:-198.89865}  
+Iteration 4:{space 3}log likelihood = {res:-198.73478}  
+Iteration 5:{space 3}log likelihood = {res:-198.73416}  
+Iteration 6:{space 3}log likelihood = {res:-198.73416}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:24})}{col 70} = {res}{ralign 6:294.19}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-198.73416}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.4253}
+
+{txt}{hline 27}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                      died{col 28}{c |} Coefficient{col 40}  Std. err.{col 52}      z{col 60}   P>|z|{col 68}     [95% con{col 81}f. interval]
+{hline 27}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}1.race_white_other {c |}{col 28}{res}{space 2}-2.675536{col 40}{space 2} 5.323294{col 51}{space 1}   -0.50{col 60}{space 3}0.615{col 68}{space 4}  -13.109{col 81}{space 3} 7.757929
+{txt}{space 18}platelet {c |}{col 28}{res}{space 2}-.0019537{col 40}{space 2} .0018024{col 51}{space 1}   -1.08{col 60}{space 3}0.278{col 68}{space 4}-.0054864{col 81}{space 3}  .001579
+{txt}{space 19}birthwt {c |}{col 28}{res}{space 2}-.0177921{col 40}{space 2} .0080481{col 51}{space 1}   -2.21{col 60}{space 3}0.027{col 68}{space 4}-.0335662{col 81}{space 3}-.0020181
+{txt}{space 19}gestage {c |}{col 28}{res}{space 2}-1.159799{col 40}{space 2}  .426883{col 51}{space 1}   -2.72{col 60}{space 3}0.007{col 68}{space 4}-1.996475{col 81}{space 3} -.323124
+{txt}{space 16}2.placedev {c |}{col 28}{res}{space 2} .2532356{col 40}{space 2} .3162476{col 51}{space 1}    0.80{col 60}{space 3}0.423{col 68}{space 4}-.3665983{col 81}{space 3} .8730696
+{txt}{space 16}1.multpreg {c |}{col 28}{res}{space 2} .3176437{col 40}{space 2} .3545994{col 51}{space 1}    0.90{col 60}{space 3}0.370{col 68}{space 4}-.3773584{col 81}{space 3} 1.012646
+{txt}{space 17}1.betamet {c |}{col 28}{res}{space 2}-.2351744{col 40}{space 2} .2902463{col 51}{space 1}   -0.81{col 60}{space 3}0.418{col 68}{space 4}-.8040467{col 81}{space 3} .3336978
+{txt}{space 17}1.tocolys {c |}{col 28}{res}{space 2}-.1525932{col 40}{space 2} .3256962{col 51}{space 1}   -0.47{col 60}{space 3}0.639{col 68}{space 4} -.790946{col 81}{space 3} .4857597
+{txt}{space 17}2.modedev {c |}{col 28}{res}{space 2}-.0523102{col 40}{space 2} .2871555{col 51}{space 1}   -0.18{col 60}{space 3}0.855{col 68}{space 4}-.6151246{col 81}{space 3} .5105043
+{txt}{space 20}apgar1 {c |}{col 28}{res}{space 2}-.0361882{col 40}{space 2} .0591425{col 51}{space 1}   -0.61{col 60}{space 3}0.541{col 68}{space 4}-.1521054{col 81}{space 3} .0797289
+{txt}{space 18}1.ventil {c |}{col 28}{res}{space 2}-2.615732{col 40}{space 2} 6.309091{col 51}{space 1}   -0.41{col 60}{space 3}0.678{col 68}{space 4}-14.98132{col 81}{space 3} 9.749859
+{txt}{space 18}1.pneumo {c |}{col 28}{res}{space 2}  1.24098{col 40}{space 2} 5.327937{col 51}{space 1}    0.23{col 60}{space 3}0.816{col 68}{space 4}-9.201585{col 81}{space 3} 11.68354
+{txt}{space 21}1.pda {c |}{col 28}{res}{space 2}-.2637997{col 40}{space 2} .2871886{col 51}{space 1}   -0.92{col 60}{space 3}0.358{col 68}{space 4} -.826679{col 81}{space 3} .2990797
+{txt}{space 17}2.sexbaby {c |}{col 28}{res}{space 2} .0208885{col 40}{space 2} .2701271{col 51}{space 1}    0.08{col 60}{space 3}0.938{col 68}{space 4}-.5085509{col 81}{space 3} .5503279
+{txt}{space 26} {c |}
+{space 10}pneumo#c.birthwt {c |}
+{space 24}1  {c |}{col 28}{res}{space 2}-.0013291{col 40}{space 2}  .001783{col 51}{space 1}   -0.75{col 60}{space 3}0.456{col 68}{space 4}-.0048236{col 81}{space 3} .0021654
+{txt}{space 26} {c |}
+{space 10}pneumo#c.gestage {c |}
+{space 24}1  {c |}{col 28}{res}{space 2} .0777122{col 40}{space 2} .2229527{col 51}{space 1}    0.35{col 60}{space 3}0.727{col 68}{space 4}-.3592672{col 81}{space 3} .5146915
+{txt}{space 26} {c |}
+{space 3}pneumo#race_white_other {c |}
+{space 22}1 1  {c |}{col 28}{res}{space 2} .3880186{col 40}{space 2} .6154502{col 51}{space 1}    0.63{col 60}{space 3}0.528{col 68}{space 4}-.8182417{col 81}{space 3} 1.594279
+{txt}{space 26} {c |}
+{space 13}pneumo#ventil {c |}
+{space 22}1 1  {c |}{col 28}{res}{space 2}-.5546323{col 40}{space 2} 1.511786{col 51}{space 1}   -0.37{col 60}{space 3}0.714{col 68}{space 4}-3.517678{col 81}{space 3} 2.408414
+{txt}{space 26} {c |}
+{space 7}c.birthwt#c.gestage {c |}{col 28}{res}{space 2} .0004903{col 40}{space 2} .0002688{col 51}{space 1}    1.82{col 60}{space 3}0.068{col 68}{space 4}-.0000367{col 81}{space 3} .0010172
+{txt}{space 26} {c |}
+race_white_other#c.birthwt {c |}
+{space 24}1  {c |}{col 28}{res}{space 2}-.0003068{col 40}{space 2} .0019214{col 51}{space 1}   -0.16{col 60}{space 3}0.873{col 68}{space 4}-.0040726{col 81}{space 3}  .003459
+{txt}{space 26} {c |}
+{space 10}ventil#c.birthwt {c |}
+{space 24}1  {c |}{col 28}{res}{space 2} .0039759{col 40}{space 2}  .002649{col 51}{space 1}    1.50{col 60}{space 3}0.133{col 68}{space 4} -.001216{col 81}{space 3} .0091678
+{txt}{space 26} {c |}
+race_white_other#c.gestage {c |}
+{space 24}1  {c |}{col 28}{res}{space 2} .1806288{col 40}{space 2} .2398351{col 51}{space 1}    0.75{col 60}{space 3}0.451{col 68}{space 4}-.2894393{col 81}{space 3}  .650697
+{txt}{space 26} {c |}
+{space 10}ventil#c.gestage {c |}
+{space 24}1  {c |}{col 28}{res}{space 2} .0351893{col 40}{space 2} .2929483{col 51}{space 1}    0.12{col 60}{space 3}0.904{col 68}{space 4}-.5389787{col 81}{space 3} .6093574
+{txt}{space 26} {c |}
+{space 3}race_white_other#ventil {c |}
+{space 22}1 1  {c |}{col 28}{res}{space 2}-1.631584{col 40}{space 2} 1.116162{col 51}{space 1}   -1.46{col 60}{space 3}0.144{col 68}{space 4}-3.819222{col 81}{space 3} .5560536
+{txt}{space 26} {c |}
+{space 21}_cons {c |}{col 28}{res}{space 2} 32.79537{col 40}{space 2} 10.15344{col 51}{space 1}    3.23{col 60}{space 3}0.001{col 68}{space 4} 12.89499{col 81}{space 3} 52.69576
+{txt}{hline 27}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store fullmodel
+{txt}
+{com}. 
+. * Likelihood ratio test comparing full model (with interaction) to reduced model
+. * A non-significant p-value means no evidence of interaction - reduced is better
+. lrtest fullmodel reducedmodel, stats
+
+{txt}Likelihood-ratio test
+Assumption: {res}{stata est replay reducedmodel:reducedmodel}{txt} nested within {res}{stata est replay fullmodel:fullmodel}
+
+{txt}{ralign 11:LR chi2({res:10})} = {res}{ralign 6:12.60}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.2469}
+
+{txt}Akaike's information criterion and Bayesian information criterion
+
+{hline 13}{c TT}{hline 63}
+       Model {c |}          N   ll(null)  ll(model)      df        AIC        BIC
+{hline 13}{c +}{hline 63}
+{ralign 12:{stata estimates replay reducedmodel:reducedmodel}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39}-205.0342{col 50}    15{col 58} 440.0684{col 69} 507.6551
+{txt}{ralign 12:{stata estimates replay fullmodel:fullmodel}}{col 14}{c |}{res}{col 16}       669{col 28}-345.8274{col 39}-198.7342{col 50}    25{col 58} 447.4683{col 69} 560.1129
+{txt}{hline 13}{c BT}{hline 63}
+{p 0 6 0 77}Note: BIC uses N = number of observations. See {helpb bic_note:{bind:[R] BIC note}}.{p_end}
+
+{com}. 
+. * The likelihood ratio test was not significant. No interaction was detected.
+. * The reduced model (without interaction terms) is preferred.
+. 
+. 
+. 
+. * ASSESS FOR CONFOUNDING
+. * Variables dropped during stepwise are added back one at a time to check
+. * whether they confound the relationship between the retained predictors
+. * and the outcome. A change of 10% or more in any odds ratio indicates
+. * confounding - that variable is then retained in the final model.
+. 
+. * Base model with independent predictors from stepwise
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-229.10865}  
+Iteration 2:{space 3}log likelihood = {res:-209.30083}  
+Iteration 3:{space 3}log likelihood = {res:-208.63271}  
+Iteration 4:{space 3}log likelihood = {res:-208.63109}  
+Iteration 5:{space 3}log likelihood = {res:-208.63109}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:5})}{col 70} = {res}{ralign 6:274.39}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.63109}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3967}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 2.013122{col 32}{space 2} .5612681{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} 1.165604{col 73}{space 3} 3.476876
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981005{col 32}{space 2} .0008027{col 43}{space 1}   -2.36{col 52}{space 3}0.018{col 60}{space 4} .9965286{col 73}{space 3} .9996749
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6155616{col 32}{space 2} .0615304{col 43}{space 1}   -4.85{col 52}{space 3}0.000{col 60}{space 4} .5060424{col 73}{space 3} .7487832
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.134981{col 32}{space 2}  .717743{col 43}{space 1}    2.26{col 52}{space 3}0.024{col 60}{space 4} 1.104676{col 73}{space 3} 4.126225
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.542965{col 32}{space 2} 1.968598{col 43}{space 1}    6.24{col 52}{space 3}0.000{col 60}{space 4} 3.628035{col 73}{space 3} 11.79988
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 287706.8{col 32}{space 2} 654042.5{col 43}{space 1}    5.53{col 52}{space 3}0.000{col 60}{space 4} 3341.317{col 73}{space 3} 2.48e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add betamethasone
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo i.betamet, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-228.31503}  
+Iteration 2:{space 3}log likelihood = {res:-208.47918}  
+Iteration 3:{space 3}log likelihood = {res:-207.81368}  
+Iteration 4:{space 3}log likelihood = {res:-207.81206}  
+Iteration 5:{space 3}log likelihood = {res:-207.81206}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:276.03}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-207.81206}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3991}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 2.002694{col 32}{space 2}  .558621{col 43}{space 1}    2.49{col 52}{space 3}0.013{col 60}{space 4} 1.159271{col 73}{space 3} 3.459747
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981424{col 32}{space 2}  .000799{col 43}{space 1}   -2.32{col 52}{space 3}0.020{col 60}{space 4} .9965776{col 73}{space 3} .9997098
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6170306{col 32}{space 2} .0613986{col 43}{space 1}   -4.85{col 52}{space 3}0.000{col 60}{space 4} .5076992{col 73}{space 3} .7499061
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.097611{col 32}{space 2} .7049106{col 43}{space 1}    2.20{col 52}{space 3}0.027{col 60}{space 4} 1.085613{col 73}{space 3} 4.052981
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.463182{col 32}{space 2} 1.943558{col 43}{space 1}    6.21{col 52}{space 3}0.000{col 60}{space 4} 3.584922{col 73}{space 3} 11.65234
+{txt}{space 9}1.betamet {c |}{col 20}{res}{space 2} .7206669{col 32}{space 2} .1850418{col 43}{space 1}   -1.28{col 52}{space 3}0.202{col 60}{space 4} .4356885{col 73}{space 3} 1.192046
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 301215.8{col 32}{space 2}   682939{col 43}{space 1}    5.56{col 52}{space 3}0.000{col 60}{space 4} 3539.728{col 73}{space 3} 2.56e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add multiple pregnancy
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo i.multpreg, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res: -228.5188}  
+Iteration 2:{space 3}log likelihood = {res:-208.68529}  
+Iteration 3:{space 3}log likelihood = {res:-208.01091}  
+Iteration 4:{space 3}log likelihood = {res:-208.00927}  
+Iteration 5:{space 3}log likelihood = {res:-208.00927}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:275.64}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.00927}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3985}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2}  2.01249{col 32}{space 2} .5616393{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} 1.164617{col 73}{space 3} 3.477638
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981296{col 32}{space 2}   .00081{col 43}{space 1}   -2.31{col 52}{space 3}0.021{col 60}{space 4} .9965433{col 73}{space 3} .9997185
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6096811{col 32}{space 2} .0619109{col 43}{space 1}   -4.87{col 52}{space 3}0.000{col 60}{space 4} .4996505{col 73}{space 3}  .743942
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.181061{col 32}{space 2} .7378159{col 43}{space 1}    2.31{col 52}{space 3}0.021{col 60}{space 4} 1.123882{col 73}{space 3} 4.232674
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.306382{col 32}{space 2} 1.909164{col 43}{space 1}    6.08{col 52}{space 3}0.000{col 60}{space 4} 3.484108{col 73}{space 3} 11.41482
+{txt}{space 8}1.multpreg {c |}{col 20}{res}{space 2} 1.442259{col 32}{space 2} .4709163{col 43}{space 1}    1.12{col 52}{space 3}0.262{col 60}{space 4} .7605273{col 73}{space 3}  2.73509
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 339089.1{col 32}{space 2} 780942.5{col 43}{space 1}    5.53{col 52}{space 3}0.000{col 60}{space 4} 3714.886{col 73}{space 3} 3.10e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add platelet count
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo platelet, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-228.27703}  
+Iteration 2:{space 3}log likelihood = {res:-208.35178}  
+Iteration 3:{space 3}log likelihood = {res:-207.69069}  
+Iteration 4:{space 3}log likelihood = {res:-207.68911}  
+Iteration 5:{space 3}log likelihood = {res:-207.68911}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:276.28}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-207.68911}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3994}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 2.009365{col 32}{space 2} .5607259{col 43}{space 1}    2.50{col 52}{space 3}0.012{col 60}{space 4} 1.162855{col 73}{space 3} 3.472098
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9983361{col 32}{space 2} .0008181{col 43}{space 1}   -2.03{col 52}{space 3}0.042{col 60}{space 4}  .996734{col 73}{space 3} .9999408
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6046581{col 32}{space 2} .0608301{col 43}{space 1}   -5.00{col 52}{space 3}0.000{col 60}{space 4} .4964517{col 73}{space 3} .7364493
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 1.960421{col 32}{space 2} .6693261{col 43}{space 1}    1.97{col 52}{space 3}0.049{col 60}{space 4} 1.003997{col 73}{space 3}  3.82795
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.398055{col 32}{space 2} 1.927694{col 43}{space 1}    6.16{col 52}{space 3}0.000{col 60}{space 4} 3.544755{col 73}{space 3} 11.54808
+{txt}{space 10}platelet {c |}{col 20}{res}{space 2} .9977446{col 32}{space 2} .0016509{col 43}{space 1}   -1.36{col 52}{space 3}0.172{col 60}{space 4} .9945142{col 73}{space 3} 1.000986
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 615523.3{col 32}{space 2}  1442461{col 43}{space 1}    5.69{col 52}{space 3}0.000{col 60}{space 4} 6229.863{col 73}{space 3} 6.08e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add PDA
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo i.pda, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-228.67997}  
+Iteration 2:{space 3}log likelihood = {res:-208.84426}  
+Iteration 3:{space 3}log likelihood = {res:-208.16973}  
+Iteration 4:{space 3}log likelihood = {res:-208.16811}  
+Iteration 5:{space 3}log likelihood = {res:-208.16811}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:275.32}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.16811}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3981}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2}  2.02167{col 32}{space 2} .5647637{col 43}{space 1}    2.52{col 52}{space 3}0.012{col 60}{space 4} 1.169292{col 73}{space 3} 3.495407
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9980948{col 32}{space 2} .0008018{col 43}{space 1}   -2.37{col 52}{space 3}0.018{col 60}{space 4} .9965245{col 73}{space 3} .9996675
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6136821{col 32}{space 2} .0613892{col 43}{space 1}   -4.88{col 52}{space 3}0.000{col 60}{space 4} .5044222{col 73}{space 3} .7466082
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.273286{col 32}{space 2} .7808559{col 43}{space 1}    2.39{col 52}{space 3}0.017{col 60}{space 4} 1.159506{col 73}{space 3} 4.456923
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.757345{col 32}{space 2} 2.049167{col 43}{space 1}    6.30{col 52}{space 3}0.000{col 60}{space 4} 3.729486{col 73}{space 3} 12.24343
+{txt}{space 13}1.pda {c |}{col 20}{res}{space 2} .7629507{col 32}{space 2} .2159031{col 43}{space 1}   -0.96{col 52}{space 3}0.339{col 60}{space 4} .4381469{col 73}{space 3} 1.328536
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 319650.2{col 32}{space 2}   727984{col 43}{space 1}    5.57{col 52}{space 3}0.000{col 60}{space 4} 3682.265{col 73}{space 3} 2.77e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add place of delivery
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo i.placedev, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-228.73804}  
+Iteration 2:{space 3}log likelihood = {res:-208.87885}  
+Iteration 3:{space 3}log likelihood = {res:-208.20921}  
+Iteration 4:{space 3}log likelihood = {res:-208.20759}  
+Iteration 5:{space 3}log likelihood = {res:-208.20759}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:275.24}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.20759}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3979}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 2.016687{col 32}{space 2} .5641631{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} 1.165512{col 73}{space 3} 3.489474
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981106{col 32}{space 2} .0008028{col 43}{space 1}   -2.35{col 52}{space 3}0.019{col 60}{space 4} .9965384{col 73}{space 3} .9996853
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6154959{col 32}{space 2} .0614754{col 43}{space 1}   -4.86{col 52}{space 3}0.000{col 60}{space 4} .5060665{col 73}{space 3} .7485877
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2}  2.05442{col 32}{space 2} .6971441{col 43}{space 1}    2.12{col 52}{space 3}0.034{col 60}{space 4} 1.056437{col 73}{space 3} 3.995166
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.529756{col 32}{space 2} 1.965925{col 43}{space 1}    6.23{col 52}{space 3}0.000{col 60}{space 4} 3.619298{col 73}{space 3} 11.78066
+{txt}{space 8}2.placedev {c |}{col 20}{res}{space 2} 1.311098{col 32}{space 2} .3843075{col 43}{space 1}    0.92{col 52}{space 3}0.355{col 60}{space 4} .7381282{col 73}{space 3} 2.328833
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 276530.3{col 32}{space 2} 628203.6{col 43}{space 1}    5.52{col 52}{space 3}0.000{col 60}{space 4} 3221.356{col 73}{space 3} 2.37e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add Apgar score
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo apgar1, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-228.54064}  
+Iteration 2:{space 3}log likelihood = {res:-208.74607}  
+Iteration 3:{space 3}log likelihood = {res:-208.07966}  
+Iteration 4:{space 3}log likelihood = {res:-208.07804}  
+Iteration 5:{space 3}log likelihood = {res:-208.07804}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:275.50}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.07804}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3983}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 1.934652{col 32}{space 2} .5441672{col 43}{space 1}    2.35{col 52}{space 3}0.019{col 60}{space 4} 1.114762{col 73}{space 3} 3.357559
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9982388{col 32}{space 2} .0008102{col 43}{space 1}   -2.17{col 52}{space 3}0.030{col 60}{space 4} .9966521{col 73}{space 3} .9998281
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6145374{col 32}{space 2} .0612659{col 43}{space 1}   -4.88{col 52}{space 3}0.000{col 60}{space 4} .5054618{col 73}{space 3} .7471509
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 1.960006{col 32}{space 2} .6772579{col 43}{space 1}    1.95{col 52}{space 3}0.051{col 60}{space 4} .9957138{col 73}{space 3} 3.858162
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.539197{col 32}{space 2} 1.971293{col 43}{space 1}    6.23{col 52}{space 3}0.000{col 60}{space 4} 3.621787{col 73}{space 3} 11.80663
+{txt}{space 12}apgar1 {c |}{col 20}{res}{space 2} .9454318{col 32}{space 2} .0504876{col 43}{space 1}   -1.05{col 52}{space 3}0.293{col 60}{space 4} .8514804{col 73}{space 3}  1.04975
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 367599.3{col 32}{space 2} 838511.8{col 43}{space 1}    5.62{col 52}{space 3}0.000{col 60}{space 4} 4204.773{col 73}{space 3} 3.21e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add tocolysis
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo i.tocolys, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-228.93642}  
+Iteration 2:{space 3}log likelihood = {res:-209.11026}  
+Iteration 3:{space 3}log likelihood = {res:-208.43963}  
+Iteration 4:{space 3}log likelihood = {res:-208.43802}  
+Iteration 5:{space 3}log likelihood = {res:-208.43802}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:274.78}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.43802}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3973}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 1.974422{col 32}{space 2} .5534326{col 43}{space 1}    2.43{col 52}{space 3}0.015{col 60}{space 4} 1.139849{col 73}{space 3} 3.420052
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981232{col 32}{space 2} .0008025{col 43}{space 1}   -2.34{col 52}{space 3}0.019{col 60}{space 4} .9965516{col 73}{space 3} .9996973
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}  .613148{col 32}{space 2} .0613628{col 43}{space 1}   -4.89{col 52}{space 3}0.000{col 60}{space 4} .5039396{col 73}{space 3} .7460229
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.119491{col 32}{space 2} .7143088{col 43}{space 1}    2.23{col 52}{space 3}0.026{col 60}{space 4} 1.094865{col 73}{space 3} 4.103011
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.497625{col 32}{space 2} 1.954068{col 43}{space 1}    6.22{col 52}{space 3}0.000{col 60}{space 4}  3.60386{col 73}{space 3} 11.71497
+{txt}{space 9}1.tocolys {c |}{col 20}{res}{space 2} .8305412{col 32}{space 2} .2493354{col 43}{space 1}   -0.62{col 52}{space 3}0.536{col 60}{space 4} .4611299{col 73}{space 3} 1.495888
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 334055.4{col 32}{space 2} 763858.5{col 43}{space 1}    5.56{col 52}{space 3}0.000{col 60}{space 4} 3779.565{col 73}{space 3} 2.95e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add sex of baby
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo i.sexbaby, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-229.11261}  
+Iteration 2:{space 3}log likelihood = {res:-209.30197}  
+Iteration 3:{space 3}log likelihood = {res:-208.61754}  
+Iteration 4:{space 3}log likelihood = {res:-208.61591}  
+Iteration 5:{space 3}log likelihood = {res:-208.61591}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:274.42}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.61591}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3968}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 2.022224{col 32}{space 2} .5662234{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} 1.168134{col 73}{space 3} 3.500789
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981192{col 32}{space 2} .0008098{col 43}{space 1}   -2.32{col 52}{space 3}0.020{col 60}{space 4} .9965334{col 73}{space 3} .9997076
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}  .614533{col 32}{space 2} .0617863{col 43}{space 1}   -4.84{col 52}{space 3}0.000{col 60}{space 4} .5046192{col 73}{space 3} .7483878
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.160107{col 32}{space 2} .7409736{col 43}{space 1}    2.25{col 52}{space 3}0.025{col 60}{space 4} 1.102785{col 73}{space 3} 4.231164
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.542192{col 32}{space 2} 1.967957{col 43}{space 1}    6.24{col 52}{space 3}0.000{col 60}{space 4} 3.628051{col 73}{space 3} 11.79705
+{txt}{space 9}2.sexbaby {c |}{col 20}{res}{space 2} .9563096{col 32}{space 2} .2452503{col 43}{space 1}   -0.17{col 52}{space 3}0.862{col 60}{space 4} .5785005{col 73}{space 3}  1.58086
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 299294.8{col 32}{space 2} 684622.7{col 43}{space 1}    5.51{col 52}{space 3}0.000{col 60}{space 4} 3380.774{col 73}{space 3} 2.65e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * Add mode of delivery
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo i.modedev, or
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-229.10839}  
+Iteration 2:{space 3}log likelihood = {res:-209.30966}  
+Iteration 3:{space 3}log likelihood = {res:-208.61491}  
+Iteration 4:{space 3}log likelihood = {res:-208.61323}  
+Iteration 5:{space 3}log likelihood = {res:-208.61323}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:6})}{col 70} = {res}{ralign 6:274.43}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.61323}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3968}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2}  2.02726{col 32}{space 2} .5703921{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} 1.167923{col 73}{space 3}  3.51888
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981094{col 32}{space 2} .0008043{col 43}{space 1}   -2.35{col 52}{space 3}0.019{col 60}{space 4} .9965343{col 73}{space 3}  .999687
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6133099{col 32}{space 2} .0625545{col 43}{space 1}   -4.79{col 52}{space 3}0.000{col 60}{space 4} .5021827{col 73}{space 3} .7490284
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2}  2.13153{col 32}{space 2} .7172377{col 43}{space 1}    2.25{col 52}{space 3}0.024{col 60}{space 4} 1.102227{col 73}{space 3} 4.122037
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.495579{col 32}{space 2}  1.97029{col 43}{space 1}    6.17{col 52}{space 3}0.000{col 60}{space 4} 3.584468{col 73}{space 3} 11.77094
+{txt}{space 9}2.modedev {c |}{col 20}{res}{space 2} .9513965{col 32}{space 2} .2508804{col 43}{space 1}   -0.19{col 52}{space 3}0.850{col 60}{space 4} .5674169{col 73}{space 3} 1.595221
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2}   323543{col 32}{space 2} 763925.5{col 43}{space 1}    5.37{col 52}{space 3}0.000{col 60}{space 4} 3163.289{col 73}{space 3} 3.31e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * None of the dropped variables changed any odds ratio by 10% or more.
+. * No confounding was detected. The final model retains only the independent
+. * predictors identified from backward LR.
+. 
+. * FINAL MODEL
+. 
+. logit died i.race_white_other birthwt gestage i.ventil i.pneumo
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res: -345.8274}  
+Iteration 1:{space 3}log likelihood = {res:-229.10865}  
+Iteration 2:{space 3}log likelihood = {res:-209.30083}  
+Iteration 3:{space 3}log likelihood = {res:-208.63271}  
+Iteration 4:{space 3}log likelihood = {res:-208.63109}  
+Iteration 5:{space 3}log likelihood = {res:-208.63109}  
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:5})}{col 70} = {res}{ralign 6:274.39}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.63109}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3967}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Coefficient{col 32}  Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} .6996867{col 32}{space 2} .2788048{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} .1532393{col 73}{space 3} 1.246134
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2}-.0019013{col 32}{space 2} .0008042{col 43}{space 1}   -2.36{col 52}{space 3}0.018{col 60}{space 4}-.0034774{col 73}{space 3}-.0003251
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2}-.4852203{col 32}{space 2} .0999582{col 43}{space 1}   -4.85{col 52}{space 3}0.000{col 60}{space 4}-.6811347{col 73}{space 3}-.2893058
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} .7584576{col 32}{space 2} .3361824{col 43}{space 1}    2.26{col 52}{space 3}0.024{col 60}{space 4} .0995523{col 73}{space 3} 1.417363
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2}  1.87839{col 32}{space 2} .3008724{col 43}{space 1}    6.24{col 52}{space 3}0.000{col 60}{space 4} 1.288691{col 73}{space 3}  2.46809
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2}  12.5697{col 32}{space 2} 2.273295{col 43}{space 1}    5.53{col 52}{space 3}0.000{col 60}{space 4}  8.11412{col 73}{space 3} 17.02527
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store finalmodel
+{txt}
+{com}. 
+. * Display as odds ratios with 95% confidence intervals
+. logistic died i.race_white_other birthwt gestage i.ventil i.pneumo
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:5})}{col 70} = {res}{ralign 6:274.39}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.63109}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3967}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 2.013122{col 32}{space 2} .5612681{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} 1.165604{col 73}{space 3} 3.476876
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981005{col 32}{space 2} .0008027{col 43}{space 1}   -2.36{col 52}{space 3}0.018{col 60}{space 4} .9965286{col 73}{space 3} .9996749
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6155616{col 32}{space 2} .0615304{col 43}{space 1}   -4.85{col 52}{space 3}0.000{col 60}{space 4} .5060424{col 73}{space 3} .7487832
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.134981{col 32}{space 2}  .717743{col 43}{space 1}    2.26{col 52}{space 3}0.024{col 60}{space 4} 1.104676{col 73}{space 3} 4.126225
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.542965{col 32}{space 2} 1.968598{col 43}{space 1}    6.24{col 52}{space 3}0.000{col 60}{space 4} 3.628035{col 73}{space 3} 11.79988
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 287706.8{col 32}{space 2} 654042.5{col 43}{space 1}    5.53{col 52}{space 3}0.000{col 60}{space 4} 3341.317{col 73}{space 3} 2.48e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. 
+. * GOODNESS OF FIT
+. * The Hosmer-Lemeshow test divides observations into 10 groups by predicted
+. * probability and compares observed to expected frequencies. A non-significant
+. * p-value (p>0.05) indicates a good fit.
+. 
+. logistic died i.race_white_other birthwt gestage i.ventil i.pneumo
+{res}
+{txt}Logistic regression{col 57}{lalign 13:Number of obs}{col 70} = {res}{ralign 6:669}
+{txt}{col 57}{lalign 13:LR chi2({res:5})}{col 70} = {res}{ralign 6:274.39}
+{txt}{col 57}{lalign 13:Prob > chi2}{col 70} = {res}{ralign 6:0.0000}
+{txt}Log likelihood = {res:-208.63109}{col 57}{lalign 13:Pseudo R2}{col 70} = {res}{ralign 6:0.3967}
+
+{txt}{hline 19}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}              died{col 20}{c |} Odds ratio{col 32}   Std. err.{col 44}      z{col 52}   P>|z|{col 60}     [95% con{col 73}f. interval]
+{hline 19}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+1.race_white_other {c |}{col 20}{res}{space 2} 2.013122{col 32}{space 2} .5612681{col 43}{space 1}    2.51{col 52}{space 3}0.012{col 60}{space 4} 1.165604{col 73}{space 3} 3.476876
+{txt}{space 11}birthwt {c |}{col 20}{res}{space 2} .9981005{col 32}{space 2} .0008027{col 43}{space 1}   -2.36{col 52}{space 3}0.018{col 60}{space 4} .9965286{col 73}{space 3} .9996749
+{txt}{space 11}gestage {c |}{col 20}{res}{space 2} .6155616{col 32}{space 2} .0615304{col 43}{space 1}   -4.85{col 52}{space 3}0.000{col 60}{space 4} .5060424{col 73}{space 3} .7487832
+{txt}{space 10}1.ventil {c |}{col 20}{res}{space 2} 2.134981{col 32}{space 2}  .717743{col 43}{space 1}    2.26{col 52}{space 3}0.024{col 60}{space 4} 1.104676{col 73}{space 3} 4.126225
+{txt}{space 10}1.pneumo {c |}{col 20}{res}{space 2} 6.542965{col 32}{space 2} 1.968598{col 43}{space 1}    6.24{col 52}{space 3}0.000{col 60}{space 4} 3.628035{col 73}{space 3} 11.79988
+{txt}{space 13}_cons {c |}{col 20}{res}{space 2} 287706.8{col 32}{space 2} 654042.5{col 43}{space 1}    5.53{col 52}{space 3}0.000{col 60}{space 4} 3341.317{col 73}{space 3} 2.48e+07
+{txt}{hline 19}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 2}Note: {bf:_cons} estimates baseline odds{txt}.{p_end}
+
+{com}. estat gof, group(10)
+{txt}{p 0 6 2}note: obs collapsed on 10 quantiles of estimated probabilities.
+
+Goodness-of-fit test after logistic model
+Variable: {res}died
+
+{txt}{ralign 23:Number of observations} = {res}{ralign 6:669}
+{txt}{ralign 23:Number of groups} = {res}{ralign 6:10}
+{txt}{ralign 23:Hosmer–Lemeshow chi2({res:8})} = {res}{ralign 6:10.10}
+{txt}{ralign 23:Prob > chi2} = {res}{ralign 6:0.2578}
+{txt}
+{com}. 
+. * A non-significant Hosmer-Lemeshow test indicates the model fits the data well.
+. 
+. 
+. 
+. 
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}data/STATA\assignment 2_Number one baby outcomes.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}17 May 2026, 23:01:30
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

@@ -1,0 +1,420 @@
+
+
+      name:  <unnamed>
+       log:  data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.smcl
+  log type:  smcl
+ opened on:  24 Mar 2026, 11:47:51
+
+. ***always log using; at the begining of every do file
+. 
+. import excel "data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.xlsx", sheet("Sheet1") firstrow
+
+. 
+. *Exploring data
+. 
+. browse
+
+. *****show excel sheet
+. 
+. describe
+
+Contains data
+  obs:             8                          
+ vars:             5                          
+ size:            40                          
+
+              storage   display    value
+variable name   type    format     label      variable label
+
+ID
+Weight
+Age
+Sex
+Religion
+
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. ***** Summary about data
+. 
+. summarize
+
+    Variable         Obs        Mean    Std. Dev.       Min        Max
+
+ID           8         4.5     2.44949          1          8
+Weight           8      70.125    7.395703         62         80
+Age           8      27.875     .834523         27         29
+Sex           0
+Religion           0
+
+. ******give details about data
+. 
+. codebook
+
+
+ID
+
+
+type:  numeric (byte)
+
+range:  [1,8]units:  1
+unique values:  8missing .:  0/8
+
+tabulation:  Freq.  Value
+         11
+         12
+         13
+         14
+         15
+         16
+         17
+         18
+
+
+Weight
+
+
+type:  numeric (byte)
+
+range:  [62,80]units:  1
+unique values:  6missing .:  0/8
+
+tabulation:  Freq.  Value
+         262
+         163
+         270
+         175
+         179
+         180
+
+
+Age
+
+
+type:  numeric (byte)
+
+range:  [27,29]units:  1
+unique values:  3missing .:  0/8
+
+tabulation:  Freq.  Value
+         327
+         328
+         229
+
+
+Sex
+
+
+type:  string (str1)
+
+unique values:  2missing "":  0/8
+
+tabulation:  Freq.  Value
+         3"F"
+         5"M"
+
+
+Religion
+
+
+type:  string (str1)
+
+unique values:  3missing "":  0/8
+
+tabulation:  Freq.  Value
+         1"C"
+         1"M"
+         6"P"
+
+. ********Give details of all data
+. 
+. 
+. summarize, detail
+
+                             ID
+
+      Percentiles      Smallest
+ 1%            1              1
+ 5%            1              2
+10%            1              3       Obs                   8
+25%          2.5              4       Sum of Wgt.           8
+
+50%          4.5                      Mean                4.5
+                        Largest       Std. Dev.       2.44949
+75%          6.5              5
+90%            8              6       Variance              6
+95%            8              7       Skewness              0
+99%            8              8       Kurtosis       1.761905
+
+                           Weight
+
+      Percentiles      Smallest
+ 1%           62             62
+ 5%           62             62
+10%           62             63       Obs                   8
+25%         62.5             70       Sum of Wgt.           8
+
+50%           70                      Mean             70.125
+                        Largest       Std. Dev.      7.395703
+75%           77             70
+90%           80             75       Variance       54.69643
+95%           80             79       Skewness       .1296486
+99%           80             80       Kurtosis       1.504648
+
+                             Age
+
+      Percentiles      Smallest
+ 1%           27             27
+ 5%           27             27
+10%           27             27       Obs                   8
+25%           27             28       Sum of Wgt.           8
+
+50%           28                      Mean             27.875
+                        Largest       Std. Dev.       .834523
+75%         28.5             28
+90%           29             28       Variance       .6964286
+95%           29             29       Skewness       .2217159
+99%           29             29       Kurtosis       1.670611
+
+                             Sex
+
+no observations
+
+                          Religion
+
+no observations
+
+. ******** gives details of numeric data
+. 
+. 
+. rename ID studynumber
+
+. *** renaming a variable
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. ****renaming variable label
+. label variable studynumber "ID given to the study participants"
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. tabulate Sex
+
+        Sex       Freq.     Percent        Cum.
+
+          F           3       37.50       37.50
+          M           5       62.50      100.00
+
+      Total           8      100.00
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. tab Sex
+
+        Sex       Freq.     Percent        Cum.
+
+          F           3       37.50       37.50
+          M           5       62.50      100.00
+
+      Total           8      100.00
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. tab Sex Religion
+
+                        Religion
+       Sex          C          M          P      Total
+
+         F          0          0          3          3 
+         M          1          1          3          5 
+
+     Total          1          1          6          8 
+
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. tab Sex Religion, row
+
+
+ Key
+
+
+
+
+
+                        Religion
+       Sex          C          M          P      Total
+
+         F          0          0          3          3 
+                 0.00       0.00     100.00     100.00 
+
+         M          1          1          3          5 
+                20.00      20.00      60.00     100.00 
+
+     Total          1          1          6          8 
+                12.50      12.50      75.00     100.00 
+
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. tab Sex Religion, col
+
+
+ Key
+
+
+
+
+
+                        Religion
+       Sex          C          M          P      Total
+
+         F          0          0          3          3 
+                 0.00       0.00      50.00      37.50 
+
+         M          1          1          3          5 
+               100.00     100.00      50.00      62.50 
+
+     Total          1          1          6          8 
+               100.00     100.00     100.00     100.00 
+
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. sort Age
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. browse
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. sort studynumber
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. browse
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. generate Sex2 =
+invalid syntax
+
+
+end of do-file
+
+
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. generate Sex2 =.
+(8 missing values generated)
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. browse
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. browse
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. replace Sex2=1 if Sex=="F"
+(3 real changes made)
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. browse
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. replace Sex2=2 if Sex=="M"
+(5 real changes made)
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. browse
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. tab Sex Sex2
+
+                    Sex2
+       Sex          1          2      Total
+
+         F          3          0          3 
+         M          0          5          5 
+
+     Total          3          5          8 
+
+
+. 
+end of do-file
+
+. do "data/FAROUK~1\AppData\Local\Temp\STD5f54_000000.tmp"
+
+. encode Sex, gen (Sex3)
+
+. bro
+
+. 
+end of do-file
+
+. save "data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.dta", replace
+file data/FAROUK OSMAN\OneDrive\Documents\STATA\class_data.dta saved
+
+. exit

@@ -1,0 +1,965 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}data/pbirths.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}20 Apr 2026, 12:49:09
+{txt}
+{com}. 
+. *****BUILDING A LINEAR REGRESION MODEL
+. **** First import dataset
+. import excel "data/pbirths.xls", sheet("Sheet1") firstrow
+{res}{text}(5 vars, 1,115 obs)
+
+{com}. 
+. ***STEP 1
+. *Fit multilinear model on which assumptions will be tested;
+. **********talk about existence of relationships by looking at the R-squared and the significance of the F-statistic
+. regress grams black educ gestate smoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   310.20
+{txt}       Model {c |} {res}  235987581         4  58996895.3   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  211110570     1,110  190189.703   {txt}R-squared       ={res}    0.5278
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5261
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 436.11
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2}-168.9684{col 26}{space 2} 27.26027{col 37}{space 1}   -6.20{col 46}{space 3}0.000{col 54}{space 4}-222.4558{col 67}{space 3}-115.4809
+{txt}{space 8}educ {c |}{col 14}{res}{space 2} 9.571829{col 26}{space 2} 6.458197{col 37}{space 1}    1.48{col 46}{space 3}0.139{col 54}{space 4}-3.099822{col 67}{space 3} 22.24348
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 156.5116{col 26}{space 2} 5.013557{col 37}{space 1}   31.22{col 46}{space 3}0.000{col 54}{space 4} 146.6744{col 67}{space 3} 166.3487
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2}-174.8129{col 26}{space 2} 31.62426{col 37}{space 1}   -5.53{col 46}{space 3}0.000{col 54}{space 4} -236.863{col 67}{space 3}-112.7628
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2834.486{col 26}{space 2} 215.6222{col 37}{space 1}  -13.15{col 46}{space 3}0.000{col 54}{space 4}-3257.559{col 67}{space 3}-2411.413
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. ***STEP 2
+. *Correlation matrix to check for Existance(E) of possible relationships
+. ***********when you run this, dont bother looking at the coeffiecients of the grams(outcome) with categorical predictors variables, as they will be low, look at those with numerical predictors; Is there atleast one predictor variable with correlation coefficient  of 0.3 and above? 
+. correlate black educ gestate smoke  grams
+{txt}(obs=1,115)
+
+             {c |}    black     educ  gestate    smoke    grams
+{hline 13}{c +}{hline 45}
+       black {c |}{res}   1.0000
+        {txt}educ {c |}{res}  -0.1458   1.0000
+     {txt}gestate {c |}{res}  -0.1736   0.0625   1.0000
+       {txt}smoke {c |}{res}   0.0524  -0.2257  -0.1454   1.0000
+       {txt}grams {c |}{res}  -0.2565   0.1187   0.7021  -0.2281   1.0000
+
+{txt}
+{com}. 
+. 
+. ***DETOUR
+. **suppose you were building simple LRM
+. 
+. regress grams gestate
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(1, 1113)      = {res}  1081.94
+{txt}       Model {c |} {res}  220385523         1   220385523   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  226712629     1,113  203695.084   {txt}R-squared       ={res}    0.4929
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.4925
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 451.33
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}gestate {c |}{col 14}{res}{space 2} 166.4463{col 26}{space 2}  5.06026{col 37}{space 1}   32.89{col 46}{space 3}0.000{col 54}{space 4} 156.5176{col 67}{space 3}  176.375
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-3245.446{col 26}{space 2} 197.0111{col 37}{space 1}  -16.47{col 46}{space 3}0.000{col 54}{space 4}-3632.001{col 67}{space 3}-2858.891
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}.  
+. ***we can use, scatter plot to assess for linearity
+. ***or we can use a LOWESS smother, LOWESS line, or superimpose line of best fit
+. 
+. 
+. **this gives a scatter plot
+. twoway (scatter grams gestate) 
+{res}{txt}
+{com}. 
+. ***this gives lowess smother
+. twoway (scatter grams gestate) (lowess grams gestate)
+{res}{txt}
+{com}. 
+. ***this adds line of best fit to the lowess smother
+. twoway (scatter grams gestate) (lowess grams gestate) (lfit grams gestate) 
+{res}{txt}
+{com}. 
+. *FIT MODEL
+. regress grams black educ gestate smoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   310.20
+{txt}       Model {c |} {res}  235987581         4  58996895.3   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  211110570     1,110  190189.703   {txt}R-squared       ={res}    0.5278
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5261
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 436.11
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2}-168.9684{col 26}{space 2} 27.26027{col 37}{space 1}   -6.20{col 46}{space 3}0.000{col 54}{space 4}-222.4558{col 67}{space 3}-115.4809
+{txt}{space 8}educ {c |}{col 14}{res}{space 2} 9.571829{col 26}{space 2} 6.458197{col 37}{space 1}    1.48{col 46}{space 3}0.139{col 54}{space 4}-3.099822{col 67}{space 3} 22.24348
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 156.5116{col 26}{space 2} 5.013557{col 37}{space 1}   31.22{col 46}{space 3}0.000{col 54}{space 4} 146.6744{col 67}{space 3} 166.3487
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2}-174.8129{col 26}{space 2} 31.62426{col 37}{space 1}   -5.53{col 46}{space 3}0.000{col 54}{space 4} -236.863{col 67}{space 3}-112.7628
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2834.486{col 26}{space 2} 215.6222{col 37}{space 1}  -13.15{col 46}{space 3}0.000{col 54}{space 4}-3257.559{col 67}{space 3}-2411.413
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. ****CHECK FOR LINEARITY IN MLRM USING cpr(component plus redual) plot
+. **will check for each variable; you select only the independent variable; as the dependent is already selected in the model
+. 
+. **is linear for black
+. cprplot black 
+{res}{txt}
+{com}. 
+. **is linear for educ
+. cprplot educ
+{res}{txt}
+{com}. 
+. **is linear for smoke
+. cprplot smoke
+{res}{txt}
+{com}. 
+. **is linear for gestate
+. cprplot gestate
+{res}{txt}
+{com}. 
+. ***NOTE; when assumption of linearity is violated with curvatures, add a quadratic term and check if it improves the linearity. Common quadratic terms are squared and cubed e.g gestate-squared or gestate cubed 
+. *HOWEVER- PRINCIPLE - DO NOT RUN A MODEL WITH HIGHER ORDER TERMS e.g. SQUAREDs, CUBED, interaction terms when the basic variable is not there(SO MAKE SURE TO INCLUDE THE INITIAL VARIABLE)
+.  
+. **if a variable violates linearity and quadratic terms do not improve the linearity, try to categorize that predictor and see if it improves; ie try and categorize at the point where linearity starts to be violated
+. 
+. **CHECKING FOR INDEPENDNCE(I)
+. *In STATA can use rvpplots i.e. residuals versus predictor plots
+. *- should not have clear pattern
+. 
+. *- Got through regression diagnostics after fitting model
+. **NB; MAKE SURE TO ADD REFERENCE LINE AT Y=0
+. 
+. rvpplot black, yline(0)
+{res}{txt}
+{com}. 
+. rvpplot educ, yline(0)
+{res}{txt}
+{com}. *showed some slight pattern
+. 
+. rvpplot smoke, yline(0)
+{res}{txt}
+{com}. 
+. rvpplot gestate, yline(0)
+{res}{txt}
+{com}. **above; plots points contrate towards the right because most pregnancies are delivered towards term; so thats where birthweight will because
+. 
+. *CHECK Normality of residuals
+. *-Checked from regression standardized residuals
+. *-Predict the residuals since assumption is that for each X they are normally distributed
+. *-PROCEDURE; Statistics > postestimation > specify what you want to predict- THIS CREATES A NEW VARIABLE FOR THE RESIDUALS; WHICH WILL THEN BE USED FOR THE PLOTS 
+. *- Check Normal Q-Q or P-P plots
+. *- Or use kernel densities, box plots, etc
+. 
+. predict residuals, residuals
+{txt}
+{com}. *creates the residuals variable
+. 
+. *can use any of the following
+. kdensity residuals, normal
+{res}{txt}
+{com}. * 1. kerenel density plot ; make sure to add normal plot as well
+. 
+. pnorm residuals
+{res}{txt}
+{com}. *2. Normal Q-Q Plot
+. 
+. *can also use
+. swilk residuals
+
+                   {txt}Shapiro–Wilk W test for normal data
+
+    Variable {c |}        Obs{col 33}W{col 45}V{col 55}z       Prob>z
+{hline 13}{c +}{hline 54}
+   residuals {c |} {res}     1,115    0.99838      1.125     0.293    0.38483
+{txt}
+{com}. *3. shapiro wilk test to check for normality; 
+. 
+. *Ho. Residuals are normally distributed
+. *Ha. Residuals are not normally distributed
+. 
+. *Non-significant p-value indicates that we fail to reject the null hypothesis hence assumption is fulfilled
+. 
+. *CHECK FOR EQUAL VARIANCE-HOMOSCEDACITY; these tests check for Heteroscedasticity, can be; 
+. *(i) Visual checks ; rvf and rvp plots
+. *(ii)Statistical tests; Breusch-Pagan / Cook-Weisberg test(estat hettest)
+. 
+. *VISUAL CHECKS
+. *(a)RVP
+. *want to see a rectangular distribution this time;
+. rvpplot black, yline(0)
+{res}{txt}
+{com}. 
+. rvpplot educ, yline(0)
+{res}{txt}
+{com}. *this not good enough to assess for equal variance as it appears slightly funnel shaped;
+. 
+. rvpplot educ, addplot((lfit residuals educ)) yline(0)
+{res}{txt}
+{com}. *This is better;RVP plot with an overlaid linear fit line (lfit) and a zero-reference line  is generated ;to check if the vertical spread of residuals remains consistent and rectangular across all levels of education.
+. 
+. rvpplot educ, addplot((lfit residuals educ)) yline(0)
+{res}{txt}
+{com}. *For educ can also use lowess smother
+. 
+. rvpplot smoke, yline(0)
+{res}{txt}
+{com}. 
+. rvpplot gestate, yline(0)
+{res}{txt}
+{com}. *same issue here as educ; not really ideal as it appears funnel shaped
+. 
+. rvpplot gestate, addplot((lowess residuals gestate)) yline(0)
+{res}{txt}
+{com}. *lowess smother and fit line both added which is more helpful; shows its linear
+. 
+. 
+. *(b) RVF
+. *An Rvf plot is also used to assess for equal variance
+. *Since its residual vs fitted,First predict the fitted values(create new variable for fitted values:linear)
+. predict fitted, xb
+{txt}
+{com}. 
+. rvfplot, ytitle(0)
+{res}{txt}
+{com}. rvfplot, addplot((lfit residuals fitted)) ytitle(0)
+{res}{txt}
+{com}. 
+. *STATISTICAL TESTS; for equal ; Breusch-Pagan / Cook-Weisberg test(estat hettest)
+. *can check for the fitted 
+. estat hettest
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:{txt:Fitted values of} {res:grams}}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:1.59}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.2067}
+{txt}
+{com}. 
+. *or one variable at a time; especially those you are suspicious about
+. estat hettest black
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:black}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:3.40}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.0654}
+{txt}
+{com}. estat hettest educ
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:educ}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:1.18}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.2768}
+{txt}
+{com}. estat hettest smoke
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:smoke}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:1.72}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.1891}
+{txt}
+{com}. estat hettest gestate
+
+{txt}Breusch–Pagan/Cook–Weisberg test for heteroskedasticity 
+Assumption: Normal error terms
+{p 0 11 0}Variable:{space 1}{res:gestate}{p_end}
+
+H0: Constant variance
+
+{ralign 11:chi2({res:1})} = {res}{ralign 6:0.54}
+{txt}{ralign 11:Prob > chi2} = {res}{ralign 6:0.4613}
+{txt}
+{com}. 
+. *or even all
+. *the p value is not significant for all the above
+.  
+. **ALL THE ASSUMPTIONS ARE NOW FULFILLED
+. 
+. *TWO OTHER THINGS TO CHECK FOR BEFORE ANALYSIS;
+. *Collinearity/Multilinearity
+. *Outliers
+. 
+. *CHECK FOR COLLINEARITY;
+. *-correlations matrix; can eye ball(however cant drop variables because of this )
+. correlate black educ smoke gestate grams
+{txt}(obs=1,115)
+
+             {c |}    black     educ    smoke  gestate    grams
+{hline 13}{c +}{hline 45}
+       black {c |}{res}   1.0000
+        {txt}educ {c |}{res}  -0.1458   1.0000
+       {txt}smoke {c |}{res}   0.0524  -0.2257   1.0000
+     {txt}gestate {c |}{res}  -0.1736   0.0625  -0.1454   1.0000
+       {txt}grams {c |}{res}  -0.2565   0.1187  -0.2281   0.7021   1.0000
+
+{txt}
+{com}. 
+. *-Variance Inflation Factor(VIF); should not be > 10
+. *Tolerance(1/VIF); should not be > 0.1
+. 
+. estat vif
+
+{txt}    Variable {c |}       VIF       1/VIF  
+{hline 13}{c +}{hline 22}
+{space 8}educ {c |} {res}     1.07    0.931012
+{txt}{space 7}smoke {c |} {res}     1.07    0.931748
+{txt}{space 5}gestate {c |} {res}     1.05    0.951174
+{txt}{space 7}black {c |} {res}     1.05    0.951580
+{txt}{hline 13}{c +}{hline 22}
+    Mean VIF {c |} {res}     1.06
+{txt}
+{com}. *no VIF > 10
+. *NB; If there is a variable that has VIF higher than 10, determine which variable it has a strong relationship with(using correlation matrix). Remove the variable which has high VIF and the other variable it has a strong relationship with  will be the proxy variable.
+. 
+. *CHECK FOR OUTLIERS
+. *Regression is very sensitive to outliers. These outliers pull the regression coefficients towards themselves. Check to see how much influence does each subject have on the regression coefficients
+. 
+. *-dfbetas;quantify how much @ of the coefficients would change if @ observation were omitted from the data set
+. *-SHOULD NOT > 0.5
+. *- done per variable
+. 
+. predict dfbetablack, dfbeta(black)
+{txt}
+{com}. predict dfbetaeduc, dfbeta(educ)
+{txt}
+{com}. predict dfbetasmoke, dfbeta(smoke)
+{txt}
+{com}. predict dfbetagestate, dfbeta(gestate)
+{txt}
+{com}. 
+. *HAVE TO CHECK THE ABSOLUTE VALUE OF MIN AND MAX (after summarising ) TO MAKE SURE ITS NOT > 0.5
+. 
+. sum dfbetablack
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}dfbetablack {c |}{res}      1,115    3.97e-06    .0309946  -.1182215   .1373609
+{txt}
+{com}. sum dfbetaeduc
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}dfbetaeduc {c |}{res}      1,115   -7.93e-06    .0321225  -.3210298    .234337
+{txt}
+{com}. sum dfbetasmoke
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}dfbetasmoke {c |}{res}      1,115    1.25e-07    .0296792  -.1896885   .2179865
+{txt}
+{com}. sum dfbetagestate
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+dfbetagest~e {c |}{res}      1,115    8.81e-06    .0272546  -.3062788   .2221158
+{txt}
+{com}. 
+. *Cooks distance(Cooks'D); not greater than 1
+. *get it by predicting(creates new variable) and summarise that variables
+. predict cooksd, cooksd
+{txt}
+{com}. *creates column cooksd
+. 
+. summarize cooksd
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}cooksd {c |}{res}      1,115    .0008896    .0018756   2.70e-09   .0257574
+{txt}
+{com}. *summarises column cooksd; look at max value; should not be greater than 1 (if below 1 = no outliers)
+. 
+. *also can use leverage: but this is too stringent
+. 
+. 
+. *ALL ASSUMPTIONS FULFILLED
+. 
+. * -------------------------------------------------------------------------------------------------------------------------------------------------------------
+. * WHICH VARIABLES TO INCLUDE IN MULTIVARIABLE ANALYSIS?
+. * ----------------------------------------------------------
+. * Ideal: include ALL variables studied (here: gestational age,
+. *   maternal smoking, education level, race).
+. * Rule: ~40 subjects per variable must be met.
+. *   If not, screen variables using univariable analysis first:
+. *   run each variable alone against birthweight; record its p-value.
+. *
+. * Cut-off for selecting variables to carry forward:
+. *   - Default:       p < 0.2
+. *   - Small sample:  relax to p < 0.3  (cast a wider net)
+. *   - Large sample:  tighten to p < 0.1 (be more selective)
+. *
+. * Override allowed: keep a variable regardless of p-value if it is
+. *   consistently established in the literature as an important predictor.
+. *
+. * Why p < 0.2 and not p < 0.05?
+. *   Some variables look non-significant alone but become important
+. *   confounders in the full model — especially NEGATIVE confounders
+. *   (variables that suppress an association; a strict cut-off would
+. *   drop them and introduce bias).
+. 
+. * SAMPLE SIZE RULES FOR NUMBER OF VARIABLES ALLOWED IN MODEL
+. * ----------------------------------------------------------
+. *   i)   40 subjects per variable  (most commonly used); we shall use this
+. *   ii)  100 subjects per variable (conservative)
+. *   iii) (8 × number of variables) + 40
+. *   iv)  10 subjects per variable- MINIMUM
+. 
+. * CHECKING FOR INTERACTION
+. *-----------------------------------------------------------------------------------------------------------------------------------------------------------
+. 
+. * --- SCENARIO A: you HAVE a main exposure ---
+. * (e.g. main exposure = maternal smoking → outcome = birthweight)
+. *
+. *   Ideal: make an interaction term between the main exposure
+. *     and EVERY other variable in the model.
+. *   If sample size does not allow this:
+. *     → prioritise variables that were significant in the model;
+. *       make interaction terms between those and the main exposure only.
+. *
+. * --- SCENARIO B: you DO NOT have a main exposure ---
+. * (our model: gestational age, smoking, education, race — all equal)
+. *
+. *   Ideal: make ALL possible pairwise interaction terms.
+. *   If sample size does not allow this, two options:
+. *     i)  Find significant variables; make interaction terms between
+. *           each significant variable and all other variables.
+. *     ii) Make interaction terms between ONLY the significant variables.
+. 
+. *Write equations with all the predictors and interaction terms;
+. 
+. *Y = alpha + b1black + b2educ + b3smoke + b4gestate + sig1blackeduc + sig2blacksmoke + sig3blackgest + sig4educsmoke + sig5educgest + sig6smokegest
+. 
+. *Above equation contains all the predictors(4) and possible all possible interaction terms(6); makes 10 total variables; therefore need 400 observations for analysis
+. 
+. *We have to generate all the variables(new columns) with those interaction terms;
+. 
+. gen blackeduc = black*educ
+{txt}
+{com}. gen blacksmoke = black*smoke
+{txt}
+{com}. gen blackgestate = black*gestate
+{txt}
+{com}. gen educsmoke = educ*smoke
+{txt}
+{com}. gen educgestate = educ*gestate
+{txt}
+{com}. gen smokegestate = smoke*gestate
+{txt}
+{com}. 
+. *Now we use, backward to remove non-significant terms; all the basic variables are added to term1; then all the interaction terms are added to terms 2,3,4...
+. *Avoid using forward as you may end up remove negative confounders leading to a biased model
+. stepwise, pr(0.05) lockterm1 : regress grams black educ smoke gestate blackeduc blacksmoke blackgestate educsmoke educgestate smokegestate
+{res}
+{txt}{p2colset 0 23 32 2}{...}
+Wald test, begin with full model:
+{p2col:p = {res:0.7714} >= 0.0500,}removing {res:blackgestate}{p_end}
+{p2col:p = {res:0.3503} >= 0.0500,}removing {res:smokegestate}{p_end}
+{p2col:p = {res:0.2598} >= 0.0500,}removing {res:educsmoke}{p_end}
+{p2col:p = {res:0.1325} >= 0.0500,}removing {res:educgestate}{p_end}
+{p2col:p = {res:0.2965} >= 0.0500,}removing {res:educ}{p_end}
+{p2colset 0 12 32 2}{...}
+{p2colreset}{...}
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(5, 1109)      = {res}   255.42
+{txt}       Model {c |} {res}  239295981         5  47859196.1   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  207802171     1,109  187377.972   {txt}R-squared       ={res}    0.5352
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5331
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 432.87
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2}-545.8378{col 26}{space 2} 117.9632{col 37}{space 1}   -4.63{col 46}{space 3}0.000{col 54}{space 4} -777.294{col 67}{space 3}-314.3816
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 236.1654{col 26}{space 2} 63.16171{col 37}{space 1}    3.74{col 46}{space 3}0.000{col 54}{space 4} 112.2354{col 67}{space 3} 360.0953
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2}-319.7399{col 26}{space 2} 49.62581{col 37}{space 1}   -6.44{col 46}{space 3}0.000{col 54}{space 4}-417.1109{col 67}{space 3}-222.3688
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.3148{col 26}{space 2} 4.983695{col 37}{space 1}   31.57{col 46}{space 3}0.000{col 54}{space 4} 147.5363{col 67}{space 3} 167.0934
+{txt}{space 3}blackeduc {c |}{col 14}{res}{space 2} 26.38129{col 26}{space 2}  9.33304{col 37}{space 1}    2.83{col 46}{space 3}0.005{col 54}{space 4} 8.068881{col 67}{space 3}  44.6937
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2714.156{col 26}{space 2} 198.1605{col 37}{space 1}  -13.70{col 46}{space 3}0.000{col 54}{space 4}-3102.968{col 67}{space 3}-2325.344
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. *If you want to use stepwise; click both forward and backward boxes in stata; but the backward box(probability f) should have higher p value
+. 
+. *in the above command; educ is removed and yet black*educ was included(which is a higher order term; THIS IS NOT ALLOWED); to correct this we add parentheses() on the basic variables in term 1 ; this asks  stata to consider variables in the parentheses as one and drop all if non-significant
+. stepwise, pr(0.05) lockterm1 : regress grams (black educ smoke gestate) blackeduc blacksmoke blackgestate educsmoke educgestate smokegestate
+{res}
+{txt}{p2colset 0 23 32 2}{...}
+Wald test, begin with full model:
+{p2col:p = {res:0.7714} >= 0.0500,}removing {res:blackgestate}{p_end}
+{p2col:p = {res:0.3503} >= 0.0500,}removing {res:smokegestate}{p_end}
+{p2col:p = {res:0.2598} >= 0.0500,}removing {res:educsmoke}{p_end}
+{p2col:p = {res:0.1325} >= 0.0500,}removing {res:educgestate}{p_end}
+{p2colset 0 12 32 2}{...}
+{p2colreset}{...}
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(6, 1108)      = {res}   213.05
+{txt}       Model {c |} {res}  239500335         6  39916722.5   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  207597816     1,108   187362.65   {txt}R-squared       ={res}    0.5357
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5332
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 432.85
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2}-666.2525{col 26}{space 2} 164.9492{col 37}{space 1}   -4.04{col 46}{space 3}0.000{col 54}{space 4}-989.9006{col 67}{space 3}-342.6044
+{txt}{space 8}educ {c |}{col 14}{res}{space 2}-9.279067{col 26}{space 2} 8.884927{col 37}{space 1}   -1.04{col 46}{space 3}0.297{col 54}{space 4}-26.71225{col 67}{space 3} 8.154114
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2}-334.6589{col 26}{space 2} 51.63903{col 37}{space 1}   -6.48{col 46}{space 3}0.000{col 54}{space 4}-435.9802{col 67}{space 3}-233.3375
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.3446{col 26}{space 2} 4.983573{col 37}{space 1}   31.57{col 46}{space 3}0.000{col 54}{space 4} 147.5663{col 67}{space 3} 167.1229
+{txt}{space 3}blackeduc {c |}{col 14}{res}{space 2} 35.65967{col 26}{space 2} 12.88522{col 37}{space 1}    2.77{col 46}{space 3}0.006{col 54}{space 4} 10.37749{col 67}{space 3} 60.94185
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 251.1168{col 26}{space 2} 64.76136{col 37}{space 1}    3.88{col 46}{space 3}0.000{col 54}{space 4} 124.0481{col 67}{space 3} 378.1856
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2594.888{col 26}{space 2} 228.7062{col 37}{space 1}  -11.35{col 46}{space 3}0.000{col 54}{space 4}-3043.634{col 67}{space 3}-2146.142
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. *From the above command ; you can see that the non-significant interaction terms were removed and only the significant ones will be kept going forward
+. *In backward; stata runs the model with all the variables included; and then after removes the least significant; and then reruns the model and the removes the least significant; and so and so on
+. 
+. 
+. 
+. *new equation;
+. *ŷ = −2594.9 + (−666.3)black + (−9.3)educ + (−334.7)smoke + (157.3)gestate + (35.7)blackeduc + (251.1)blacksmoke
+. 
+. *INTERPRETATION
+. * 1. Always check Prob>F first — if not significant, the whole model is useless, stop there
+. * 2. R-squared tells you how much of the outcome your model explains — higher is better
+. * 3. P-value tells you if a variable is significant — want p<0.05
+. * 4. Coefficient sign (+ or -) tells you the direction of the effect on the outcome
+. * 5. Coefficient size tells you the real-world magnitude of the effect in outcome units
+. * 6. t-statistic = coefficient divided by standard error — high t means strong signal, low t means noise: term with highest t is the strongest predictor
+. 
+. *------------------------------------------------------------------------------------------------------------------------------------------------------------
+. 
+. *Suppose you had a main exposure?
+. 
+. *QN; Does smoking have an influence on birthweight?
+. 
+. *- Interaction
+. 
+. *1) You can form all possible interaction terms with the main exposure if the sample size allows(40 subjects per variable)
+. *2) If the sample size is not sufficient, form interaction terms with the significant variables and the main exposure
+. 
+. *NOTE; The main exposure has to remain in the analysis regardless of its significance
+. 
+. *always write out model first;
+. 
+. *Y = alpha + b1smoke + b2black + b3educ + b4gestate + sig1smokeblack + sig2smokeeduc + sig3smokegest 
+. 
+. * as you can see above; the model we are about to do a backward assessment on includes all the basic variables and all the interaction terms with the main predictor/exposure
+. 
+. *command becomes to do backward is now ;
+. 
+. stepwise, pr(0.05) : regress grams black educ smoke gestate blacksmoke educsmoke smokegestate
+{res}
+{txt}{p2colset 0 23 32 2}{...}
+Wald test, begin with full model:
+{p2col:p = {res:0.5805} >= 0.0500,}removing {res:smokegestate}{p_end}
+{p2col:p = {res:0.5001} >= 0.0500,}removing {res:educ}{p_end}
+{p2col:p = {res:0.1983} >= 0.0500,}removing {res:educsmoke}{p_end}
+{p2colset 0 12 32 2}{...}
+{p2colreset}{...}
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   315.29
+{txt}       Model {c |} {res}  237798834         4  59449708.5   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209299317     1,110  188557.943   {txt}R-squared       ={res}    0.5319
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5302
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.23
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2} -223.641{col 26}{space 2} 30.47141{col 37}{space 1}   -7.34{col 46}{space 3}0.000{col 54}{space 4} -283.429{col 67}{space 3}-163.8529
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 216.5259{col 26}{space 2} 62.97576{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 54}{space 4} 92.96095{col 67}{space 3} 340.0908
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2} -319.665{col 26}{space 2} 49.78181{col 37}{space 1}   -6.42{col 46}{space 3}0.000{col 54}{space 4}-417.3421{col 67}{space 3}-221.9879
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4879{col 26}{space 2} 4.998985{col 37}{space 1}   31.50{col 46}{space 3}0.000{col 54}{space 4} 147.6794{col 67}{space 3} 167.2964
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2720.991{col 26}{space 2} 198.7687{col 37}{space 1}  -13.69{col 46}{space 3}0.000{col 54}{space 4}-3110.996{col 67}{space 3}-2330.986
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. *this becomes our model to check for interaction; as you can see all the nonsignificant variables are dropped; dont mind about educ this time as no higher order terms of educ remained in the model
+. 
+. *-----------------------------------------------------------------------------------------------------------------------------------------------------------
+. 
+. 
+. *CHECKING FOR CONFOUNDING
+. 
+. *- Check the variables that have been dropped if they are confounders or not. If they are confounders they are returned to the model and from part of the crude model
+. *- We check them in the order in which they were dropped
+. *- variables that  interact(those that form significant interaction terms eg blacksmoke; so that means black wont be checked for confounding as it interacts ) ; are not assessed for confounding
+. *- When we do not have a main predictor look at the effect on all variables that were left significant in the model
+. *- with main exposure, check for effect on main exposure
+. 
+. 
+. *Check for confounding will begin for when there is a main predictor/exposure;
+. *Since we have main exposure, we check for effect of variables removed from the model first. The last one to be dropped is checked first. If it changes the regression coefficient by significant magnitude (i.e 10% and above, then it is a confounder)
+. 
+. *first disable non-significant variables and interaction terms after checking for interaction(model from line 313);remove; educ, educsmoke, and smokegestate; and then run to get initial crude model; 
+. 
+. *the initial crude model; 
+. regress grams black  smoke gestate blacksmoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   315.29
+{txt}       Model {c |} {res}  237798834         4  59449708.5   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209299317     1,110  188557.943   {txt}R-squared       ={res}    0.5319
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5302
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.23
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2} -223.641{col 26}{space 2} 30.47141{col 37}{space 1}   -7.34{col 46}{space 3}0.000{col 54}{space 4} -283.429{col 67}{space 3}-163.8529
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2} -319.665{col 26}{space 2} 49.78181{col 37}{space 1}   -6.42{col 46}{space 3}0.000{col 54}{space 4}-417.3421{col 67}{space 3}-221.9879
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4879{col 26}{space 2} 4.998985{col 37}{space 1}   31.50{col 46}{space 3}0.000{col 54}{space 4} 147.6794{col 67}{space 3} 167.2964
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 216.5259{col 26}{space 2} 62.97576{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 54}{space 4} 92.96095{col 67}{space 3} 340.0908
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2720.991{col 26}{space 2} 198.7687{col 37}{space 1}  -13.69{col 46}{space 3}0.000{col 54}{space 4}-3110.996{col 67}{space 3}-2330.986
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Now we need if educ(last variable to be dropped )is a cofounder
+. *Bring it back into the model 
+. regress grams black educ smoke gestate blacksmoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(5, 1109)      = {res}   252.61
+{txt}       Model {c |} {res}  238065327         5  47613065.4   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209032824     1,109  188487.668   {txt}R-squared       ={res}    0.5325
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5304
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.15
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2}-217.7709{col 26}{space 2} 30.86312{col 37}{space 1}   -7.06{col 46}{space 3}0.000{col 54}{space 4}-278.3276{col 67}{space 3}-157.2142
+{txt}{space 8}educ {c |}{col 14}{res}{space 2} 7.674833{col 26}{space 2} 6.454573{col 37}{space 1}    1.19{col 46}{space 3}0.235{col 54}{space 4} -4.98972{col 67}{space 3} 20.33939
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2}-307.3471{col 26}{space 2} 50.83919{col 37}{space 1}   -6.05{col 46}{space 3}0.000{col 54}{space 4}-407.0989{col 67}{space 3}-207.5952
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4129{col 26}{space 2} 4.998451{col 37}{space 1}   31.49{col 46}{space 3}0.000{col 54}{space 4} 147.6054{col 67}{space 3} 167.2204
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 209.8725{col 26}{space 2} 63.21217{col 37}{space 1}    3.32{col 46}{space 3}0.001{col 54}{space 4} 85.84352{col 67}{space 3} 333.9014
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2817.651{col 26}{space 2} 214.7151{col 37}{space 1}  -13.12{col 46}{space 3}0.000{col 54}{space 4}-3238.945{col 67}{space 3}-2396.357
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Since smoke is our main exposure; we shall look at the changes in the coefficient of smoke ; without educ(crude) and with educ*gestate
+. 
+. regress grams black smoke gestate blacksmoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   315.29
+{txt}       Model {c |} {res}  237798834         4  59449708.5   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209299317     1,110  188557.943   {txt}R-squared       ={res}    0.5319
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5302
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.23
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2} -223.641{col 26}{space 2} 30.47141{col 37}{space 1}   -7.34{col 46}{space 3}0.000{col 54}{space 4} -283.429{col 67}{space 3}-163.8529
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2} -319.665{col 26}{space 2} 49.78181{col 37}{space 1}   -6.42{col 46}{space 3}0.000{col 54}{space 4}-417.3421{col 67}{space 3}-221.9879
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4879{col 26}{space 2} 4.998985{col 37}{space 1}   31.50{col 46}{space 3}0.000{col 54}{space 4} 147.6794{col 67}{space 3} 167.2964
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 216.5259{col 26}{space 2} 62.97576{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 54}{space 4} 92.96095{col 67}{space 3} 340.0908
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2720.991{col 26}{space 2} 198.7687{col 37}{space 1}  -13.69{col 46}{space 3}0.000{col 54}{space 4}-3110.996{col 67}{space 3}-2330.986
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *without educ=-319.665
+. 
+. regress grams black educ smoke gestate blacksmoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(5, 1109)      = {res}   252.61
+{txt}       Model {c |} {res}  238065327         5  47613065.4   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209032824     1,109  188487.668   {txt}R-squared       ={res}    0.5325
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5304
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.15
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2}-217.7709{col 26}{space 2} 30.86312{col 37}{space 1}   -7.06{col 46}{space 3}0.000{col 54}{space 4}-278.3276{col 67}{space 3}-157.2142
+{txt}{space 8}educ {c |}{col 14}{res}{space 2} 7.674833{col 26}{space 2} 6.454573{col 37}{space 1}    1.19{col 46}{space 3}0.235{col 54}{space 4} -4.98972{col 67}{space 3} 20.33939
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2}-307.3471{col 26}{space 2} 50.83919{col 37}{space 1}   -6.05{col 46}{space 3}0.000{col 54}{space 4}-407.0989{col 67}{space 3}-207.5952
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4129{col 26}{space 2} 4.998451{col 37}{space 1}   31.49{col 46}{space 3}0.000{col 54}{space 4} 147.6054{col 67}{space 3} 167.2204
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 209.8725{col 26}{space 2} 63.21217{col 37}{space 1}    3.32{col 46}{space 3}0.001{col 54}{space 4} 85.84352{col 67}{space 3} 333.9014
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2817.651{col 26}{space 2} 214.7151{col 37}{space 1}  -13.12{col 46}{space 3}0.000{col 54}{space 4}-3238.945{col 67}{space 3}-2396.357
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *with educ = -307.3471
+. 
+. *Percentage change; = 3.85%
+. 
+. *EDUCATION IS NOT A CONFOUNDER; DONT NEED TO INCLUDE IT IN THE MODEL
+. 
+. *Now we check gestate; so we take it out (becomes our crude)  and compare it to when gestate is present in model(coefficients for smoke)
+. 
+. regress grams black smoke blacksmoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(3, 1111)      = {res}    47.32
+{txt}       Model {c |} {res} 50655000.2         3  16885000.1   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  396443151     1,111  356834.519   {txt}R-squared       ={res}    0.1133
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.1109
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 597.36
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2}-341.6757{col 26}{space 2} 41.60021{col 37}{space 1}   -8.21{col 46}{space 3}0.000{col 54}{space 4}-423.2995{col 67}{space 3}-260.0518
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2}-387.7827{col 26}{space 2}  68.4182{col 37}{space 1}   -5.67{col 46}{space 3}0.000{col 54}{space 4}-522.0261{col 67}{space 3}-253.5392
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 110.5623{col 26}{space 2} 86.50956{col 37}{space 1}    1.28{col 46}{space 3}0.202{col 54}{space 4}-59.17828{col 67}{space 3} 280.3028
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3498.896{col 26}{space 2} 31.65982{col 37}{space 1}  110.52{col 46}{space 3}0.000{col 54}{space 4} 3436.776{col 67}{space 3} 3561.016
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *without gestate= -387.7827
+. 
+. regress grams black smoke gestate blacksmoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   315.29
+{txt}       Model {c |} {res}  237798834         4  59449708.5   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209299317     1,110  188557.943   {txt}R-squared       ={res}    0.5319
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5302
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.23
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2} -223.641{col 26}{space 2} 30.47141{col 37}{space 1}   -7.34{col 46}{space 3}0.000{col 54}{space 4} -283.429{col 67}{space 3}-163.8529
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2} -319.665{col 26}{space 2} 49.78181{col 37}{space 1}   -6.42{col 46}{space 3}0.000{col 54}{space 4}-417.3421{col 67}{space 3}-221.9879
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4879{col 26}{space 2} 4.998985{col 37}{space 1}   31.50{col 46}{space 3}0.000{col 54}{space 4} 147.6794{col 67}{space 3} 167.2964
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 216.5259{col 26}{space 2} 62.97576{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 54}{space 4} 92.96095{col 67}{space 3} 340.0908
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2720.991{col 26}{space 2} 198.7687{col 37}{space 1}  -13.69{col 46}{space 3}0.000{col 54}{space 4}-3110.996{col 67}{space 3}-2330.986
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *with gestate = -319.665
+. 
+. *Percentage change; = 17.6%
+. 
+. *GESTATE IS A CONFOUNDER; dont remove from model but make sure to report on it
+. *------------------------------------------------------------------------------------------------------------------------------------------------------------
+. 
+. *Final Model
+. *After completing interaction and confounding checks, the final model is:
+. 
+. regress grams black smoke gestate blacksmoke
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   315.29
+{txt}       Model {c |} {res}  237798834         4  59449708.5   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209299317     1,110  188557.943   {txt}R-squared       ={res}    0.5319
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5302
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.23
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2} -223.641{col 26}{space 2} 30.47141{col 37}{space 1}   -7.34{col 46}{space 3}0.000{col 54}{space 4} -283.429{col 67}{space 3}-163.8529
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2} -319.665{col 26}{space 2} 49.78181{col 37}{space 1}   -6.42{col 46}{space 3}0.000{col 54}{space 4}-417.3421{col 67}{space 3}-221.9879
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4879{col 26}{space 2} 4.998985{col 37}{space 1}   31.50{col 46}{space 3}0.000{col 54}{space 4} 147.6794{col 67}{space 3} 167.2964
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 216.5259{col 26}{space 2} 62.97576{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 54}{space 4} 92.96095{col 67}{space 3} 340.0908
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2720.991{col 26}{space 2} 198.7687{col 37}{space 1}  -13.69{col 46}{space 3}0.000{col 54}{space 4}-3110.996{col 67}{space 3}-2330.986
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *----------------------------------------------------------------------------------------------------------------
+. 
+. *Standardized Beta Coefficients
+. 
+. *Used to compare the relative importance / strength of different predictors in the same model. Raw coefficients cannot be compared because they depend on units of measurement.
+. 
+. *•    Standardized betas are dimensionless — units of measurement are removed
+. *•    Range from −1 to +1, like a correlation coefficient
+. *•    The variable with the largest magnitude (ignoring sign) is the strongest predictor
+. *•    Sign tells you direction (positive or negative relationship) — not importance
+. *•    Can be obtained regardless of whether interaction is present in the model
+. 
+. 
+. * In Stata: Statistics > Linear models > Reporting > tick 'Standardized beta coefficients'
+. * Or add 'beta' option to regress command:
+. 
+. regress grams black smoke gestate blacksmoke, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(4, 1110)      = {res}   315.29
+{txt}       Model {c |} {res}  237798834         4  59449708.5   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  209299317     1,110  188557.943   {txt}R-squared       ={res}    0.5319
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5302
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 434.23
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 67}        Beta
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}black {c |}{col 14}{res}{space 2} -223.641{col 26}{space 2} 30.47141{col 37}{space 1}   -7.34{col 46}{space 3}0.000{col 67}{space 3}-.1734565
+{txt}{space 7}smoke {c |}{col 14}{res}{space 2} -319.665{col 26}{space 2} 49.78181{col 37}{space 1}   -6.42{col 46}{space 3}0.000{col 67}{space 3} -.215982
+{txt}{space 5}gestate {c |}{col 14}{res}{space 2} 157.4879{col 26}{space 2} 4.998985{col 37}{space 1}   31.50{col 46}{space 3}0.000{col 67}{space 3} .6642983
+{txt}{space 2}blacksmoke {c |}{col 14}{res}{space 2} 216.5259{col 26}{space 2} 62.97576{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 67}{space 3} .1235068
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-2720.991{col 26}{space 2} 198.7687{col 37}{space 1}  -13.69{col 46}{space 3}0.000{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *gestate had the largest standardized beta → strongest predictor of birthweight
+. 
+. *R-squared and the Multiple Correlation Coefficient;
+. *•    R-squared: proportion of variation in the outcome (birthweight) explained by all predictors together
+. *•    Adjusted R-squared: use this as the population estimate — it penalizes for number of predictors
+. *•    Square root of R-squared: gives the multiple correlation coefficient — the correlation between observed birthweight and the birthweight predicted by the model
+. 
+. *the constant( _cons); the value of the outcome Y;  which is birthweight in grams in this model; when the predictors are all at 0
+. 
+. 
+. *CHECK BOOK FOR INTERPRETATION
+. 
+. *When we have variables that are categorical with more than 2 levels we need indicate them as such in the analysis
+. *now lets generate new variables gestcat and educcat where we create categories with more than 2 levels
+. 
+. *Generating gestcat variable with 3 levels
+. gen gestcat=gestate
+{txt}
+{com}. recode gestcat min/27=1 28/35=2 36/max=3
+{txt}(1115 changes made to {bf:gestcat})
+
+{com}. label define gestcat 1"less than 28 weeks" 2"28 weeks to 35 weeks" 3"36 weeks and above"
+{txt}
+{com}. label values gestcat gestcat
+{txt}
+{com}. 
+. 
+. *Generating educcat with 4 levels
+. gen educcat=educ
+{txt}
+{com}. recode educcat min/7=1 8/11=2 12/13=3 14/max=4
+{txt}(1115 changes made to {bf:educcat})
+
+{com}. label define educcat 1"Upto 7 years" 2"8 to 11 years" 3"12 to 13 years" 4" 14 years and above"
+{txt}
+{com}. label values educcat educcat
+{txt}
+{com}. 
+. *to tell stata that this is a categorical vraiable; add prefix i. before the variable name; eg i.gestcat; this tells stata its a categorical variable and stata automatically creates dummy variables; NOTE; stata automatically uses the lowest level amongst the categories as the constant(_cons) to which other higher levels are compared; if you want to compare to a specific level,maybe level 3 as the baseline; then you do ib3.gestcat
+. 
+. regress grams gestcat
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(1, 1113)      = {res}   686.43
+{txt}       Model {c |} {res}  170555438         1   170555438   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  276542713     1,113  248466.049   {txt}R-squared       ={res}    0.3815
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3809
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 498.46
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}gestcat {c |}{col 14}{res}{space 2} 1241.051{col 26}{space 2} 47.36857{col 37}{space 1}   26.20{col 46}{space 3}0.000{col 54}{space 4} 1148.109{col 67}{space 3} 1333.992
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} -403.441{col 26}{space 2} 139.0856{col 37}{space 1}   -2.90{col 46}{space 3}0.004{col 54}{space 4}-676.3406{col 67}{space 3}-130.5414
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *notice how it doesnt treat it as actegorical variable but rather a continous variable using the underlying levels
+. 
+. regress grams i.gestcat
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(2, 1112)      = {res}   345.70
+{txt}       Model {c |} {res}  171410789         2  85705394.6   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  275687362     1,112   247920.29   {txt}R-squared       ={res}    0.3834
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3823
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 497.92
+
+{txt}{hline 22}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                grams{col 23}{c |} Coefficient{col 35}  Std. err.{col 47}      t{col 55}   P>|t|{col 63}     [95% con{col 76}f. interval]
+{hline 22}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 14}gestcat {c |}
+28 weeks to 35 weeks  {c |}{col 23}{res}{space 2} 1500.219{col 35}{space 2}  147.334{col 46}{space 1}   10.18{col 55}{space 3}0.000{col 63}{space 4} 1211.135{col 76}{space 3} 1789.303
+{txt}{space 2}36 weeks and above  {c |}{col 23}{res}{space 2} 2658.234{col 35}{space 2} 133.9672{col 46}{space 1}   19.84{col 55}{space 3}0.000{col 63}{space 4} 2395.377{col 76}{space 3} 2921.091
+{txt}{space 21} {c |}
+{space 16}_cons {c |}{col 23}{res}{space 2} 659.0714{col 35}{space 2} 133.0736{col 46}{space 1}    4.95{col 55}{space 3}0.000{col 63}{space 4} 397.9677{col 76}{space 3} 920.1752
+{txt}{hline 22}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *notice how stata recognises that its a categorical variable and  compares it to the lowest level(1)
+. 
+. regress grams ib3.gestcat
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(2, 1112)      = {res}   345.70
+{txt}       Model {c |} {res}  171410789         2  85705394.6   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  275687362     1,112   247920.29   {txt}R-squared       ={res}    0.3834
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3823
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 497.92
+
+{txt}{hline 22}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}                grams{col 23}{c |} Coefficient{col 35}  Std. err.{col 47}      t{col 55}   P>|t|{col 63}     [95% con{col 76}f. interval]
+{hline 22}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 14}gestcat {c |}
+{space 2}less than 28 weeks  {c |}{col 23}{res}{space 2}-2658.234{col 35}{space 2} 133.9672{col 46}{space 1}  -19.84{col 55}{space 3}0.000{col 63}{space 4}-2921.091{col 76}{space 3}-2395.377
+{txt}28 weeks to 35 weeks  {c |}{col 23}{res}{space 2}-1158.015{col 35}{space 2} 65.09477{col 46}{space 1}  -17.79{col 55}{space 3}0.000{col 63}{space 4}-1285.737{col 76}{space 3}-1030.292
+{txt}{space 21} {c |}
+{space 16}_cons {c |}{col 23}{res}{space 2} 3317.305{col 35}{space 2} 15.44715{col 46}{space 1}  214.75{col 55}{space 3}0.000{col 63}{space 4} 3286.996{col 76}{space 3} 3347.614
+{txt}{hline 22}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. *this uses level 3 as the baseline
+. 
+. *if you want to store dummy variables ; use xi: before the command
+. 
+. xi: regress grams i.gestcat
+{txt}i.gestcat{col 19}_Igestcat_1-3{col 39}(naturally coded; _Igestcat_1 omitted)
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}     1,115
+{txt}{hline 13}{c +}{hline 34}   F(2, 1112)      = {res}   345.70
+{txt}       Model {c |} {res}  171410789         2  85705394.6   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  275687362     1,112   247920.29   {txt}R-squared       ={res}    0.3834
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3823
+{txt}       Total {c |} {res}  447098151     1,114   401344.84   {txt}Root MSE        =   {res} 497.92
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}       grams{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      t{col 46}   P>|t|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 1}_Igestcat_2 {c |}{col 14}{res}{space 2} 1500.219{col 26}{space 2}  147.334{col 37}{space 1}   10.18{col 46}{space 3}0.000{col 54}{space 4} 1211.135{col 67}{space 3} 1789.303
+{txt}{space 1}_Igestcat_3 {c |}{col 14}{res}{space 2} 2658.234{col 26}{space 2} 133.9672{col 37}{space 1}   19.84{col 46}{space 3}0.000{col 54}{space 4} 2395.377{col 67}{space 3} 2921.091
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 659.0714{col 26}{space 2} 133.0736{col 37}{space 1}    4.95{col 46}{space 3}0.000{col 54}{space 4} 397.9677{col 67}{space 3} 920.1752
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. **look in variable window; the dummy variables have been stored
+. 
+. *END*
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. 
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}data/pbirths.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}20 Apr 2026, 12:49:30
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
